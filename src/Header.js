@@ -1,47 +1,117 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Header = () => {
+  const [openMenu, setOpenMenu] = useState(false);
+  function handleClick() {
+    setOpenMenu((prevState) => !prevState);
+  }
+
+  //to close the dropdown after clicking a link
+  const hideDropdown = () => {
+    setOpenMenu(false);
+  };
+
   return (
-    <header className="w-full h-20 bg-white px-[5%] fixed top-0 left-0 flex items-center z-[100] shadow-md">
-      <Link to="/" className="mr-[150px]">
-        <div className="w-20 h-10 border-[2px] border-blue-500 flex items-center gap-[0px] cursor-pointer">
-          LOGO
-          {/*<img alt="logo" src={logo} className="w-[60px] h-[60px]" />
-          <p className="font-dyna text-[1.5rem] text-rose-300 tracking-widest">
-            Note app
-  </p>*/}
+    <header>
+      <div className="w-full h-20 bg-white px-[5%] fixed top-0 left-0 hidden md:flex items-center z-[100] shadow-md">
+        <Link to="/" className="mr-[150px]">
+          <img
+            alt="logo"
+            src="/images/Travas Logo.png"
+            className="w-[120px] h-auto mr-auto"
+          />
+        </Link>
+        <nav className="mr-auto">
+          <div className="flex items-center gap-[60px] mr-auto">
+            <Link
+              to="/home"
+              className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
+            >
+              Home
+            </Link>
+            <Link
+              to="/about"
+              className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
+            >
+              About
+            </Link>
+            <Link
+              to="/pricing"
+              className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
+            >
+              Pricing
+            </Link>
+            <Link
+              to="/support"
+              className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
+            >
+              Support
+            </Link>
+          </div>
+        </nav>
+        <div>
+          <button className="bg-white font-[700] text-[0.90rem] text-blue-500 mr-[20px] px-[20px] py-[5px] border-2 border-blue-500 rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300">
+            <Link to="/login">Log In</Link>
+          </button>
+          <button className="bg-blue-500 font-[700] text-[0.90rem] text-white px-[20px] py-[5px] rounded-md border-2 border-blue-500 hover:bg-blue-500 hover:translate-y-[6px] transition-all duration-300">
+            <Link to="/register">Sign Up</Link>
+          </button>
         </div>
-      </Link>
-      <nav className="mr-auto">
-        <div className="flex items-center gap-[60px] mr-auto">
-          <Link
-            to="/about"
-            className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
-          >
-            About
-          </Link>
-          <Link
-            to="/pricing"
-            className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
-          >
-            Pricing
-          </Link>
-          <Link
-            to="/support"
-            className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
-          >
-            Support
-          </Link>
-        </div>
-      </nav>
-      <div>
-        <button className="bg-white font-[700] text-[0.90rem] text-blue-500 mr-[20px] px-[20px] py-[5px] border-2 border-blue-500 rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300">
-          <Link to="/login">Log In</Link>
-        </button>
-        <button className="bg-blue-500 font-[700] text-[0.90rem] text-white px-[20px] py-[5px] rounded-md border-2 border-blue-500 hover:bg-blue-500 hover:translate-y-[6px] transition-all duration-300">
-          <Link to="/register">Sign Up</Link>
-        </button>
       </div>
+
+      {/*mobile header */}
+      <div
+        className={`md:hidden w-full h-[70px] px-[20px] bg-white fixed top-0 left-0 z-[100] border-b-[0px] border-b-[#47a3b3] flex justify-between items-center shadow-md`}
+      >
+        <Link to="/">
+          <img
+            alt="logo"
+            src="/images/Travas Logo.png"
+            className="w-[80px] h-auto mr-auto"
+          />
+        </Link>
+        <img
+          alt="hamburger"
+          src="/images/icons8-menu-squared-50.png"
+          onClick={handleClick}
+          className="w-[30px] h-[30px] cursor-pointer"
+        />
+
+        {openMenu && (
+          <div className="w-full h-[100vh] z-[200] bg-black/80 fixed top-0 left-0">
+            <img
+              className="w-[30px] h-[30px] cursor-pointer mr-[25px] absolute top-[30px] right-[10px]"
+              alt=""
+              src="/images/icons8-close-window-50.png"
+              onClick={handleClick}
+            />
+            <ul className="slide float-right w-[65%] h-full bg-white px-[30px] text-[1.25rem] font-[700] text-[#3F3D56] pt-[100px]">
+              <li className="my-4">
+                <Link to="/" onClick={hideDropdown}>
+                  <div className="w-full">Home</div>
+                </Link>
+              </li>
+              <li className="my-4">
+                <Link to="/about" onClick={hideDropdown}>
+                  <div className="w-full">About</div>
+                </Link>
+              </li>
+              <li className="my-4">
+                <Link to="/pricing" onClick={hideDropdown}>
+                  <div className="w-full">Pricing</div>
+                </Link>
+              </li>
+              <li className="my-4">
+                <Link to="/support" onClick={hideDropdown}>
+                  <div className="w-full">Support</div>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
+      </div>
+      {/*mobile header */}
     </header>
   );
 };

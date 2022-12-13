@@ -32,3 +32,19 @@ input::-webkit-input-placeholder {
 li::marker {
   font-size: 30px;
 }
+
+@layer utilities {
+  .slide {
+    animation: slide 0.8s ease-out;
+  }
+  @keyframes slide {
+    0% {
+      opacity: 0;
+      transform: translateX(200px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+  }
+}

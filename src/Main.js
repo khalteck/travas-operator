@@ -8,7 +8,7 @@ const Main = () => {
       {/* Slider Section */}
       <div></div>
       {/* Slider Section Ends */}
-      <div className="bg-[#3F3D56] pt-12 pb-20 space-y-28 mb-16">
+      <div className="bg-[#3F3D56] pt-12 pb-20 space-y-28 mb-16 rounded-t-3xl">
         {/* About Section*/}
         <div className="w-[90%] mx-auto flex flex-col items-start text-white sm:flex-row">
           <img
@@ -146,7 +146,7 @@ const Main = () => {
           </button>
           <p>
             Already have an account?
-            <a href="" className="text-[#1F66D0]">
+            <a href="/" className="text-[#1F66D0]">
               Login
             </a>
           </p>
