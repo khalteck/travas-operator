@@ -47,4 +47,8 @@ li::marker {
       transform: translateX(0px);
     }
   }
+  .gridy {
+    display: grid;
+    grid-template-columns: repeat(0.5fr, 2);
+  }
 }

@@ -14,9 +14,41 @@ import Step2 from "./components/Step2";
 import Step3 from "./components/Step3";
 import Preview from "./components/Preview";
 import Dashboard from "./pages/Dasboard";
-import Sidebar from "./components/Sidebar";
+import TourRequest from "./pages/TourRequest";
+import { useState } from "react";
+import TourGuide from "./pages/TourGuide";
+import Payment from "./pages/Payment";
+import Withdraw from "./components/Withdraw";
+import SupportUser from "./pages/SupportUser";
+import ProductFeedback from "./pages/ProductFeedback";
 
 function App() {
+  //to handle the link highlight of current page
+  const [currentPage, setCurrentPage] = useState({
+    dashboard: true,
+    tourRequest: false,
+    tourGuide: false,
+    payment: false,
+    support: false,
+    product: false,
+  });
+
+  //to handle click of nav links
+  function handleCurrentPage(event) {
+    const { id } = event.target;
+    setCurrentPage((prevState) => {
+      return {
+        dashboard: false,
+        tourRequest: false,
+        tourGuide: false,
+        payment: false,
+        support: false,
+        product: false,
+        [id]: true,
+      };
+    });
+  }
+
   return (
     <Router>
       <div className="content-per-page">
@@ -105,7 +137,58 @@ function App() {
 
           {/* Dashboard Route */}
           <Route exact path="/dashboard">
-            <Dashboard />
+            <Dashboard
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Tour request Route */}
+          <Route exact path="/tour-request">
+            <TourRequest
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Tour guide Route */}
+          <Route exact path="/tour-guide">
+            <TourGuide
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Payment Route */}
+          <Route exact path="/payment">
+            <Payment
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Withdraw Route */}
+          <Route exact path="/withdraw">
+            <Withdraw
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Support user Route */}
+          <Route exact path="/support-user">
+            <SupportUser
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
+          </Route>
+
+          {/* Product feedback Route */}
+          <Route exact path="/product-feedback">
+            <ProductFeedback
+              currentPage={currentPage}
+              handleCurrentPage={handleCurrentPage}
+            />
           </Route>
         </Switch>
       </div>
