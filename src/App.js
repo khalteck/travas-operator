@@ -3,11 +3,11 @@ import Header from "./Header";
 import Main from "./Main";
 import "./input.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import About from "./components/About";
-import Pricing from "./components/Pricing";
-import Support from "./components/Support";
-import Login from "./components/Login";
-import Register from "./components/Register";
+import About from "./pages/About";
+import Pricing from "./pages/Pricing";
+import Support from "./pages/Support";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Verify from "./components/Verify";
 import Step1 from "./components/Step1";
 import Step2 from "./components/Step2";
@@ -18,40 +18,45 @@ function App() {
   return (
     <Router>
       <div className="content-per-page">
-        <Header />
         <Switch>
           {/**home page route */}
           <Route exact path="/">
+            <Header />
             <Main />
           </Route>
           {/**home page route */}
 
           {/**about page route */}
           <Route exact path="/about">
+            <Header />
             <About />
           </Route>
           {/**about page route */}
 
           {/**pricing page route */}
           <Route exact path="/pricing">
+            <Header />
             <Pricing />
           </Route>
           {/**pricing page route */}
 
           {/**support page route */}
           <Route exact path="/support">
+            <Header />
             <Support />
           </Route>
           {/**support page route */}
 
           {/* Login Page Route */}
           <Route exact path="/login">
+            <Header />
             <Login />
           </Route>
           {/* Login Page Route */}
 
           {/* Register Page Route */}
           <Route exact path="/register">
+            <Header />
             <Register />
           </Route>
           {/* Register Page Route */}
