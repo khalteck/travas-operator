@@ -13,6 +13,8 @@ import Step1 from "./components/Step1";
 import Step2 from "./components/Step2";
 import Step3 from "./components/Step3";
 import Preview from "./components/Preview";
+import Dashboard from "./pages/Dasboard";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           <Route exact path="/">
             <Header />
             <Main />
+            <Footer />
           </Route>
           {/**home page route */}
 
@@ -30,6 +33,7 @@ function App() {
           <Route exact path="/about">
             <Header />
             <About />
+            <Footer />
           </Route>
           {/**about page route */}
 
@@ -37,6 +41,7 @@ function App() {
           <Route exact path="/pricing">
             <Header />
             <Pricing />
+            <Footer />
           </Route>
           {/**pricing page route */}
 
@@ -44,6 +49,7 @@ function App() {
           <Route exact path="/support">
             <Header />
             <Support />
+            <Footer />
           </Route>
           {/**support page route */}
 
@@ -51,6 +57,7 @@ function App() {
           <Route exact path="/login">
             <Header />
             <Login />
+            <Footer />
           </Route>
           {/* Login Page Route */}
 
@@ -58,40 +65,49 @@ function App() {
           <Route exact path="/register">
             <Header />
             <Register />
+            <Footer />
           </Route>
           {/* Register Page Route */}
 
           {/* verify identity Route */}
           <Route exact path="/verify">
             <Verify />
+            <Footer />
           </Route>
           {/* Verify identity Route */}
 
           {/* Step1 Route */}
           <Route exact path="/step1">
             <Step1 />
+            <Footer />
           </Route>
           {/* Step1 Route */}
 
           {/* Step2 Route */}
           <Route exact path="/step2">
             <Step2 />
+            <Footer />
           </Route>
           {/* Step2 Route */}
 
           {/* Step3 Route */}
           <Route exact path="/step3">
             <Step3 />
+            <Footer />
           </Route>
           {/* Step3 Route */}
 
           {/* Preview Route */}
           <Route exact path="/preview">
             <Preview />
+            <Footer />
+          </Route>
+
+          {/* Dashboard Route */}
+          <Route exact path="/dashboard">
+            <Dashboard />
           </Route>
         </Switch>
-
-        <Footer />
       </div>
     </Router>
   );
