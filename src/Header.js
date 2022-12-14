@@ -25,7 +25,7 @@ const Header = () => {
         <nav className="mr-auto">
           <div className="flex items-center gap-[60px] mr-auto">
             <Link
-              to="/home"
+              to="/"
               className="cursor-pointer px-[10px] py-[5px] rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
             >
               Home

@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+import ScrollToTop from "../ScrollToTop";
+
 const Register = () => {
   return (
-    <div className="pt-[150px] mx-auto space-y-8 w-[90%] md:mx-0 md:w-[45%] md:pl-[80px]">
+    <div className="pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:mx-0 md:w-[45%] md:pl-[80px]">
       <div className="pb-8">
         <h2 className="font-bold pb-4 md:text-2xl">Register</h2>
         <p>Enter these few information to become a Travas supplier today!</p>
@@ -85,22 +88,23 @@ const Register = () => {
       <div className="w-full space-y-5">
         <p className="text-center">
           Already have an account?<span> </span>
-          <a href="" className="text-[#1F66D0]">
+          <Link to="/login" className="text-[#1F66D0]">
             Log in
-          </a>
+          </Link>
         </p>
         <p>
           By registering, you hereby agree to the Travas<span> </span>
-          <a className="text-[#1F66D0]" href="">
+          <Link className="text-[#1F66D0]" to="/">
             Privacy Policy
-          </a>{" "}
+          </Link>{" "}
           <span> </span>
           and <span> </span>
-          <a className="text-[#1F66D0]" href="">
+          <Link className="text-[#1F66D0]" to="/">
             Terms of use
-          </a>
+          </Link>
         </p>
       </div>
+      <ScrollToTop />
     </div>
   );
 };

@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import ScrollToTop from "./ScrollToTop";
+
 const Main = () => {
   return (
     <div className="pt-[90px] px-[5%]">
@@ -141,17 +144,20 @@ const Main = () => {
           <p className="text-white text-md md:text-xl font-semibold">
             Become a Travas supplier for free today!
           </p>
-          <button className="bg-[#1F66D0] px-12 py-2.5 my-6 font-semibold md:px-28 md:py-3">
-            Sign up for free
-          </button>
+          <Link to="/register">
+            <button className="bg-[#1F66D0] px-12 py-2.5 my-6 font-semibold md:px-28 md:py-3">
+              Sign up for free
+            </button>
+          </Link>
           <p>
-            Already have an account?
-            <a href="/" className="text-[#1F66D0]">
+            Already have an account?{" "}
+            <Link to="/login" className="text-[#1F66D0]">
               Login
-            </a>
+            </Link>
           </p>
         </div>
       </div>
+      <ScrollToTop />
     </div>
   );
 };
