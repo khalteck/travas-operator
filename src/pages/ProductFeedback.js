@@ -9,8 +9,8 @@ const ProductFeedback = ({ currentPage, handleCurrentPage }) => {
         currentPage={currentPage}
         handleCurrentPage={handleCurrentPage}
       />
-      <div className="w-full md:w-[80%] float-right bg-white pt-[50px] px-12">
-        <div className="w-full min-h-[80vh] mb-16">
+      <div className="w-full md:w-[80%] float-right bg-white pt-[50px] px-0 md:px-12">
+        <div className="w-full min-h-[80vh] px-3 md:px-0 mb-16">
           <div className="flex items-center gap-2 mt-5 mb-5 text-[1.25rem]">
             <strong>Product feedback</strong>
           </div>
@@ -30,7 +30,7 @@ const ProductFeedback = ({ currentPage, handleCurrentPage }) => {
             <h2 className="text-[1.25rem] mb-6">
               Which of these features are you having issues with?
             </h2>
-            <div className="w-full grid grid-cols-4 gap-8">
+            <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-8">
               <button className="bg-gray-200/40 border border-gray-300 p-3">
                 Tour packages
               </button>
