@@ -107,6 +107,20 @@ const Header = () => {
                   <div className="w-full">Support</div>
                 </Link>
               </li>
+              <li className="my-4">
+                <Link to="/login" onClick={hideDropdown}>
+                  <div className="w-[70%] text-center rounded-md border-2 border-blue-500">
+                    Sign In
+                  </div>
+                </Link>
+              </li>
+              <li className="my-4">
+                <Link to="/register" onClick={hideDropdown}>
+                  <div className="w-[70%] text-center rounded-md border-2 border-blue-500 bg-blue-500 text-white">
+                    Register
+                  </div>
+                </Link>
+              </li>
             </ul>
           </div>
         )}
