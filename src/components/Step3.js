@@ -98,7 +98,7 @@ export default function Step3() {
         <button className="bg-[#1F66D0] text-white font-semibold py-2 px-12 flex items-center shadow-md">
           Assign
           <span className="pl-4">
-            <img className="w-[14px]" src="/images/plus2.svg" />
+            <img className="w-[14px]" src="/images/plus2.svg" alt="img" />
           </span>
         </button>
       </div>

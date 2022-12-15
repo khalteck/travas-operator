@@ -12,7 +12,7 @@ function Slider() {
       <div className="slider-container lg:space-x-10">
         {/* img */}
         <div className="lg:w-1/2">
-          <img src={items.image} className="" />
+          <img src={items.image} className="" alt="img" />
         </div>
         {/* texts */}
         <div className="lg:w-1/2">

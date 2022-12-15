@@ -27,6 +27,9 @@ input::-webkit-input-placeholder {
   .verify-input {
     @apply bg-[#F5F5F5] text-[#079F32] text-opacity-50 pl-4 py-2.5 focus:outline-none rounded-sm w-full;
   }
+  .slider-container {
+    @apply flex flex-col lg:flex-row lg:items-center lg:justify-between mx-auto space-y-6 pb-6 px-5 mt-8;
+  }
 }
 
 li::marker {
@@ -46,9 +49,5 @@ li::marker {
       opacity: 1;
       transform: translateX(0px);
     }
-  }
-  .gridy {
-    display: grid;
-    grid-template-columns: repeat(0.5fr, 2);
   }
 }

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Slider from "./components/Slider/Slider";
 import ScrollToTop from "./ScrollToTop";
 
 const Main = () => {
@@ -9,7 +10,7 @@ const Main = () => {
         <p> Perfectly designed for domestic tour operators within Nigeria</p>
       </div>
       {/* Slider Section */}
-      <div></div>
+      <Slider />
       {/* Slider Section Ends */}
       <div className="bg-[#3F3D56] pt-12 pb-20 space-y-28 mb-16 rounded-t-3xl">
         {/* About Section*/}
