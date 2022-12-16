@@ -1,4 +1,5 @@
 import ScrollToTop from "../ScrollToTop";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
@@ -36,6 +37,15 @@ const Login = () => {
             </div>
           </form>
         </div>
+      </div>
+
+      <div className="w-full space-y-5">
+        <p className="text-center">
+          Don't have an account?<span> </span>
+          <Link to="/register" className="text-[#1F66D0]">
+            Sign up
+          </Link>
+        </p>
       </div>
       <ScrollToTop />
     </div>

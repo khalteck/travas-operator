@@ -24,7 +24,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/dashboard">
             <li
               id="dashboard"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.dashboard
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -37,7 +37,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/tour-request">
             <li
               id="tourRequest"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.tourRequest
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -50,7 +50,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/tour-guide">
             <li
               id="tourGuide"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.tourGuide
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -63,7 +63,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/payment">
             <li
               id="payment"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.payment
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -76,7 +76,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/support-user">
             <li
               id="support"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.support
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -89,7 +89,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
           <Link to="/product-feedback">
             <li
               id="product"
-              className={`w-[90%] mb-8 py-3 px-12 cursor-pointer ${
+              className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
                 currentPage?.product
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
@@ -99,7 +99,9 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
               Product Feedback
             </li>
           </Link>
-          <li className="w-[80%] px-3 py-2 bg-white border-2 mx-auto border-gray-300 rounded-xl cursor-pointer hover:bg-gray-300">
+          <li
+            className={`w-[90%] mb-8 py-3 px-12 cursor-pointer bg-gray-200 border-gray-200 hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
+          >
             Log out
           </li>
         </ul>

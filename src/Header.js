@@ -86,7 +86,7 @@ const Header = () => {
               src="/images/icons8-close-window-50.png"
               onClick={handleClick}
             />
-            <ul className="slide float-right w-[65%] h-full bg-white px-[30px] text-[1.25rem] font-[700] text-[#3F3D56] pt-[100px]">
+            <ul className="slide float-right w-[65%] h-full bg-white px-[30px] text-[1.25rem] text-[#3F3D56] pt-[100px]">
               <li className="my-4">
                 <Link to="/" onClick={hideDropdown}>
                   <div className="w-full">Home</div>
@@ -109,14 +109,14 @@ const Header = () => {
               </li>
               <li className="my-4">
                 <Link to="/login" onClick={hideDropdown}>
-                  <div className="w-[70%] text-center rounded-md border-2 border-blue-500">
+                  <div className="w-[fit-content] px-10 py-1 text-center text-[0.95rem] rounded-md border-2 border-blue-500">
                     Sign In
                   </div>
                 </Link>
               </li>
               <li className="my-4">
                 <Link to="/register" onClick={hideDropdown}>
-                  <div className="w-[70%] text-center rounded-md border-2 border-blue-500 bg-blue-500 text-white">
+                  <div className="w-[fit-content] px-10 py-1 text-center text-[0.95rem] rounded-md border-2 border-blue-500 bg-blue-500 text-white">
                     Register
                   </div>
                 </Link>
