@@ -107,7 +107,7 @@ const Header = () => {
                   <div className="w-full">Support</div>
                 </Link>
               </li>
-              <li className="my-4">
+              <li className="mt-12 mb-4">
                 <Link to="/login" onClick={hideDropdown}>
                   <div className="w-[fit-content] px-10 py-1 text-center text-[0.95rem] rounded-md border-2 border-blue-500">
                     Sign In
