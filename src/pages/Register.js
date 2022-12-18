@@ -1,7 +1,50 @@
 import { Link } from "react-router-dom";
 import ScrollToTop from "../ScrollToTop";
+import { useState } from "react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/firebase-config";
 
 const Register = () => {
+  //to save reg form input
+  const [regForm, setRegForm] = useState({
+    companyName: "",
+    email: "email",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  console.log(regForm);
+
+  //to handle form input change chnage
+  function handleChange(event) {
+    const { id, value } = event.target;
+    setRegForm((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to handle reg form data submit to firebase
+  const register = async (e) => {
+    e.preventDefault();
+    try {
+      const user = await createUserWithEmailAndPassword(
+        auth,
+        regForm.companyName,
+        regForm.email,
+        regForm.phone,
+        regForm.password,
+        regForm.confirmPassword
+      );
+      console.log(user);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className="pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:mx-0 md:w-[45%] md:pl-[80px]">
       <div className="pb-8">
@@ -11,14 +54,15 @@ const Register = () => {
       <form className="space-y-4">
         {/* business/company name */}
         <div className="space-y-5 pb-8">
-          <label for="business-name">
+          <label htmlFor="business-name">
             Registered business/company name
             <span className="text-red-500"> *</span>
           </label>
           <input
             className="reg-input"
             type="text"
-            id="business-name"
+            id="companyName"
+            onChange={handleChange}
             placeholder="Business/company name"
             required
           />
@@ -27,13 +71,14 @@ const Register = () => {
         {/* Contact info */}
         <div className="space-y-12 pb-8">
           <div className="space-y-5">
-            <label for="email">
+            <label htmlFor="email">
               Contact info <span className="text-red-500">*</span>
             </label>
             <input
               className="reg-input"
-              type="text"
+              type="email"
               id="email"
+              onChange={handleChange}
               placeholder="Email address"
               required
             />
@@ -46,6 +91,8 @@ const Register = () => {
             <input
               className="bg-[#F5F5F5] text-black text-opacity-50 w-[80%] pl-6 py-2.5 focus:outline-none rounded-sm"
               type="number"
+              id="phone"
+              onChange={handleChange}
               placeholder="Mobile number"
               required
             />
@@ -54,20 +101,23 @@ const Register = () => {
 
         {/* Password */}
         <div className="space-y-5 pb-8">
-          <label for="password">
-            Set you password <span className="text-red-500">*</span>
+          <label htmlFor="password">
+            Set your password <span className="text-red-500">*</span>
           </label>
           <div className="space-y-12">
             <input
               className="reg-input"
               type="password"
               id="password"
+              onChange={handleChange}
               placeholder="Password"
               required
             />
             <input
               type="password"
               className="reg-input"
+              id="confirmPassword"
+              onChange={handleChange}
               placeholder="Confirm password"
               required
             />
@@ -77,6 +127,7 @@ const Register = () => {
         {/* Register */}
         <div className="pt-8">
           <button
+            onClick={register}
             className="bg-[#B6B1B1] font-semibold text-center py-3 w-full rounded-sm pointer"
             type="submit"
           >

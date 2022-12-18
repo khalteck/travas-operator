@@ -1,7 +1,25 @@
 import ScrollToTop from "../ScrollToTop";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
+  //to save reg form input
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  //to handle form input change chnage
+  function handleChange(event) {
+    const { id, value } = event.target;
+    setLoginForm((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
   return (
     <div className="pt-[150px] w-[90%] min-h-[90vh] mx-auto space-y-16 md:pl-[80px] md:mx-0  md:w-[45%] ">
       <div>
@@ -15,6 +33,8 @@ const Login = () => {
               <input
                 className="login-input"
                 type="email"
+                id="email"
+                onChange={handleChange}
                 placeholder="Email address"
               />
             </div>
@@ -23,6 +43,8 @@ const Login = () => {
               <input
                 className="login-input"
                 type="password"
+                id="password"
+                onChange={handleChange}
                 placeholder="Password"
               />
             </div>
