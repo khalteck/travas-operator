@@ -4,7 +4,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import Loader from "../components/Loader";
 
-const Login = ({ handleLoginChange, showLoader, login }) => {
+const Login = ({ handleLoginChange, showLoader, login, invalidCred }) => {
   return (
     <>
       <Header />
@@ -36,8 +36,11 @@ const Login = ({ handleLoginChange, showLoader, login }) => {
                   placeholder="Password"
                 />
               </div>
+              {invalidCred && (
+                <p className="text-red-500">Invalid Login Credentials</p>
+              )}
               {/* Login Button */}
-              <div className="pt-8">
+              <div className="pt-5">
                 <button
                   className="bg-[#B6B1B1] font-semibold text-center py-2.5 rounded-sm pointer w-full"
                   type="submit"

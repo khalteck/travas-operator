@@ -772,6 +772,11 @@ video {
   margin-bottom: 2.5rem;
 }
 
+.my-\[-30px\] {
+  margin-top: -30px;
+  margin-bottom: -30px;
+}
+
 .mr-\[150px\] {
   margin-right: 150px;
 }
@@ -1525,6 +1530,11 @@ video {
 .py-\[25px\] {
   padding-top: 25px;
   padding-bottom: 25px;
+}
+
+.py-\[-30px\] {
+  padding-top: -30px;
+  padding-bottom: -30px;
 }
 
 .pt-\[100px\] {

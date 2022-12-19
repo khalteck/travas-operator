@@ -84,6 +84,8 @@ function App() {
   );
   // console.log(isLoggedIn);
 
+  const [invalidCred, setInvalidCred] = useState(false);
+
   const navigate = useNavigate();
 
   //to handle reg form data submit to firebase
@@ -114,11 +116,13 @@ function App() {
         setShowLoader(false);
         navigate("/dashboard");
         setIsLoggedIn(true);
+        setInvalidCred(false);
         localStorage.setItem("isLoggedIn", true);
       })
       .catch((err) => {
         setShowLoader(false);
         console.log(err.message);
+        setInvalidCred(true);
       });
   };
 
@@ -129,29 +133,6 @@ function App() {
       navigate("/");
     });
   };
-
-  //   try {
-  //     const user = await createUserWithEmailAndPassword(
-  //       auth,
-  //       regForm.email,
-  //       regForm.password
-  //       // regForm.companyName,
-  //       // regForm.email,
-  //       // regForm.phone,
-  //       // regForm.password,
-  //       // regForm.confirmPassword
-  //     );
-  //     console.log(user);
-  //     setUserState(true);
-  //     setShowLoader(false);
-  //     // window.location.href = "/dashboard";
-  //     history.push("/login");
-  //     // alert("Sign Up Successful! User Looged in.");
-  //   } catch (error) {
-  //     setShowLoader(false);
-  //     console.log(error.message);
-  //   }
-  // };
 
   //to handle the link highlight of current page
   const [currentPage, setCurrentPage] = useState({
@@ -193,6 +174,7 @@ function App() {
               handleLoginChange={handleLoginChange}
               showLoader={showLoader}
               login={login}
+              invalidCred={invalidCred}
             />
           }
         />

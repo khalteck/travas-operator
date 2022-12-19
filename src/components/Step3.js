@@ -1,14 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Footer from "../Footer";
+import ScrollToTop from "../ScrollToTop";
 
 export default function Step3() {
   return (
     <>
       <div className="pt-[100px] md:pt-[120px] w-[90%] px-1 mx-auto md:w-full md:mx-0 md:px-[80px] pb-20">
-        <div className="flex items-center space-x-4">
-          <img className="w-[16px]" src="/images/arrow.svg" alt="arrow" />
-          <p>Step 3</p>
-        </div>
+        <Link to="/step2">
+          <div className="flex items-center space-x-4">
+            <img className="w-[16px]" src="/images/arrow.svg" alt="arrow" />
+            <p>Step 2</p>
+          </div>
+        </Link>
         {/* progress ball 2 */}
         <div className="w-full flex justify-center">
           <img
@@ -116,15 +120,20 @@ export default function Step3() {
 
         {/* Back and submit button */}
         <div className="flex sm:justify-end justify-between mt-24 space-x-6">
-          <button className="text-[#1F66D0] bg-white border border-[#1F66D0] font-semibold px-12 py-3 md:px-24">
-            Back
-          </button>
-          <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
-            Submit
-          </button>
+          <Link to="/step2">
+            <button className="text-[#1F66D0] bg-white border border-[#1F66D0] font-semibold px-12 py-3 md:px-24">
+              Back
+            </button>
+          </Link>
+          <Link to="/preview">
+            <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
+              Submit
+            </button>
+          </Link>
         </div>
       </div>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }

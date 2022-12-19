@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Footer from "../Footer";
+import ScrollToTop from "../ScrollToTop";
 
 export default function Preview() {
   return (
@@ -131,15 +133,20 @@ export default function Preview() {
 
         {/* Edit and submit button */}
         <div className="flex sm:justify-end justify-between mt-24 space-x-6">
-          <button className="text-[#1F66D0] bg-white border border-[#1F66D0] font-semibold px-12 py-3 md:px-24">
-            Edit
-          </button>
-          <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
-            Submit
-          </button>
+          <Link to="/step3">
+            <button className="text-[#1F66D0] bg-white border border-[#1F66D0] font-semibold px-12 py-3 md:px-24">
+              Edit
+            </button>
+          </Link>
+          <Link to="/dashboard">
+            <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
+              Submit
+            </button>
+          </Link>
         </div>
       </div>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }

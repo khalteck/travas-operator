@@ -33,14 +33,16 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
                   Help us improve the platform by giving us your feedback
                 </p>
               </div>
-              <div className="flex items-center gap-2 mt-2 md:mt-0">
-                <p className="text-blue-500">Send feedback</p>
-                <img
-                  alt=""
-                  src="/images/icons8-chevron-right-blue.png"
-                  className="w-3 h-4"
-                />
-              </div>
+              <Link to="/product-feedback">
+                <div className="flex items-center gap-2 mt-2 md:mt-0">
+                  <p className="text-blue-500">Send feedback</p>
+                  <img
+                    alt=""
+                    src="/images/icons8-chevron-right-blue.png"
+                    className="w-3 h-4"
+                  />
+                </div>
+              </Link>
             </div>
           </div>
           <div className="w-full h-[60px] flex gap-4 mt-6">
@@ -64,9 +66,11 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
 
           <div className="w-full flex justify-between mt-8 mb-16 md:md-0">
             <h1 className="font-bold text-[1.25rem]">Packages</h1>
-            <button className="bg-blue-500 hover:bg-blue-400 text-white rounded-md p-3">
-              Create new package
-            </button>
+            <Link to="/step1">
+              <button className="bg-blue-500 hover:bg-blue-400 text-white rounded-md p-3">
+                Create new package
+              </button>
+            </Link>
           </div>
 
           <div className="my-10 text-center">

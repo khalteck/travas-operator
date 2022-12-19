@@ -1,14 +1,18 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Footer from "../Footer";
+import ScrollToTop from "../ScrollToTop";
 
 function Step1() {
   return (
     <>
       <div className="pt-[100px] md:pt-[120px] w-[90%] px-1 mx-auto md:w-full md:mx-0 md:pl-[80px] md:pr-[50px] pb-48">
-        <div className="flex items-center space-x-4">
-          <img className="w-[16px]" src="/images/arrow.svg" alt="arrow" />
-          <p>Step 1</p>
-        </div>
+        <Link to="/dashboard">
+          <div className="flex items-center space-x-4">
+            <img className="w-[16px]" src="/images/arrow.svg" alt="arrow" />
+            <p>Back</p>
+          </div>
+        </Link>
         {/* progress ball 1 */}
         <div className="w-full flex justify-center">
           <img className="w-[20%]" src="images/Progress ball-1.svg" alt="" />
@@ -89,7 +93,7 @@ function Step1() {
             <div className="flex flex-wrap justify-between gap-6 w-[100%]">
               {/* Start time */}
               <div className="space-y-6 flex flex-col">
-                <label for="time">Start time</label>
+                <label htmlFor="time">Start time</label>
                 <div className="flex items-center space-x-6">
                   <input
                     className=" border-b-2 focus:outline-none pb-2 pl-1 w-[70px]"
@@ -105,7 +109,7 @@ function Step1() {
 
               {/* Start date */}
               <div className="space-y-6 flex flex-col">
-                <label for="time">Start date</label>
+                <label htmlFor="time">Start date</label>
                 <div id="time" className="number flex items-center space-x-6">
                   {/* day */}
                   <div className="flex flex-col">
@@ -115,7 +119,10 @@ function Step1() {
                       type="number"
                       placeholder="10"
                     />
-                    <label className="font-light text-center text-xs" for="day">
+                    <label
+                      className="font-light text-center text-xs"
+                      htmlFor="day"
+                    >
                       Day
                     </label>
                   </div>
@@ -129,7 +136,7 @@ function Step1() {
                     />
                     <label
                       className="text-center font-light text-xs"
-                      for="month"
+                      htmlFor="month"
                     >
                       Month
                     </label>
@@ -144,7 +151,7 @@ function Step1() {
                     />
                     <label
                       className="font-light text-center text-xs"
-                      for="year"
+                      htmlFor="year"
                     >
                       Year
                     </label>
@@ -154,7 +161,7 @@ function Step1() {
 
               {/* Start time */}
               <div className="space-y-6 flex flex-col">
-                <label for="time">Start time</label>
+                <label htmlFor="time">Start time</label>
                 <div id="time" className="number flex items-center space-x-6">
                   {/* day */}
                   <div className="flex flex-col">
@@ -164,7 +171,10 @@ function Step1() {
                       type="number"
                       placeholder="10"
                     />
-                    <label className="font-light text-center text-xs" for="day">
+                    <label
+                      className="font-light text-center text-xs"
+                      htmlFor="day"
+                    >
                       Day
                     </label>
                   </div>
@@ -178,7 +188,7 @@ function Step1() {
                     />
                     <label
                       className="font-light text-center  text-xs"
-                      for="month"
+                      htmlFor="month"
                     >
                       Month
                     </label>
@@ -193,7 +203,7 @@ function Step1() {
                     />
                     <label
                       className="font-light text-center text-xs"
-                      for="year"
+                      htmlFor="year"
                     >
                       Year
                     </label>
@@ -215,7 +225,7 @@ function Step1() {
             <div className="flex items-center flex-wrap gap-6 justify-between w-[100%]">
               {/* price/ per person */}
               <div className="flex flex-col space-y-6">
-                <label for="price">Price Per Person</label>
+                <label htmlFor="price">Price Per Person</label>
                 <input
                   className="border-b-2 focus:outline-none pl-1 pb-2"
                   id="price"
@@ -225,7 +235,7 @@ function Step1() {
               </div>
               {/* Language */}
               <div className="flex flex-col space-y-6">
-                <label for="language">
+                <label htmlFor="language">
                   Language your tour would be offered in
                 </label>
                 <input
@@ -237,7 +247,7 @@ function Step1() {
               </div>
               {/* Number of tourists */}
               <div className="flex flex-col space-y-6">
-                <label for="num_of_tourists">
+                <label htmlFor="num_of_tourists">
                   Maximum number of tourists you can take
                 </label>
                 <input
@@ -252,13 +262,16 @@ function Step1() {
 
           {/* Next Button */}
           <div className="flex justify-end mt-24">
-            <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
-              Next
-            </button>
+            <Link to="/step2">
+              <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
+                Next
+              </button>
+            </Link>
           </div>
         </form>
       </div>
       <Footer />
+      <ScrollToTop />
     </>
   );
 }
