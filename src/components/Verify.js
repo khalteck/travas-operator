@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Footer from "../Footer";
+import ScrollToTop from "../ScrollToTop";
 
 const Verify = () => {
   return (
@@ -98,7 +99,7 @@ const Verify = () => {
             <p className="font-light">
               The information provided would be reviewed
             </p>
-            <p className="font-medium">Review might take up to 24 hours</p>
+            <p className="font-medium">Review might take up to 24 hours.</p>
           </div>
 
           <div className=" mx-auto">
@@ -116,6 +117,7 @@ const Verify = () => {
         </div>
       </div>
       <Footer />
+      <ScrollToTop />
     </>
   );
 };
