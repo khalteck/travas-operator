@@ -3,12 +3,13 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-const Dashboard = ({ currentPage, handleCurrentPage }) => {
+const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
   return (
     <div className="w-full">
       <Sidebar
         currentPage={currentPage}
         handleCurrentPage={handleCurrentPage}
+        logout={logout}
       />
       <div className="w-full md:w-[80%] float-right bg-white pt-[80px] md:pt-[50px] px-0 md:px-12">
         <div className="w-full min-h-[80vh] mb-16 px-3">

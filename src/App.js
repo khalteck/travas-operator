@@ -1,8 +1,6 @@
-import Footer from "./Footer";
-import Header from "./Header";
 import Main from "./Main";
 import "./input.css";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import About from "./pages/About";
 import Pricing from "./pages/Pricing";
 import Support from "./pages/Support";
@@ -21,8 +19,140 @@ import Payment from "./pages/Payment";
 import Withdraw from "./components/Withdraw";
 import SupportUser from "./pages/SupportUser";
 import ProductFeedback from "./pages/ProductFeedback";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { auth } from "./firebase/firebase-config";
+import PageNotFound from "./pages/PageNotFound";
+import { useEffect } from "react";
 
 function App() {
+  //to save reg form input
+  const [regForm, setRegForm] = useState({
+    companyName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  // console.log(regForm);
+
+  //to handle form input change chnage
+  function handleRegChange(event) {
+    const { id, value } = event.target;
+    setRegForm((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to save login form input
+  const [loginForm, setLoginForm] = useState({
+    email: "",
+    password: "",
+  });
+
+  //to handle form input change chnage
+  function handleLoginChange(event) {
+    const { id, value } = event.target;
+    setLoginForm((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  const [showLoader, setShowLoader] = useState(false);
+
+  const [user, setUser] = useState({});
+  useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+  }, []);
+  // console.log(user);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") || false
+  );
+  // console.log(isLoggedIn);
+
+  const navigate = useNavigate();
+
+  //to handle reg form data submit to firebase
+  const register = async (e) => {
+    e.preventDefault();
+    setShowLoader(true);
+
+    createUserWithEmailAndPassword(auth, regForm.email, regForm.password)
+      .then((res) => {
+        setShowLoader(false);
+        navigate("/dashboard");
+        setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", true);
+      })
+      .catch((err) => {
+        setShowLoader(false);
+        console.log(err.message);
+      });
+  };
+
+  //to log in users
+  const login = async (e) => {
+    e.preventDefault();
+    setShowLoader(true);
+
+    signInWithEmailAndPassword(auth, loginForm.email, loginForm.password)
+      .then((res) => {
+        setShowLoader(false);
+        navigate("/dashboard");
+        setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", true);
+      })
+      .catch((err) => {
+        setShowLoader(false);
+        console.log(err.message);
+      });
+  };
+
+  //to log out users
+  const logout = async () => {
+    signOut(auth).then(() => {
+      localStorage.setItem("isLoggedIn", false);
+      navigate("/");
+    });
+  };
+
+  //   try {
+  //     const user = await createUserWithEmailAndPassword(
+  //       auth,
+  //       regForm.email,
+  //       regForm.password
+  //       // regForm.companyName,
+  //       // regForm.email,
+  //       // regForm.phone,
+  //       // regForm.password,
+  //       // regForm.confirmPassword
+  //     );
+  //     console.log(user);
+  //     setUserState(true);
+  //     setShowLoader(false);
+  //     // window.location.href = "/dashboard";
+  //     history.push("/login");
+  //     // alert("Sign Up Successful! User Looged in.");
+  //   } catch (error) {
+  //     setShowLoader(false);
+  //     console.log(error.message);
+  //   }
+  // };
+
   //to handle the link highlight of current page
   const [currentPage, setCurrentPage] = useState({
     dashboard: true,
@@ -50,150 +180,271 @@ function App() {
   }
 
   return (
-    <Router>
-      <div className="content-per-page">
-        <Switch>
-          {/**home page route */}
-          <Route exact path="/">
-            <Header />
-            <Main />
-            <Footer />
-          </Route>
-          {/**home page route */}
-
-          {/**about page route */}
-          <Route exact path="/about">
-            <Header />
-            <About />
-            <Footer />
-          </Route>
-          {/**about page route */}
-
-          {/**pricing page route */}
-          <Route exact path="/pricing">
-            <Header />
-            <Pricing />
-            <Footer />
-          </Route>
-          {/**pricing page route */}
-
-          {/**support page route */}
-          <Route exact path="/support">
-            <Header />
-            <Support />
-            <Footer />
-          </Route>
-          {/**support page route */}
-
-          {/* Login Page Route */}
-          <Route exact path="/login">
-            <Header />
-            <Login />
-            <Footer />
-          </Route>
-          {/* Login Page Route */}
-
-          {/* Register Page Route */}
-          <Route exact path="/register">
-            <Header />
-            <Register />
-            <Footer />
-          </Route>
-          {/* Register Page Route */}
-
-          {/* verify identity Route */}
-          <Route exact path="/verify">
-            <Verify />
-            <Footer />
-          </Route>
-          {/* Verify identity Route */}
-
-          {/* Step1 Route */}
-          <Route exact path="/step1">
-            <Step1 />
-            <Footer />
-          </Route>
-          {/* Step1 Route */}
-
-          {/* Step2 Route */}
-          <Route exact path="/step2">
-            <Step2 />
-            <Footer />
-          </Route>
-          {/* Step2 Route */}
-
-          {/* Step3 Route */}
-          <Route exact path="/step3">
-            <Step3 />
-            <Footer />
-          </Route>
-          {/* Step3 Route */}
-
-          {/* Preview Route */}
-          <Route exact path="/preview">
-            <Preview />
-            <Footer />
-          </Route>
-
-          {/* Dashboard Route */}
-          <Route exact path="/dashboard">
-            <Dashboard
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
+    <>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/support" element={<Support />} />
+        <Route
+          path="/login"
+          element={
+            <Login
+              handleLoginChange={handleLoginChange}
+              showLoader={showLoader}
+              login={login}
             />
-          </Route>
-
-          {/* Tour request Route */}
-          <Route exact path="/tour-request">
-            <TourRequest
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <Register
+              regForm={regForm}
+              handleRegChange={handleRegChange}
+              showLoader={showLoader}
+              register={register}
             />
-          </Route>
+          }
+        />
 
-          {/* Tour guide Route */}
-          <Route exact path="/tour-guide">
-            <TourGuide
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
+        {isLoggedIn && user && (
+          <>
+            <Route
+              path="/dashboard"
+              element={
+                <Dashboard
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
             />
-          </Route>
+            <Route
+              path="/tour-request"
+              element={
+                <TourRequest
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route
+              path="/tour-guide"
+              element={
+                <TourGuide
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route
+              path="/payment"
+              element={
+                <Payment
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route
+              path="/withdraw"
+              element={
+                <Withdraw
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route
+              path="/support-user"
+              element={
+                <SupportUser
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route
+              path="/product-feedback"
+              element={
+                <ProductFeedback
+                  currentPage={currentPage}
+                  handleCurrentPage={handleCurrentPage}
+                  logout={logout}
+                />
+              }
+            />
+            <Route path="/verify" element={<Verify />} />
+            <Route path="/step1" element={<Step1 />} />
+            <Route path="/step2" element={<Step2 />} />
+            <Route path="/step3" element={<Step3 />} />
+            <Route path="/preview" element={<Preview />} />
+          </>
+        )}
 
-          {/* Payment Route */}
-          <Route exact path="/payment">
-            <Payment
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
-            />
-          </Route>
-
-          {/* Withdraw Route */}
-          <Route exact path="/withdraw">
-            <Withdraw
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
-            />
-          </Route>
-
-          {/* Support user Route */}
-          <Route exact path="/support-user">
-            <SupportUser
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
-            />
-          </Route>
-
-          {/* Product feedback Route */}
-          <Route exact path="/product-feedback">
-            <ProductFeedback
-              currentPage={currentPage}
-              handleCurrentPage={handleCurrentPage}
-            />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+        {/* user will be redirected to this page if they input invalid URL  */}
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </>
   );
 }
 
 export default App;
+
+// *home page route
+//       <Route path="/">
+//         <Header />
+//         <Main />
+//         <Footer />
+//       </Route>
+//       {/**home page route */}
+
+//       {/**about page route */}
+//       <Route path="/about">
+//         <Header />
+//         <About />
+//         <Footer />
+//       </Route>
+//       {/**about page route */}
+
+//       {/**pricing page route */}
+//       <Route path="/pricing">
+//         <Header />
+//         <Pricing />
+//         <Footer />
+//       </Route>
+//       {/**pricing page route */}
+
+//       {/**support page route */}
+//       <Route path="/support">
+//         <Header />
+//         <Support />
+//         <Footer />
+//       </Route>
+//       {/**support page route */}
+
+//       {/* Login Page Route */}
+//       <Route path="/login">
+//         <Header />
+//         <Login />
+//         <Footer />
+//       </Route>
+//       {/* Login Page Route */}
+
+//       {/* Register Page Route */}
+//       <Route path="/register">
+//         <Header />
+//         <Register
+//           regForm={regForm}
+//           handleRegChange={handleRegChange}
+//           showLoader={showLoader}
+//           register={register}
+//         />
+//         <Footer />
+//       </Route>
+//       {/* Register Page Route */}
+
+//       {/* user will be redirected to this page if they input invalid URL  */}
+//       <Route path="*">
+//         <PageNotFound />
+//       </Route>
+
+//       {userState && (
+//         <>
+//           {/* Dashboard Route */}
+//           <Route path="/dashboard">
+//             <Dashboard
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Tour request Route */}
+//           <Route path="/tour-request">
+//             <TourRequest
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Tour guide Route */}
+//           <Route path="/tour-guide">
+//             <TourGuide
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Payment Route */}
+//           <Route path="/payment">
+//             <Payment
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Withdraw Route */}
+//           <Route path="/withdraw">
+//             <Withdraw
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Support user Route */}
+//           <Route path="/support-user">
+//             <SupportUser
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* Product feedback Route */}
+//           <Route path="/product-feedback">
+//             <ProductFeedback
+//               currentPage={currentPage}
+//               handleCurrentPage={handleCurrentPage}
+//             />
+//           </Route>
+
+//           {/* verify identity Route */}
+//           <Route path="/verify">
+//             <Verify />
+//             <Footer />
+//           </Route>
+//           {/* Verify identity Route */}
+
+//           {/* Step1 Route */}
+//           <Route path="/step1">
+//             <Step1 />
+//             <Footer />
+//           </Route>
+//           {/* Step1 Route */}
+
+//           {/* Step2 Route */}
+//           <Route path="/step2">
+//             <Step2 />
+//             <Footer />
+//           </Route>
+//           {/* Step2 Route */}
+
+//           {/* Step3 Route */}
+//           <Route path="/step3">
+//             <Step3 />
+//             <Footer />
+//           </Route>
+//           {/* Step3 Route */}
+
+//           {/* Preview Route */}
+//           <Route path="/preview">
+//             <Preview />
+//             <Footer />
+//           </Route>
+//         </>
+//       )}

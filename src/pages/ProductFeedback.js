@@ -2,12 +2,13 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-const ProductFeedback = ({ currentPage, handleCurrentPage }) => {
+const ProductFeedback = ({ currentPage, handleCurrentPage, logout }) => {
   return (
     <div className="w-full">
       <Sidebar
         currentPage={currentPage}
         handleCurrentPage={handleCurrentPage}
+        logout={logout}
       />
       <div className="w-full md:w-[80%] float-right bg-white pt-[50px] px-0 md:px-12">
         <div className="w-full min-h-[80vh] px-3 md:px-0 mb-16">

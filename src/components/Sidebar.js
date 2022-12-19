@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const Sidebar = ({ currentPage, handleCurrentPage }) => {
+const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
   const [openMenu, setOpenMenu] = useState(false);
   function handleClick() {
     setOpenMenu((prevState) => !prevState);
@@ -100,6 +100,7 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
             </li>
           </Link>
           <li
+            onClick={logout}
             className={`w-[90%] mb-8 py-3 px-12 cursor-pointer bg-gray-200 border-gray-200 hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
           >
             Log out
@@ -207,6 +208,12 @@ const Sidebar = ({ currentPage, handleCurrentPage }) => {
                 Product Feedback
               </li>
             </Link>
+            <li
+              className={`w-[70%] mb-8 py-3 px-12 cursor-pointer bg-gray-200 border-gray-200" hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
+              onClick={logout}
+            >
+              logout
+            </li>
           </ul>
         )}
       </div>
