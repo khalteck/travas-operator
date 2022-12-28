@@ -80,7 +80,9 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
               className="w-[180px] h-auto mx-auto mb-5"
             />
             <p className="text-gray-500">No packages yet</p>
-            <p className="mt-4 text-blue-500 font-bold">Create new package</p>
+            <Link to="/step1">
+              <p className="mt-4 text-blue-500 font-bold">Create new package</p>
+            </Link>
           </div>
 
           <div className="w-full h-[fit-content] md:h-[80px] flex gap-4 mt-6">

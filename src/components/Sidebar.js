@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
+const Sidebar = ({ currentPage, logout }) => {
   const [openMenu, setOpenMenu] = useState(false);
   function handleClick() {
     setOpenMenu((prevState) => !prevState);
@@ -25,11 +25,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="dashboard"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.dashboard
+                currentPage === "/dashboard"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               Dashboard
             </li>
@@ -38,11 +37,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="tourRequest"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.tourRequest
+                currentPage === "/tour-request"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               Tour Requests
             </li>
@@ -51,11 +49,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="tourGuide"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.tourGuide
+                currentPage === "/tour-guide"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               My tour guides
             </li>
@@ -64,11 +61,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="payment"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.payment
+                currentPage === "/payment"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               Payment
             </li>
@@ -77,11 +73,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="support"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.support
+                currentPage === "/support-user"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               Support
             </li>
@@ -90,11 +85,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
             <li
               id="product"
               className={`w-[90%] mb-6 py-3 px-12 cursor-pointer ${
-                currentPage?.product
+                currentPage === "/product-feedback"
                   ? "bg-white border-slate-600"
                   : "bg-gray-200 border-gray-200"
               } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-              onClick={handleCurrentPage}
             >
               Product Feedback
             </li>
@@ -134,11 +128,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="dashboard"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.dashboard
+                  currentPage === "/dashboard"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 Dashboard
               </li>
@@ -147,11 +140,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="tourRequest"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.tourRequest
+                  currentPage === "/tour-request"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 Tour Requests
               </li>
@@ -160,11 +152,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="tourGuide"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.tourGuide
+                  currentPage === "/tour-guide"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 My tour guides
               </li>
@@ -173,11 +164,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="payment"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.payment
+                  currentPage === "/payment"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 Payment
               </li>
@@ -186,11 +176,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="support"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.support
+                  currentPage === "/support-user"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 Support
               </li>
@@ -199,11 +188,10 @@ const Sidebar = ({ currentPage, handleCurrentPage, logout }) => {
               <li
                 id="product"
                 className={`w-[70%] mb-8 py-3 px-12 cursor-pointer ${
-                  currentPage?.product
+                  currentPage === "/product-feedback"
                     ? "bg-white border-slate-600"
                     : "bg-gray-200 border-gray-200"
                 } hover:bg-white hover:border-slate-600 border rounded-r-2xl`}
-                onClick={handleCurrentPage}
               >
                 Product Feedback
               </li>

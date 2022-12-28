@@ -22,7 +22,7 @@ const SupportUser = ({ currentPage, handleCurrentPage, logout }) => {
           <div className="my-12">
             <h2 className="text-[1.25rem] mb-4">Contact us</h2>
             <p className="text-gray-500 mb-4">
-              Contact us via a any of these channels
+              Contact us via any of these channels
             </p>
             <div className="w-full sm:w-[300px] grid grid-cols-2 gap-6">
               <p>Email:</p>
@@ -41,7 +41,7 @@ const SupportUser = ({ currentPage, handleCurrentPage, logout }) => {
               <p>Enquiries:</p>
               <p>Response would take not more than 24 hrs </p>
             </div>
-            <div className="w-full p-3 flex gap-16">
+            <div className="w-full p-3 flex gap-12">
               <p>Complaints:</p>
               <p>Response would take not more than 3 working days</p>
             </div>

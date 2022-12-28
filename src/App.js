@@ -1,6 +1,6 @@
 import Main from "./Main";
 import "./input.css";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import About from "./pages/About";
 import Pricing from "./pages/Pricing";
 import Support from "./pages/Support";
@@ -135,30 +135,8 @@ function App() {
   };
 
   //to handle the link highlight of current page
-  const [currentPage, setCurrentPage] = useState({
-    dashboard: true,
-    tourRequest: false,
-    tourGuide: false,
-    payment: false,
-    support: false,
-    product: false,
-  });
-
-  //to handle click of nav links
-  function handleCurrentPage(event) {
-    const { id } = event.target;
-    setCurrentPage((prevState) => {
-      return {
-        dashboard: false,
-        tourRequest: false,
-        tourGuide: false,
-        payment: false,
-        support: false,
-        product: false,
-        [id]: true,
-      };
-    });
-  }
+  const location = useLocation();
+  let currentPage = location.pathname;
 
   return (
     <>
@@ -194,72 +172,36 @@ function App() {
           <>
             <Route
               path="/dashboard"
-              element={
-                <Dashboard
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
-              }
+              element={<Dashboard currentPage={currentPage} logout={logout} />}
             />
             <Route
               path="/tour-request"
               element={
-                <TourRequest
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
+                <TourRequest currentPage={currentPage} logout={logout} />
               }
             />
             <Route
               path="/tour-guide"
-              element={
-                <TourGuide
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
-              }
+              element={<TourGuide currentPage={currentPage} logout={logout} />}
             />
             <Route
               path="/payment"
-              element={
-                <Payment
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
-              }
+              element={<Payment currentPage={currentPage} logout={logout} />}
             />
             <Route
               path="/withdraw"
-              element={
-                <Withdraw
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
-              }
+              element={<Withdraw currentPage={currentPage} logout={logout} />}
             />
             <Route
               path="/support-user"
               element={
-                <SupportUser
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
+                <SupportUser currentPage={currentPage} logout={logout} />
               }
             />
             <Route
               path="/product-feedback"
               element={
-                <ProductFeedback
-                  currentPage={currentPage}
-                  handleCurrentPage={handleCurrentPage}
-                  logout={logout}
-                />
+                <ProductFeedback currentPage={currentPage} logout={logout} />
               }
             />
             <Route path="/verify" element={<Verify />} />
