@@ -10,13 +10,16 @@ import (
 
 func Routes(r *gin.Engine, o controller.Operator) {
 	router := r.Use(gin.Logger(), gin.Recovery())
+	
 	router.Use(cors.Default())
+	
 	cookieData := cookie.NewStore([]byte("travas"))
 	router.Use(sessions.Sessions("session", cookieData))
+	
 	router.GET("/", o.Welcome())
-	//router.GET("/register", o.Register())
+	router.GET("/register", o.Register())
 	router.POST("/register", o.ProcessRegister())
-	//router.GET("/login", o.LoginPage())
+	router.GET("/login", o.LoginPage())
 	router.POST("/login", o.ProcessLogin())
 	authRouter := r.Group("/auth")
 	authRouter.Use(Authorization())
