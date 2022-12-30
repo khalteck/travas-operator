@@ -67,13 +67,16 @@ func main() {
 	Routes(router, *handler)
 
 	app.InfoLogger.Println("*---------- Starting Travas Web Server -----------*")
+
 	c := make(chan os.Signal, 1)
+
 	go func() {
 		err := router.Run()
 		if err != nil {
 			app.ErrorLogger.Fatalf("cannot start the server : %v", err)
 		}
 	}()
+
 	signal.Notify(c, os.Interrupt)
 	<-c
 	app.InfoLogger.Println("*---------- End of Travas Web Server Program -----------*")
