@@ -7,7 +7,13 @@ import Loader from "../components/Loader";
 import Header from "../Header";
 import Footer from "../Footer";
 
-const Register = ({ regForm, handleRegChange, showLoader, register }) => {
+const Register = ({
+  regForm,
+  handleRegChange,
+  showLoader,
+  register,
+  regGo,
+}) => {
   return (
     <>
       <Header />
@@ -17,7 +23,7 @@ const Register = ({ regForm, handleRegChange, showLoader, register }) => {
           <h2 className="font-bold pb-4 md:text-2xl">Register</h2>
           <p>Enter these few information to become a Travas supplier today!</p>
         </div>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={regGo}>
           {/* business/company name */}
           <div className="space-y-5 pb-8">
             <label htmlFor="business-name">
@@ -93,7 +99,7 @@ const Register = ({ regForm, handleRegChange, showLoader, register }) => {
           {/* Register */}
           <div className="pt-8">
             <button
-              onClick={register}
+              onClick={regGo}
               className="bg-[#B6B1B1] font-semibold text-center py-3 w-full rounded-sm pointer"
               type="submit"
             >

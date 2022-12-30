@@ -88,6 +88,27 @@ function App() {
 
   const navigate = useNavigate();
 
+  //to send reg data to endpoint
+  const regGo = async (e) => {
+    e.preventDefault();
+    setShowLoader(true);
+
+    fetch("http://localhost:8080/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(regForm),
+    })
+      .then((res) => {
+        navigate("/dashboard");
+        console.log("User data sent!", res.json());
+        setShowLoader(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setShowLoader(false);
+      });
+  };
+
   //to handle reg form data submit to firebase
   const register = async (e) => {
     e.preventDefault();
@@ -164,6 +185,7 @@ function App() {
               handleRegChange={handleRegChange}
               showLoader={showLoader}
               register={register}
+              regGo={regGo}
             />
           }
         />
