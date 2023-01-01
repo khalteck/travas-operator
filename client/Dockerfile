@@ -8,10 +8,10 @@ WORKDIR "/app"
 COPY ./package.json ./
 
 # Execute command to install all dependencies
-RUN npm install
+RUN yarn install
 
 # Copy all the files in the local PWD to the container PWD
 COPY . .
 
 # Execute the command to start the application
-CMD ["npm", "run", "start"]
+CMD ["yarn", "run", "start"]
