@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  travas-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+
+  travas-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server:/app
+    deploy:
+      mode: replicated
+      replicas: 1
+    restart: always
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    restart: always
