@@ -16,9 +16,9 @@ COPY . .
 
 # build your code from the main folder/file in the parent folder
 # and disabled using C code and use just pure default golang
-RUN GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags="-w -s" -o main.out -mod=vendor ./cmd/web/main.go
+RUN GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags="-w -s" -o travasAPI.out -mod=vendor ./cmd/web/*.go
 
 # RUN chmod +x /app/travasAPI
 
 #Compile the executable file
-CMD [ "./main.out" ]
+CMD [ "./travasAPI.out" ]
