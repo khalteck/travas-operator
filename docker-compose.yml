@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 
 services:
   travas-client:
@@ -19,6 +19,9 @@ services:
       mode: replicated
       replicas: 1
     restart: always
+    # command: /app/travasAPI --flag1 --flag2
+    # image: ayaa001/travas-server:latest
+    # container_name: ayaa001/travas-server:latest
 
   nginx:
     build:

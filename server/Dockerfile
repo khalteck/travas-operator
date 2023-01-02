@@ -1,8 +1,8 @@
 #pull the base image from docker hub
-FROM golang:1.19.2
+FROM golang:1.19.2-alpine
 
 #Set the working directory to use
-WORKDIR "/app"
+WORKDIR /app
 
 #Copy the golang dependencies file into the work directory
 COPY go.mod .
@@ -16,9 +16,9 @@ COPY . .
 
 # build your code from the main folder/file in the parent folder
 # and disabled using C code and use just pure default golang
-RUN CGO_ENABLED=0 go build -o travas-server ./cmd/web
+RUN GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags="-w -s" -o main.out -mod=vendor ./cmd/web/main.go
 
-RUN chmod +x /app/travas-server
+# RUN chmod +x /app/travasAPI
 
 #Compile the executable file
-CMD ["/app/travas-server"]
+CMD [ "./main.out" ]
