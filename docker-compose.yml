@@ -1,27 +1,24 @@
-version: "3.7"
+version: "3.8"
 
 services:
   travas-client:
     build:
-      context: ./client
       dockerfile: Dockerfile
+      context: ./client
     volumes:
       - /app/node_modules
       - ./client:/app
 
   travas-server:
     build:
-      context: ./server
       dockerfile: Dockerfile
+      context: ./server  
     volumes:
       - ./server:/app
     deploy:
       mode: replicated
       replicas: 1
     restart: always
-    # command: /app/travasAPI --flag1 --flag2
-    # image: ayaa001/travas-server:latest
-    # container_name: ayaa001/travas-server:latest
 
   nginx:
     build:
