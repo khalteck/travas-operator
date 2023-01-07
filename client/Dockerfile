@@ -2,16 +2,16 @@
 FROM node:alpine
 
 # Setup the working directory to run the image instance for the appliaction
-WORKDIR "/app"
+WORKDIR /app
 
 # Copy the dependencies file in the working directory
-COPY ./package.json ./
+COPY ./package.json /app
 
 # Execute command to install all dependencies
 RUN yarn install
 
 # Copy all the files in the local PWD to the container PWD
-COPY . .
+COPY . /app
 
 # Execute the command to start the application
 CMD ["yarn", "run", "start"]
