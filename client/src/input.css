@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* to edit placeholder */
+input,
+input::-webkit-input-placeholder {
+  font-size: 14px;
+}
+
+@layer components {
+  .reg-input {
+    @apply bg-[#F5F5F5] text-black text-opacity-50 block pl-4 py-2.5 focus:outline-none rounded-sm w-full;
+  }
+  .login-input {
+    @apply bg-[#F5F5F5] text-black text-opacity-50 pl-4 py-2.5 focus:outline-none rounded-sm w-full;
+  }
+  .verify-input {
+    @apply bg-[#F5F5F5] text-[#079F32] text-opacity-50 pl-4 py-2.5 focus:outline-none rounded-sm w-full;
+  }
+  .slider-container {
+    @apply flex flex-col lg:flex-row lg:items-center lg:justify-between mx-auto space-y-6 pb-6 px-5 mt-8;
+  }
+}
+
+li::marker {
+  font-size: 30px;
+}
+
+@layer utilities {
+  .slide {
+    animation: slide 0.8s ease-out;
+  }
+  @keyframes slide {
+    0% {
+      opacity: 0;
+      transform: translateX(200px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0px);
+    }
+  }
+}
