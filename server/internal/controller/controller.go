@@ -71,11 +71,6 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			UpdatedAt:       UpdatedAt,
 		}
 
-		if user.Password != user.ConfirmPassword {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("passwords did not match"))
-			return
-		}
-
 		user.Password, _ = encrypt.Hash(user.Password)
 		user.ConfirmPassword, _ = encrypt.Hash(user.ConfirmPassword)
 
@@ -95,9 +90,10 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		cookieData := sessions.Default(ctx)
 
 		userInfo := model.UserInfo{
-			ID:       userID,
-			Email:    user.Email,
-			Password: user.Password,
+			ID:          userID,
+			Email:       user.Email,
+			Password:    user.Password,
+			CompanyName: user.CompanyName,
 		}
 		cookieData.Set("info", userInfo)
 
@@ -106,20 +102,27 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
 			return
 		}
-		switch track {
-		case 1:
+		switch {
+
+		case track == 1:
 			// add the user id to session
 			// redirect to the home page of the application
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Existing Account, Go to the Login page",
 			})
-		case 0:
+
+		case track == 0:
 			//	after inserting new user to the database
 			//  notify the user to verify their  details via mail
 			//  OR
 			//  Send notification message on the page for them to login
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Registered Successfully",
+			})
+
+		case user.Password != user.ConfirmPassword:
+			ctx.JSON(http.StatusNotAcceptable, gin.H{
+				"message": "unmatched password !Input correct password",
 			})
 		}
 	}
@@ -173,7 +176,18 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				}
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
-				ctx.JSONP(http.StatusOK, gin.H{"message": "Welcome to user homepage"})
+				ctx.JSONP(http.StatusOK, gin.H{
+					"message": "Welcome to user homepage",
+					"user_data": map[string]string{
+						"email":        userInfo.Email,
+						"id":           userInfo.ID.String(),
+						"company_name": userInfo.CompanyName,
+					},
+				})
+
+			case email != userInfo.Email:
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect email ! login with correct details"})
+
 			}
 		}
 	}
