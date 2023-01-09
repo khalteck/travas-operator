@@ -2,8 +2,9 @@ package db
 
 import (
 	"context"
-	"github.com/travas-io/travas-op/internal/config"
 	"time"
+
+	"github.com/travas-io/travas-op/internal/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

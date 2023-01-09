@@ -93,20 +93,20 @@ function App() {
     e.preventDefault();
     setShowLoader(true);
 
-    fetch("http://localhost:8080/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(regForm),
-    })
-      .then((res) => {
-        navigate("/dashboard");
-        console.log("User data sent!", res.json());
-        setShowLoader(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setShowLoader(false);
+    try {
+      const res = await fetch("http://localhost:8080/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(regForm),
       });
+      const data = await res.json();
+      navigate("/dashboard");
+      console.log("User data sent!", data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setShowLoader(false);
+    }
   };
 
   //to handle reg form data submit to firebase
