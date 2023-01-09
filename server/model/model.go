@@ -49,9 +49,10 @@ type Tour struct {
 }
 
 type UserInfo struct {
-	ID       primitive.ObjectID
-	Email    string
-	Password string
+	ID          primitive.ObjectID
+	Email       string
+	Password    string
+	CompanyName string
 }
 
 type Tourist struct {
