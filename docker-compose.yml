@@ -13,8 +13,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./server  
-    volumes:
-      - ./server:/app
+    # volumes:
+      # - ./server:/app
     deploy:
       mode: replicated
       replicas: 1
