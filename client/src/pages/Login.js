@@ -56,7 +56,7 @@ const Login = ({
         )}
         <div className="pt-[150px] w-[90%] min-h-[90vh] mx-auto space-y-16 md:pl-[80px] md:w-[45%] md:mx-auto">
           <div>
-            <h2 className="font-bold md:text-2xl mb-10 mx-auto text-center">
+            <h2 className="font-bold text-2xl mb-10 mx-auto text-center">
               Login
             </h2>
 

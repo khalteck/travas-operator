@@ -46,7 +46,7 @@ const Register = ({
         <div className="pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:w-[45%] md:pl-[80px] md:mx-auto">
           {showLoader && <Loader />}
           <div className="pb-8">
-            <h2 className="font-bold pb-4 md:text-2xl text-center mb-5">
+            <h2 className="font-bold pb-4 text-2xl text-center mb-5">
               Register
             </h2>
             <p>

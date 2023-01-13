@@ -128,11 +128,15 @@ function App() {
       const data = await res.json();
       if (data.message === "Existing Account, Go to the Login page") {
         console.log("User Exists!", data);
+        window.scrollTo(0, 0);
         setUserExists(true);
 
         setTimeout(() => {
           navigate("/login");
         }, 5000);
+        setTimeout(() => {
+          setUserExists(false);
+        }, 12000);
       } else {
         setRegisterSuccess(true);
         navigate("/login");
