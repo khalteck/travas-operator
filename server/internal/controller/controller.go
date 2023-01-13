@@ -71,6 +71,12 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			UpdatedAt:       UpdatedAt,
 		}
 
+		if user.Password != user.ConfirmPassword {
+			ctx.JSON(http.StatusNotAcceptable, gin.H{
+				"message": "unmatched password !Input correct password",
+			})
+			return
+		}
 		user.Password, _ = encrypt.Hash(user.Password)
 		user.ConfirmPassword, _ = encrypt.Hash(user.ConfirmPassword)
 
@@ -102,27 +108,23 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
 			return
 		}
-		switch {
 
-		case track == 1:
+		switch track {
+
+		case 1:
 			// add the user id to session
 			// redirect to the home page of the application
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Existing Account, Go to the Login page",
 			})
 
-		case track == 0:
+		case 0:
 			//	after inserting new user to the database
 			//  notify the user to verify their  details via mail
 			//  OR
 			//  Send notification message on the page for them to login
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Registered Successfully",
-			})
-
-		case user.Password != user.ConfirmPassword:
-			ctx.JSON(http.StatusNotAcceptable, gin.H{
-				"message": "unmatched password !Input correct password",
 			})
 		}
 	}
@@ -292,6 +294,5 @@ func (op *Operator) GetTourRequest() gin.HandlerFunc {
 			return
 		}
 		ctx.JSONP(http.StatusOK, gin.H{"tourRequests": requestTours})
-
 	}
 }
