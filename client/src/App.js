@@ -100,7 +100,7 @@ function App() {
         body: JSON.stringify(regForm),
       });
       const data = await res.json();
-      navigate("/dashboard");
+      navigate("/login");
       console.log("User data sent!", data);
     } catch (err) {
       console.log(err);
