@@ -108,10 +108,12 @@ function App() {
 
   const [userExists, setUserExists] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   function closeUserMod() {
     setUserExists(false);
     setRegisterSuccess(false);
+    setLoginSuccess(false);
   }
 
   //to send reg data to endpoint
@@ -125,9 +127,9 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(regForm),
       });
-      const data = await res.json();
-      if (data.message === "Existing Account, Go to the Login page") {
-        console.log("User Exists!", data);
+      // const data = await res.json();
+      if (!res.ok) {
+        console.log("ERROR, status : ", res.status);
         window.scrollTo(0, 0);
         setUserExists(true);
 
@@ -139,8 +141,11 @@ function App() {
         }, 12000);
       } else {
         setRegisterSuccess(true);
+        setTimeout(() => {
+          setRegisterSuccess(false);
+        }, 5000);
         navigate("/login");
-        console.log("Sign up success!", data);
+        console.log("Sign up success! status : ", res.status);
       }
     } catch (err) {
       console.log(err);
@@ -167,6 +172,37 @@ function App() {
         console.log(err.message);
         setInvalidCred(true);
       });
+  };
+
+  const [userData, setUserData] = useState({});
+  //to login users with go
+  const loginGo = async (e) => {
+    e.preventDefault();
+    setShowLoader(true);
+
+    try {
+      const res = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginForm),
+      });
+      // setUserData(res.json());
+
+      if (res.ok) {
+        setLoginSuccess(true);
+        setTimeout(() => {
+          setLoginSuccess(false);
+        }, 5000);
+        navigate("/dashboard");
+        window.scrollTo(0, 0);
+        console.log(res.message, res.status, res);
+      }
+    } catch (err) {
+      console.log(err.message, err.status, err);
+      window.scrollTo(0, 0);
+    } finally {
+      setShowLoader(false);
+    }
   };
 
   //to log out users
@@ -199,6 +235,7 @@ function App() {
               registerSuccess={registerSuccess}
               closeUserMod={closeUserMod}
               userExists={userExists}
+              loginGo={loginGo}
             />
           }
         />
@@ -220,7 +257,14 @@ function App() {
           <>
             <Route
               path="/dashboard"
-              element={<Dashboard currentPage={currentPage} logout={logout} />}
+              element={
+                <Dashboard
+                  currentPage={currentPage}
+                  logout={logout}
+                  loginSuccess={loginSuccess}
+                  closeUserMod={closeUserMod}
+                />
+              }
             />
             <Route
               path="/tour-request"

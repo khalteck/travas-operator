@@ -3,7 +3,13 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
+const Dashboard = ({
+  currentPage,
+  handleCurrentPage,
+  logout,
+  loginSuccess,
+  closeUserMod,
+}) => {
   return (
     <div className="w-full">
       <Sidebar
@@ -11,6 +17,22 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
         handleCurrentPage={handleCurrentPage}
         logout={logout}
       />
+      {loginSuccess && (
+        <div className=" p-10 float-center mx-5 md:mr-16 border border-[#B6B1B1] rounded-xl float-right relative flex gap-4 items-center">
+          <img
+            className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
+            alt=""
+            src="/images/icons8-close-50.png"
+            onClick={closeUserMod}
+          />
+          <img
+            alt=""
+            src="/images/icons8-checkmark-64.png"
+            className="w-10 h-10"
+          />
+          <p>Login Successful!</p>
+        </div>
+      )}
       <div className="w-full md:w-[80%] float-right bg-white pt-[80px] md:pt-[50px] px-0 md:px-12">
         <div className="w-full min-h-[80vh] mb-16 px-3">
           <p>Welcome back</p>

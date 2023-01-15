@@ -29,36 +29,38 @@ const Main = () => {
             <div className="sm:pl-6 space-y-12">
               {/* About */}
               <div className="space-y-4">
-                <h4 className="pt-2 text-xl font-semibold">About</h4>
+                <h4 className="pt-2 text-xl font-semibold">
+                  Welcome to Travas
+                </h4>
                 <p className="font-light md:text-lg">
-                  Lorem ispum et tu, Lorem ispum et tu Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu
-                  ,Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
-                  Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et
-                  tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
-                  Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu
+                  Travas assist domestic tour operators in Nigeria to market
+                  their products efficiently to individuals who want them.
                 </p>
               </div>
               {/* Why choose travas */}
               <div className="space-y-4">
-                <h5 className="text-[#1F66D0] font-semibold text-xl">
-                  Why choose Travas?
-                </h5>
+                <h5 className="font-semibold text-xl">Why choose Travas?</h5>
                 <p className="font-light md:text-lg">
-                  Lorem ispum et tu, Lorem ispum et tu Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu
-                  ,Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
-                  Lorem i
+                  <strong>More revenue</strong>
+                  <br />
+                  Getting your products in front of the right audience could
+                  increaseyour overall bookings greatly.
+                </p>
+                <p className="font-light md:text-lg">
+                  <strong>Customers insight</strong>
+                  <br />
+                  Get indepth insight into what tourists are inerested in via
+                  tour requests.
+                </p>
+                <p className="font-light md:text-lg">
+                  <strong>No charges, No commission</strong>
+                  <br />
+                  Get indepth insight into what tourists are inerested in via
+                  tour requests.
                 </p>
               </div>
               {/* More Sales */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h4 className="text-xl font-semibold">More sales</h4>
                 <p className="md:text-lg">
                   Lorem ispum et tu, Lorem ispum et tu Lorem ispum et tu, Lorem
@@ -70,7 +72,7 @@ const Main = () => {
                   Lorem ispum et tu, Lorem ispum et tu
                 </p>
               </div>
-              {/* Tour requests */}
+              {/* Tour requests 
               <div className="space-y-4">
                 <h4 className="text-xl font-semibold">Tour requests</h4>
                 <p className="md:text-lg">
@@ -83,7 +85,7 @@ const Main = () => {
                   Lorem ispum et tu, Lorem ispum et tu
                 </p>
               </div>
-              {/* Manage bookings */}
+              {/* Manage bookings 
               <div className="space-y-4">
                 <h4 className="text-xl font-semibold">Manage bookings</h4>
                 <p className="font-light md:text-lg">
@@ -95,16 +97,16 @@ const Main = () => {
                   tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
                   Lorem ispum et tu, Lorem ispum et tu
                 </p>
-              </div>
+              </div>*/}
             </div>
           </div>
 
-          {/* Price Section */}
+          {/* Price Section 
           <div className="w-[90%] mx-auto flex flex-col items-start text-white sm:flex-row ">
             <img src="/images/rectangle.svg" alt="rectangle"></img>
 
             <div className="sm:pl-6 space-y-12">
-              {/* Pricing */}
+              {/* Pricing 
               <div className="space-y-4">
                 <h4 className="pt-2 text-xl font-semibold">Pricing</h4>
                 <p className="font-light md:text-lg">
@@ -122,7 +124,7 @@ const Main = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Support Section */}
           <div className="w-[90%] mx-auto flex flex-col items-start text-white sm:flex-row ">
@@ -133,17 +135,13 @@ const Main = () => {
               <div className="space-y-4">
                 <h4 className="pt-2 text-xl font-semibold">Support</h4>
                 <p className="font-light md:text-lg">
-                  Lorem ispum et tu, Lorem ispum et tu Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu
-                  ,Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
-                  Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et
-                  tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu,
-                  Lorem ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem
-                  ispum et tu, Lorem ispum et tu, Lorem ispum et tu, Lorem ispum
-                  et tu
+                  For support and enquiries,
+                  <br />
+                  Contact us;
+                  <br />
+                  Phone: +2348026441652
+                  <br />
+                  Email:
                 </p>
               </div>
             </div>

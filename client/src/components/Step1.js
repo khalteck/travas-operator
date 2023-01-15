@@ -161,7 +161,7 @@ function Step1() {
 
               {/* Start time */}
               <div className="space-y-6 flex flex-col">
-                <label htmlFor="time">Start time</label>
+                <label htmlFor="time">End date</label>
                 <div id="time" className="number flex items-center space-x-6">
                   {/* day */}
                   <div className="flex flex-col">
