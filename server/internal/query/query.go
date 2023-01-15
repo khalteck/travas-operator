@@ -50,23 +50,24 @@ func (op *OperatorDB) InsertUser(user *model.Operator) (int, primitive.ObjectID,
 
 // VerifyUser : this method will verify the user login details store in the database
 // and compare with the input details
-func (op *OperatorDB) VerifyUser(userID primitive.ObjectID) (bool, error) {
+func (op *OperatorDB) VerifyUser(email string) (primitive.M, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
-	var result bson.M
+	var res bson.M
 
-	filter := bson.D{{Key: "_id", Value: userID}}
-	err := OperatorData(op.DB, "operators").FindOne(ctx, filter).Decode(&result)
+	filter := bson.D{{Key: "email", Value: email}}
+	err := OperatorData(op.DB, "operators").FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			op.App.ErrorLogger.Println("no document found for this query")
-			return false, err
+			return nil, err
 		}
 		op.App.ErrorLogger.Fatalf("cannot execute the database query perfectly : %v ", err)
 	}
+	// id := (res["_id"]).(primitive.ObjectID)
 
-	return true, nil
+	return res, nil
 }
 
 func (op *OperatorDB) UpdateInfo(userID primitive.ObjectID, tk map[string]string) (bool, error) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -88,26 +89,26 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			}
 		}
 
-		track, userID, err := op.DB.InsertUser(user)
+		track, _, err := op.DB.InsertUser(user)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("error while adding new user"))
 			return
 		}
-		cookieData := sessions.Default(ctx)
+		// cookieData := sessions.Default(ctx)
 
-		userInfo := model.UserInfo{
-			ID:          userID,
-			Email:       user.Email,
-			Password:    user.Password,
-			CompanyName: user.CompanyName,
-		}
-		cookieData.Set("info", userInfo)
+		// userInfo := model.UserInfo{
+		// 	ID:          userID,
+		// 	Email:       user.Email,
+		// 	Password:    user.Password,
+		// 	CompanyName: user.CompanyName,
+		// }
+		// cookieData.Set("info", userInfo)
 
-		if err := cookieData.Save(); err != nil {
-			log.Println("error from the session storage")
-			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
-			return
-		}
+		// if err := cookieData.Save(); err != nil {
+		// 	log.Println("error from the session storage")
+		// 	_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
+		// 	return
+		// }
 
 		switch track {
 
@@ -147,29 +148,48 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 		email := ctx.Request.Form.Get("email")
 		password := ctx.Request.Form.Get("password")
 
-		cookieData := sessions.Default(ctx)
-		userInfo := cookieData.Get("info").(model.UserInfo)
+		regMail := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+		ok := regMail.MatchString(email)
 
-		verified, err := encrypt.Verify(password, userInfo.Password)
-		if err != nil {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot verify user input password"))
-		}
-		if verified {
-			switch {
-			case email == userInfo.Email:
-				_, checkErr := op.DB.VerifyUser(userInfo.ID)
+		if ok {
 
-				if checkErr != nil {
-					_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", checkErr))
+			res, checkErr := op.DB.VerifyUser(email)
+
+			if checkErr != nil {
+				_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", checkErr))
+			}
+			id := (res["id"]).(primitive.ObjectID)
+			inputPass := (res["password"]).(string)
+			compName := (res["company_name"]).(string)
+
+			verified, err := encrypt.Verify(password, inputPass)
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusUnauthorized, errors.New("cannot verify user details"))
+			}
+			if verified {
+				cookieData := sessions.Default(ctx)
+
+				userInfo := model.UserInfo{
+					ID:          id,
+					Email:       email,
+					Password:    password,
+					CompanyName: compName,
+				}
+				cookieData.Set("info", userInfo)
+
+				if err := cookieData.Save(); err != nil {
+					log.Println("error from the session storage")
+					_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
+					return
 				}
 				// generate the jwt token
-				t1, t2, err := token.Generate(userInfo.Email, userInfo.ID)
+				t1, t2, err := token.Generate(email, id)
 				if err != nil {
 					_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token no generated : %v ", err))
 				}
 
-				var tk map[string]string
-				tk = map[string]string{"t1": t1, "t2": t2}
+				// var tk map[string]string
+				tk := map[string]string{"t1": t1, "t2": t2}
 
 				// update the database adding the token to user database
 				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
@@ -179,17 +199,9 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
 				ctx.JSONP(http.StatusOK, gin.H{
-					"message": "Welcome to user homepage",
-					"user_data": map[string]string{
-						"email":        userInfo.Email,
-						"id":           userInfo.ID.String(),
-						"company_name": userInfo.CompanyName,
-					},
+					"message":   "Welcome to user homepage",
+					"user_data": userInfo,
 				})
-
-			case email != userInfo.Email:
-				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect email ! login with correct details"})
-
 			}
 		}
 	}
