@@ -12,6 +12,7 @@ const Login = ({
   closeUserMod,
   registerSuccess,
   userExists,
+  loginGo,
 }) => {
   return (
     <>
@@ -91,7 +92,7 @@ const Login = ({
                   <button
                     className="bg-[#B6B1B1] font-semibold text-center py-2.5 rounded-sm pointer w-full"
                     type="submit"
-                    onClick={login}
+                    onClick={loginGo}
                   >
                     Login
                   </button>
