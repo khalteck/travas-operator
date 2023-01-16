@@ -53,8 +53,11 @@ func main() {
 
 	app.InfoLogger.Println("*---------- Starting Travas Web Server -----------*")
 
+	gin.SetMode(gin.ReleaseMode)
+	
 	router := gin.New()
 	err = router.SetTrustedProxies([]string{"127.0.0.1"})
+	
 
 	if err != nil {
 		app.ErrorLogger.Fatalf("untrusted proxy address : %v", err)
