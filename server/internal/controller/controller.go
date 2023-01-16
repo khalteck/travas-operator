@@ -191,8 +191,12 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
 				ctx.JSONP(http.StatusOK, gin.H{
-					"message":   "Welcome to user homepage",
-					"user_data": userInfo,
+					"message": "Welcome to user homepage",
+					"user_data": map[string]string{
+						"email":        email,
+						"id":           id.String(),
+						"company_name": compName,
+					},
 				})
 			} else {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
