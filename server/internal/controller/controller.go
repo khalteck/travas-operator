@@ -94,21 +94,6 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("error while adding new user"))
 			return
 		}
-		// cookieData := sessions.Default(ctx)
-
-		// userInfo := model.UserInfo{
-		// 	ID:          userID,
-		// 	Email:       user.Email,
-		// 	Password:    user.Password,
-		// 	CompanyName: user.CompanyName,
-		// }
-		// cookieData.Set("info", userInfo)
-
-		// if err := cookieData.Save(); err != nil {
-		// 	log.Println("error from the session storage")
-		// 	_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
-		// 	return
-		// }
 
 		switch track {
 
@@ -156,8 +141,11 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 			res, checkErr := op.DB.VerifyUser(email)
 
 			if checkErr != nil {
-				_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", checkErr))
+				_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unregistered user %v", checkErr))
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "unregistered user"})
+				return
 			}
+
 			id := (res["id"]).(primitive.ObjectID)
 			inputPass := (res["password"]).(string)
 			compName := (res["company_name"]).(string)
@@ -165,6 +153,8 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 			verified, err := encrypt.Verify(password, inputPass)
 			if err != nil {
 				_ = ctx.AbortWithError(http.StatusUnauthorized, errors.New("cannot verify user details"))
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
+				return
 			}
 			if verified {
 				cookieData := sessions.Default(ctx)
@@ -194,7 +184,9 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				// update the database adding the token to user database
 				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
 				if updateErr != nil {
-					_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", updateErr))
+					_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("unregistered user %v", updateErr))
+					ctx.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect login details"})
+					return
 				}
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
@@ -202,6 +194,9 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 					"message":   "Welcome to user homepage",
 					"user_data": userInfo,
 				})
+			} else {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
+				return
 			}
 		}
 	}
