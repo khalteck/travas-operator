@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 )
 
 var app config.Tools
+
 // var uri = os.Getenv("TRAVAS_DB_URI")
 
 func SetConnection(uri string) (*mongo.Client, error) {
@@ -23,12 +25,12 @@ func SetConnection(uri string) (*mongo.Client, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPIOptions))
 	if err != nil {
-		app.ErrorLogger.Panicln(err)
+	log.Panicln(err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		app.ErrorLogger.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	return client, nil
@@ -42,18 +44,19 @@ func OpenConnection() *mongo.Client {
 	for {
 		client, err := SetConnection(uri)
 		if err != nil {
-			app.ErrorLogger.Println("Postgres not yet ready to connect ...")
+			log.Println("MongoDB not yet ready to connect ...")
 			count++
+
 		} else {
-			app.InfoLogger.Println("Connecting to Postgres DB ...")
+			log.Println("Connecting to MongoDB Atlas ...")
 			return client
 		}
 		if count >= 10 {
-			app.InfoLogger.Println(err)
+			log.Println(err)
 			return nil
 		}
 
-		app.InfoLogger.Println("Trying to reconnect postgres database ...")
+	log.Println("Trying to reconnect MongoDB database ...")
 		time.Sleep(5 * time.Second)
 		continue
 	}
