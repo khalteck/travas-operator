@@ -22,7 +22,7 @@ import ProductFeedback from "./pages/ProductFeedback";
 import {
   // createUserWithEmailAndPassword,
   onAuthStateChanged,
-  signInWithEmailAndPassword,
+  // signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import { auth } from "./firebase/firebase-config";
@@ -121,14 +121,21 @@ function App() {
     e.preventDefault();
     setShowLoader(true);
 
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(regForm),
+    });
+
     try {
-      const res = await fetch("http://localhost:8080/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(regForm),
-      });
-      // const data = await res.json();
-      if (!res.ok) {
+      if (res.ok) {
+        setRegisterSuccess(true);
+        setTimeout(() => {
+          setRegisterSuccess(false);
+        }, 10000);
+        navigate("/login");
+        console.log("Sign up success! status : ", res.status);
+      } else {
         console.log("ERROR, status : ", res.status);
         window.scrollTo(0, 0);
         setUserExists(true);
@@ -139,13 +146,6 @@ function App() {
         setTimeout(() => {
           setUserExists(false);
         }, 12000);
-      } else {
-        setRegisterSuccess(true);
-        setTimeout(() => {
-          setRegisterSuccess(false);
-        }, 5000);
-        navigate("/login");
-        console.log("Sign up success! status : ", res.status);
       }
     } catch (err) {
       console.log(err);
@@ -154,40 +154,41 @@ function App() {
     }
   };
 
-  //to log in users with firebase
-  const login = async (e) => {
-    e.preventDefault();
-    setShowLoader(true);
+  // //to log in users with firebase
+  // const login = async (e) => {
+  //   e.preventDefault();
+  //   setShowLoader(true);
 
-    signInWithEmailAndPassword(auth, loginForm.email, loginForm.password)
-      .then((res) => {
-        setShowLoader(false);
-        navigate("/dashboard");
-        setIsLoggedIn(true);
-        setInvalidCred(false);
-        localStorage.setItem("isLoggedIn", true);
-      })
-      .catch((err) => {
-        setShowLoader(false);
-        console.log(err.message);
-        setInvalidCred(true);
-      });
-  };
+  //   signInWithEmailAndPassword(auth, loginForm.email, loginForm.password)
+  //     .then((res) => {
+  //       setShowLoader(false);
+  //       navigate("/dashboard");
+  //       setIsLoggedIn(true);
+  //       setInvalidCred(false);
+  //       localStorage.setItem("isLoggedIn", true);
+  //     })
+  //     .catch((err) => {
+  //       setShowLoader(false);
+  //       console.log(err.message);
+  //       setInvalidCred(true);
+  //     });
+  // };
 
   const [userData, setUserData] = useState({});
+
   //to login users with go
   const loginGo = async (e) => {
     e.preventDefault();
     setShowLoader(true);
 
-    try {
-      const res = await fetch("http://localhost:8080/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginForm),
-      });
-      // setUserData(res.json());
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginForm),
+    });
 
+    try {
+      setUserData(res);
       if (res.ok) {
         setLoginSuccess(true);
         setTimeout(() => {
@@ -195,10 +196,10 @@ function App() {
         }, 5000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log(res.message, res.status, res);
+        console.log(userData, res.json());
       }
     } catch (err) {
-      console.log(err.message, err.status, err);
+      console.log(err);
       window.scrollTo(0, 0);
     } finally {
       setShowLoader(false);
@@ -230,7 +231,6 @@ function App() {
             <Login
               handleLoginChange={handleLoginChange}
               showLoader={showLoader}
-              login={login}
               invalidCred={invalidCred}
               registerSuccess={registerSuccess}
               closeUserMod={closeUserMod}
@@ -253,7 +253,50 @@ function App() {
           }
         />
 
-        {isLoggedIn && user && (
+        <Route
+          path="/dashboard"
+          element={
+            <Dashboard
+              currentPage={currentPage}
+              logout={logout}
+              loginSuccess={loginSuccess}
+              closeUserMod={closeUserMod}
+            />
+          }
+        />
+        <Route
+          path="/tour-request"
+          element={<TourRequest currentPage={currentPage} logout={logout} />}
+        />
+        <Route
+          path="/tour-guide"
+          element={<TourGuide currentPage={currentPage} logout={logout} />}
+        />
+        <Route
+          path="/payment"
+          element={<Payment currentPage={currentPage} logout={logout} />}
+        />
+        <Route
+          path="/withdraw"
+          element={<Withdraw currentPage={currentPage} logout={logout} />}
+        />
+        <Route
+          path="/support-user"
+          element={<SupportUser currentPage={currentPage} logout={logout} />}
+        />
+        <Route
+          path="/product-feedback"
+          element={
+            <ProductFeedback currentPage={currentPage} logout={logout} />
+          }
+        />
+        <Route path="/verify" element={<Verify />} />
+        <Route path="/step1" element={<Step1 />} />
+        <Route path="/step2" element={<Step2 />} />
+        <Route path="/step3" element={<Step3 />} />
+        <Route path="/preview" element={<Preview />} />
+
+        {/* {isLoggedIn && user && (
           <>
             <Route
               path="/dashboard"
@@ -302,7 +345,7 @@ function App() {
             <Route path="/step3" element={<Step3 />} />
             <Route path="/preview" element={<Preview />} />
           </>
-        )}
+        )} */}
 
         {/* user will be redirected to this page if they input invalid URL  */}
         <Route path="*" element={<PageNotFound />} />
