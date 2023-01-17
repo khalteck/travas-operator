@@ -21,13 +21,13 @@ import SupportUser from "./pages/SupportUser";
 import ProductFeedback from "./pages/ProductFeedback";
 import {
   // createUserWithEmailAndPassword,
-  onAuthStateChanged,
+  // onAuthStateChanged,
   // signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 import { auth } from "./firebase/firebase-config";
 import PageNotFound from "./pages/PageNotFound";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
 function App() {
   //to save reg form input
@@ -71,20 +71,18 @@ function App() {
 
   const [showLoader, setShowLoader] = useState(false);
 
-  const [user, setUser] = useState({});
-  useEffect(() => {
-    onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-  }, []);
+  // const [user, setUser] = useState({});
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (currentUser) => {
+  //     setUser(currentUser);
+  //   });
+  // }, []);
   // console.log(user);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem("isLoggedIn") || false
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   // console.log(isLoggedIn);
 
-  const [invalidCred, setInvalidCred] = useState(false);
+  // const [invalidCred, setInvalidCred] = useState(false);
 
   const navigate = useNavigate();
 
@@ -102,6 +100,7 @@ function App() {
   const regGo = async (e) => {
     e.preventDefault();
     setShowLoader(true);
+    console.log(regForm);
 
     const res = await fetch("/api/register", {
       method: "POST",
@@ -116,7 +115,7 @@ function App() {
           setRegisterSuccess(false);
         }, 10000);
         navigate("/login");
-        console.log("Sign up success! status : ", res.status);
+        console.log("Sign up success! status : ", res.status, res.statusText);
         console.log(await res.json());
       } else {
         console.log("ERROR, status : ", res.status);
@@ -143,6 +142,7 @@ function App() {
   const loginGo = async (e) => {
     e.preventDefault();
     setShowLoader(true);
+    console.log(loginForm);
 
     const res = await fetch("/api/login", {
       method: "POST",
@@ -152,17 +152,20 @@ function App() {
 
     try {
       if (res.ok) {
+        setIsLoggedIn(true);
         setLoginSuccess(true);
         setTimeout(() => {
           setLoginSuccess(false);
         }, 5000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log("LOg in success! status : ", res.status);
-        console.log(await res.json());
+        console.log("Log in success! status : ", res.status, res.statusText);
+        const responseObject = JSON.parse(res);
+        console.log(responseObject);
       }
     } catch (err) {
-      console.log(err);
+      console.log("Error parsing JSON: ", err);
+      setIsLoggedIn(false);
       window.scrollTo(0, 0);
     } finally {
       setShowLoader(false);
@@ -194,7 +197,7 @@ function App() {
             <Login
               handleLoginChange={handleLoginChange}
               showLoader={showLoader}
-              invalidCred={invalidCred}
+              // invalidCred={invalidCred}
               registerSuccess={registerSuccess}
               closeUserMod={closeUserMod}
               userExists={userExists}
@@ -219,12 +222,24 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <Dashboard
-              currentPage={currentPage}
-              logout={logout}
-              loginSuccess={loginSuccess}
-              closeUserMod={closeUserMod}
-            />
+            isLoggedIn ? (
+              <Dashboard
+                currentPage={currentPage}
+                logout={logout}
+                loginSuccess={loginSuccess}
+                closeUserMod={closeUserMod}
+              />
+            ) : (
+              <Login
+                handleLoginChange={handleLoginChange}
+                showLoader={showLoader}
+                // invalidCred={invalidCred}
+                registerSuccess={registerSuccess}
+                closeUserMod={closeUserMod}
+                userExists={userExists}
+                loginGo={loginGo}
+              />
+            )
           }
         />
         <Route
