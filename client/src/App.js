@@ -88,24 +88,6 @@ function App() {
 
   const navigate = useNavigate();
 
-  //to handle reg form data submit to firebase
-  // const register = async (e) => {
-  //   e.preventDefault();
-  //   setShowLoader(true);
-
-  //   createUserWithEmailAndPassword(auth, regForm.email, regForm.password)
-  //     .then((res) => {
-  //       setShowLoader(false);
-  //       navigate("/dashboard");
-  //       setIsLoggedIn(true);
-  //       localStorage.setItem("isLoggedIn", true);
-  //     })
-  //     .catch((err) => {
-  //       setShowLoader(false);
-  //       console.log(err.message);
-  //     });
-  // };
-
   const [userExists, setUserExists] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
@@ -135,6 +117,7 @@ function App() {
         }, 10000);
         navigate("/login");
         console.log("Sign up success! status : ", res.status);
+        console.log(await res.json());
       } else {
         console.log("ERROR, status : ", res.status);
         window.scrollTo(0, 0);
@@ -154,27 +137,7 @@ function App() {
     }
   };
 
-  // //to log in users with firebase
-  // const login = async (e) => {
-  //   e.preventDefault();
-  //   setShowLoader(true);
-
-  //   signInWithEmailAndPassword(auth, loginForm.email, loginForm.password)
-  //     .then((res) => {
-  //       setShowLoader(false);
-  //       navigate("/dashboard");
-  //       setIsLoggedIn(true);
-  //       setInvalidCred(false);
-  //       localStorage.setItem("isLoggedIn", true);
-  //     })
-  //     .catch((err) => {
-  //       setShowLoader(false);
-  //       console.log(err.message);
-  //       setInvalidCred(true);
-  //     });
-  // };
-
-  const [userData, setUserData] = useState({});
+  // const [userData, setUserData] = useState({});
 
   //to login users with go
   const loginGo = async (e) => {
@@ -188,7 +151,6 @@ function App() {
     });
 
     try {
-      setUserData(res);
       if (res.ok) {
         setLoginSuccess(true);
         setTimeout(() => {
@@ -196,7 +158,8 @@ function App() {
         }, 5000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log(userData, res.json());
+        console.log("LOg in success! status : ", res.status);
+        console.log(await res.json());
       }
     } catch (err) {
       console.log(err);
