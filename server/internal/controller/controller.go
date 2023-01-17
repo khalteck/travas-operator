@@ -146,7 +146,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				return
 			}
 
-			id := (res["id"]).(primitive.ObjectID)
+			id := (res["_id"]).(primitive.ObjectID)
 			inputPass := (res["password"]).(string)
 			compName := (res["company_name"]).(string)
 
