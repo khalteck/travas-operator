@@ -27,6 +27,7 @@ func main() {
 	gob.Register(model.UserInfo{})
 	gob.Register(model.Operator{})
 	gob.Register(model.Tour{})
+	gob.Register(model.UserInfo{})
 	err := godotenv.Load()
 	if err != nil {
 		app.ErrorLogger.Fatalf("cannot load up the env file : %v", err)
