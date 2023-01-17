@@ -115,7 +115,7 @@ function App() {
           setRegisterSuccess(false);
         }, 10000);
         navigate("/login");
-        console.log("Sign up success! status : ", res.status, res.statusText);
+        console.log("Sign up success, status : ", res.status, res.statusText);
         console.log(await res.json());
       } else {
         console.log("ERROR, status : ", res.status);
