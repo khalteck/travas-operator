@@ -156,7 +156,53 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
 				return
 			}
-			if verified {
+			switch {
+			case verified:
+				cookieData := sessions.Default(ctx)
+
+				userInfo := model.UserInfo{
+					ID:          id,
+					Email:       email,
+					Password:    password,
+					CompanyName: compName,
+				}
+				cookieData.Set("info", userInfo)
+
+				if err := cookieData.Save(); err != nil {
+					log.Println("error from the session storage")
+					_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
+					return
+				}
+				// generate the jwt token
+				t1, t2, err := token.Generate(email, id)
+				if err != nil {
+					_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token no generated : %v ", err))
+				}
+
+				// var tk map[string]string
+				tk := map[string]string{"t1": t1, "t2": t2}
+
+				// update the database adding the token to user database
+				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
+				if updateErr != nil {
+					_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("unregistered user %v", updateErr))
+					ctx.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect login details"})
+					return
+				}
+
+				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
+				ctx.JSON(http.StatusOK, gin.H{
+					"message":      "Welcome to user homepage",
+					"email":        email,
+					"id":           id.String(),
+					"company_name": compName,
+				})
+			case !verified:
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
+				return
+			}
+			
+			/*if verified {
 				cookieData := sessions.Default(ctx)
 
 				userInfo := model.UserInfo{
@@ -200,6 +246,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
 				return
 			}
+			*/
 		}
 	}
 }
