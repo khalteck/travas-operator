@@ -100,7 +100,7 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		case 1:
 			// add the user id to session
 			// redirect to the home page of the application
-			ctx.JSON(http.StatusOK, gin.H{
+			ctx.JSON(http.StatusSeeOther, gin.H{
 				"message": "Existing Account, Go to the Login page",
 			})
 
@@ -236,12 +236,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				}
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
-				ctx.JSON(http.StatusOK, gin.H{
-					"message":      "Welcome to user homepage",
-					"email":        email,
-					"id":           id.String(),
-					"company_name": compName,
-				})
+				ctx.JSON(http.StatusOK, gin.H{"message": "Welcome to user homepage"})
 			} else {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
 				return
