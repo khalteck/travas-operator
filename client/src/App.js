@@ -13,31 +13,22 @@ import Step3 from "./components/Step3";
 import Preview from "./components/Preview";
 import Dashboard from "./pages/Dasboard";
 import TourRequest from "./pages/TourRequest";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TourGuide from "./pages/TourGuide";
 import Payment from "./pages/Payment";
 import Withdraw from "./components/Withdraw";
 import SupportUser from "./pages/SupportUser";
 import ProductFeedback from "./pages/ProductFeedback";
-import {
-  // createUserWithEmailAndPassword,
-  // onAuthStateChanged,
-  // signInWithEmailAndPassword,
-  signOut,
-} from "firebase/auth";
-import { auth } from "./firebase/firebase-config";
 import PageNotFound from "./pages/PageNotFound";
-import axios from "axios";
-// import { useEffect } from "react";
 
 function App() {
   //to save reg form input
   const [regForm, setRegForm] = useState({
-    companyName: "",
+    company_name: "",
     email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
+    confirm_password: "",
   });
 
   // console.log(regForm);
@@ -80,9 +71,6 @@ function App() {
   // }, []);
   // console.log(user);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // console.log(isLoggedIn);
-
   // const [invalidCred, setInvalidCred] = useState(false);
 
   const navigate = useNavigate();
@@ -101,7 +89,13 @@ function App() {
     e.preventDefault();
     setShowLoader(true);
     try {
-      const response = await axios.post("/api/register", regForm);
+      const response = await fetch("/api/register", {
+        method: "POST",
+        body: JSON.stringify(regForm),
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+
       if (response.ok) {
         setRegisterSuccess(true);
         setTimeout(() => {
@@ -109,11 +103,10 @@ function App() {
         }, 10000);
         navigate("/login");
         console.log(response.status, response.statusText);
-        console.log(response.data);
-      } else if (response.seeother) {
+        console.log(data.message);
+      } else if (!response.ok) {
         window.scrollTo(0, 0);
         setUserExists(true);
-
         setTimeout(() => {
           navigate("/login");
         }, 5000);
@@ -121,124 +114,69 @@ function App() {
           setUserExists(false);
         }, 12000);
         console.log(response.status, response.statusText);
-        console.log(response.data);
+        console.log(data.message);
       }
-      // return response.data;
     } catch (error) {
-      console.error(error);
+      console.log(error);
     } finally {
       setShowLoader(false);
     }
   }
 
-  //to send reg data to endpoint
-  // const regGo = async (e) => {
-  //   e.preventDefault();
-  //   setShowLoader(true);
-  //   // console.log(regForm);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    JSON.parse(localStorage.getItem("isLoggedIn")) || false
+  );
+  const [userData, setUserData] = useState(
+    JSON.parse(localStorage.getItem("userData")) || {}
+  );
 
-  //   const res = await fetch("/api/register", {
-  //     method: "POST",
-  //     headers: { "Content-Type": "application/json" },
-  //     body: JSON.stringify(regForm),
-  //   });
-
-  //   console.log("register func response : ", res);
-
-  //   try {
-  //     if (res.ok) {
-  //       setRegisterSuccess(true);
-  //       setTimeout(() => {
-  //         setRegisterSuccess(false);
-  //       }, 10000);
-  //       navigate("/login");
-  //       console.log("Sign up success, status : ", res.status, res.statusText);
-  //       console.log(await res.json());
-  //     } else if (res.seeother) {
-  //       console.log("ERROR, status : ", res.status);
-  //       window.scrollTo(0, 0);
-  //       setUserExists(true);
-
-  //       setTimeout(() => {
-  //         navigate("/login");
-  //       }, 5000);
-  //       setTimeout(() => {
-  //         setUserExists(false);
-  //       }, 12000);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   } finally {
-  //     setShowLoader(false);
-  //   }
-  // };
-
-  // const [userData, setUserData] = useState({});
-
-  // async function loginGo(e) {
-  //   e.preventDefault();
-  //   setShowLoader(true);
-  //   try {
-  //     const response = await axios.post("/api/login", loginForm);
-  //     if (response.ok) {
-  //       setIsLoggedIn(true);
-  //       setLoginSuccess(true);
-  //       setTimeout(() => {
-  //         setLoginSuccess(false);
-  //       }, 5000);
-  //       navigate("/dashboard");
-  //       window.scrollTo(0, 0);
-  //       console.log("Success... status : ", res.status, res.statusText);
-  //       console.log(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     setIsLoggedIn(false);
-  //     window.scrollTo(0, 0);
-  //   } finally {
-  //     setShowLoader(false);
-  //   }
-  // }
-
-  //to login users with go
-  const loginGo = async (e) => {
+  async function loginGo(e) {
     e.preventDefault();
     setShowLoader(true);
-    console.log(loginForm);
-
-    const res = await fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginForm),
-    });
-
     try {
-      if (res.ok) {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        body: new URLSearchParams(loginForm),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setUserData(data);
         setIsLoggedIn(true);
         setLoginSuccess(true);
         setTimeout(() => {
           setLoginSuccess(false);
-        }, 5000);
+        }, 6000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log("Log in success... status : ", res.status, res.statusText);
-        console.log(await res.json());
+        console.log(response.status, response.statusText);
+        console.log(data);
+      } else if (!response.ok) {
+        console.log(response.status, response.statusText);
+        console.log(data);
+        setIsLoggedIn(false);
+        window.scrollTo(0, 0);
       }
-    } catch (err) {
-      console.log("Error: ", err);
-      setIsLoggedIn(false);
-      window.scrollTo(0, 0);
+    } catch (error) {
+      console.log(error);
     } finally {
       setShowLoader(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    localStorage.setItem("isLoggedIn", JSON.stringify(isLoggedIn));
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    localStorage.setItem("userData", JSON.stringify(userData));
+  }, [userData]);
 
   //to log out users
   const logout = async () => {
-    signOut(auth).then(() => {
-      localStorage.setItem("isLoggedIn", false);
-      navigate("/");
-    });
+    localStorage.setItem("isLoggedIn", false);
+    localStorage.removeItem("userData");
+    navigate("/");
   };
 
   //to handle the link highlight of current page
@@ -289,6 +227,7 @@ function App() {
                 logout={logout}
                 loginSuccess={loginSuccess}
                 closeUserMod={closeUserMod}
+                userData={userData}
               />
             ) : (
               <Login

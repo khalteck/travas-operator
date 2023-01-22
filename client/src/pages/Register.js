@@ -63,7 +63,7 @@ const Register = ({
               <input
                 className="reg-input"
                 type="text"
-                id="companyName"
+                id="company_name"
                 onChange={handleRegChange}
                 placeholder="Business/company name"
                 required
@@ -118,7 +118,7 @@ const Register = ({
                 <input
                   type="password"
                   className="reg-input"
-                  id="confirmPassword"
+                  id="confirm_password"
                   onChange={handleRegChange}
                   placeholder="Confirm password"
                   required

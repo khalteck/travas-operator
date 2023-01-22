@@ -9,6 +9,7 @@ const Dashboard = ({
   logout,
   loginSuccess,
   closeUserMod,
+  userData,
 }) => {
   return (
     <div className="w-full">
@@ -18,7 +19,7 @@ const Dashboard = ({
         logout={logout}
       />
       {loginSuccess && (
-        <div className=" p-10 float-center mx-5 md:mr-16 border border-[#B6B1B1] rounded-xl float-right relative flex gap-4 items-center">
+        <div className="bg-white w-full sm:w-1/3 px-5 sm:py-5 py-2 md:mr-16 border border-[#B6B1B1] rounded-xl relative sm:fixed sm:top-8 top-[70px] right-0 flex gap-4 items-center">
           <img
             className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
             alt=""
@@ -37,7 +38,12 @@ const Dashboard = ({
         <div className="w-full min-h-[80vh] mb-16 px-3">
           <p>Welcome back</p>
           <div className="flex items-center gap-2 mt-5">
-            <strong>Angie style travels and tours limited</strong>
+            <img
+              alt=""
+              src="/images/icons8-user-64.png"
+              className="w-10 h-10"
+            />
+            <strong>{userData.company_name}</strong>
             <img
               alt=""
               src="/images/icons8-chevron-right-30.png"
