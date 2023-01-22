@@ -58,11 +58,11 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user := &model.Operator{
-			CompanyName:     ctx.Request.Form.Get("company_name"),
-			Email:           ctx.Request.Form.Get("email"),
-			Password:        ctx.Request.Form.Get("password"),
-			ConfirmPassword: ctx.Request.Form.Get("confirm_password"),
-			Phone:           ctx.Request.Form.Get("phone"),
+			CompanyName:     ctx.Request.FormValue("company_name"),
+			Email:           ctx.Request.FormValue("email"),
+			Password:        ctx.Request.FormValue("password"),
+			ConfirmPassword: ctx.Request.FormValue("confirm_password"),
+			Phone:           ctx.Request.FormValue("phone"),
 			TourGuide:       []string{},
 			ToursList:       []model.Tour{},
 			GeoLocation:     "",
@@ -84,34 +84,31 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		if err := op.App.Validator.Struct(&user); err != nil {
 			if _, ok := err.(*validator.InvalidValidationError); !ok {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				log.Println(err)
+				op.App.InfoLogger.Println(err)
 				return
 			}
 		}
 
-		track, _, err := op.DB.InsertUser(user)
+		found, status, err := op.DB.InsertUser(user)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("error while adding new user"))
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 
-		switch track {
-
-		case 1:
-			// add the user id to session
-			// redirect to the home page of the application
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "Existing Account, Go to the Login page",
-			})
-
-		case 0:
-			//	after inserting new user to the database
-			//  notify the user to verify their  details via mail
-			//  OR
-			//  Send notification message on the page for them to login
+		switch {
+		case found && status == 1:
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Registered Successfully",
 			})
+			return
+
+		case found && status == 2:
+			ctx.JSON(http.StatusSeeOther, gin.H{
+				"message": "Existing Account, Go to the Login page",
+			})
+			return
+
 		}
 	}
 }
@@ -194,59 +191,15 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				ctx.JSON(http.StatusOK, gin.H{
 					"message":      "Welcome to user homepage",
 					"email":        email,
-					"id":           id.String(),
+					"id":           id,
 					"company_name": compName,
+					"session_token" : t1,
 				})
 			case !verified:
 				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
 				return
 			}
-			
-			/*if verified {
-				cookieData := sessions.Default(ctx)
 
-				userInfo := model.UserInfo{
-					ID:          id,
-					Email:       email,
-					Password:    password,
-					CompanyName: compName,
-				}
-				cookieData.Set("info", userInfo)
-
-				if err := cookieData.Save(); err != nil {
-					log.Println("error from the session storage")
-					_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
-					return
-				}
-				// generate the jwt token
-				t1, t2, err := token.Generate(email, id)
-				if err != nil {
-					_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token no generated : %v ", err))
-				}
-
-				// var tk map[string]string
-				tk := map[string]string{"t1": t1, "t2": t2}
-
-				// update the database adding the token to user database
-				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
-				if updateErr != nil {
-					_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("unregistered user %v", updateErr))
-					ctx.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect login details"})
-					return
-				}
-
-				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
-				ctx.JSON(http.StatusOK, gin.H{
-					"message":      "Welcome to user homepage",
-					"email":        email,
-					"id":           id.String(),
-					"company_name": compName,
-				})
-			} else {
-				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
-				return
-			}
-			*/
 		}
 	}
 }
@@ -281,19 +234,19 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 		tour := &model.Tour{
 			ID:              primitive.NewObjectID(),
 			OperatorID:      userInfo.ID,
-			Title:           ctx.Request.Form.Get("title"),
-			Destination:     strings.TrimSpace(strings.ToLower(ctx.Request.Form.Get("destination"))),
-			MeetingPoint:    ctx.Request.Form.Get("meeting_point"),
-			StartTime:       ctx.Request.Form.Get("start_time"),
-			StartDate:       ctx.Request.Form.Get("start_date"),
-			EndDate:         ctx.Request.Form.Get("end_date"),
-			Price:           ctx.Request.Form.Get("price"),
-			Contact:         ctx.Request.Form.Get("contact"),
-			Language:        ctx.Request.Form.Get("language"),
-			NumberOfTourist: ctx.Request.Form.Get("number_of_tourists"),
-			Description:     ctx.Request.Form.Get("description"),
-			WhatToExpect:    append([]string{}, ctx.Request.Form.Get("what_to_expect")),
-			Rules:           append([]string{}, ctx.Request.Form.Get("rules")),
+			Title:           ctx.Request.FormValue("title"),
+			Destination:     strings.TrimSpace(strings.ToLower(ctx.Request.FormValue("destination"))),
+			MeetingPoint:    ctx.Request.FormValue("meeting_point"),
+			StartTime:       ctx.Request.FormValue("start_time"),
+			StartDate:       ctx.Request.FormValue("start_date"),
+			EndDate:         ctx.Request.FormValue("end_date"),
+			Price:           ctx.Request.FormValue("price"),
+			Contact:         ctx.Request.FormValue("contact"),
+			Language:        ctx.Request.FormValue("language"),
+			NumberOfTourist: ctx.Request.FormValue("number_of_tourists"),
+			Description:     ctx.Request.FormValue("description"),
+			WhatToExpect:    append([]string{}, ctx.Request.FormValue("what_to_expect")),
+			Rules:           append([]string{}, ctx.Request.FormValue("rules")),
 			CreatedAt:       CreatedAt,
 			UpdatedAt:       UpdatedAt,
 		}

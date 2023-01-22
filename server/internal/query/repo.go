@@ -6,7 +6,7 @@ import (
 )
 
 type Repo interface {
-	InsertUser(user *model.Operator) (int, primitive.ObjectID, error)
+	InsertUser(user *model.Operator) (bool, int, error)
 	VerifyUser(email string) (primitive.M, error)
 	UpdateInfo(userID primitive.ObjectID, tk map[string]string) (bool, error)
 

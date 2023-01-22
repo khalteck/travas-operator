@@ -2,6 +2,8 @@ package query
 
 import (
 	"context"
+	"errors"
+	"regexp"
 	"time"
 
 	"github.com/travas-io/travas-op/internal/config"
@@ -24,9 +26,16 @@ func NewOperatorDB(app *config.Tools, db *mongo.Client) Repo {
 }
 
 // InsertUser : this will check for existing user and also insert new to the operator collection
-func (op *OperatorDB) InsertUser(user *model.Operator) (int, primitive.ObjectID, error) {
+func (op *OperatorDB) InsertUser(user *model.Operator) (bool, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
+
+	regMail := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	ok := regMail.MatchString(user.Email)
+	if !ok {
+		op.App.ErrorLogger.Println("invalid registered details")
+		return false, 0, errors.New("invalid registered details")
+	}
 
 	filter := bson.D{{Key: "email", Value: user.Email}}
 
@@ -39,13 +48,11 @@ func (op *OperatorDB) InsertUser(user *model.Operator) (int, primitive.ObjectID,
 			if insertErr != nil {
 				op.App.ErrorLogger.Fatalf("cannot add user to the database : %v ", insertErr)
 			}
-			return 0, user.ID, nil
+			return true, 1, nil
 		}
 		op.App.ErrorLogger.Fatal(err)
 	}
-
-	id := (res["_id"]).(primitive.ObjectID)
-	return 1, id, err
+	return true, 2, nil
 }
 
 // VerifyUser : this method will verify the user login details store in the database
@@ -65,7 +72,6 @@ func (op *OperatorDB) VerifyUser(email string) (primitive.M, error) {
 		}
 		op.App.ErrorLogger.Fatalf("cannot execute the database query perfectly : %v ", err)
 	}
-	// id := (res["_id"]).(primitive.ObjectID)
 
 	return res, nil
 }
