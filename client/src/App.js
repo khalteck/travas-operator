@@ -27,6 +27,7 @@ import {
 } from "firebase/auth";
 import { auth } from "./firebase/firebase-config";
 import PageNotFound from "./pages/PageNotFound";
+import axios from "axios";
 // import { useEffect } from "react";
 
 function App() {
@@ -96,29 +97,20 @@ function App() {
     setLoginSuccess(false);
   }
 
-  //to send reg data to endpoint
-  const regGo = async (e) => {
+  async function regGo(e) {
     e.preventDefault();
     setShowLoader(true);
-    console.log(regForm);
-
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(regForm),
-    });
-
     try {
-      if (res.ok) {
+      const response = await axios.post("/api/register", regForm);
+      if (response.ok) {
         setRegisterSuccess(true);
         setTimeout(() => {
           setRegisterSuccess(false);
         }, 10000);
         navigate("/login");
-        console.log("Sign up success, status : ", res.status, res.statusText);
-        console.log(await res.json());
-      } else {
-        console.log("ERROR, status : ", res.status);
+        console.log(response.status, response.statusText);
+        console.log(response.data);
+      } else if (response.seeother) {
         window.scrollTo(0, 0);
         setUserExists(true);
 
@@ -128,15 +120,85 @@ function App() {
         setTimeout(() => {
           setUserExists(false);
         }, 12000);
+        console.log(response.status, response.statusText);
+        console.log(response.data);
       }
-    } catch (err) {
-      console.log(err);
+      // return response.data;
+    } catch (error) {
+      console.error(error);
     } finally {
       setShowLoader(false);
     }
-  };
+  }
+
+  //to send reg data to endpoint
+  // const regGo = async (e) => {
+  //   e.preventDefault();
+  //   setShowLoader(true);
+  //   // console.log(regForm);
+
+  //   const res = await fetch("/api/register", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify(regForm),
+  //   });
+
+  //   console.log("register func response : ", res);
+
+  //   try {
+  //     if (res.ok) {
+  //       setRegisterSuccess(true);
+  //       setTimeout(() => {
+  //         setRegisterSuccess(false);
+  //       }, 10000);
+  //       navigate("/login");
+  //       console.log("Sign up success, status : ", res.status, res.statusText);
+  //       console.log(await res.json());
+  //     } else if (res.seeother) {
+  //       console.log("ERROR, status : ", res.status);
+  //       window.scrollTo(0, 0);
+  //       setUserExists(true);
+
+  //       setTimeout(() => {
+  //         navigate("/login");
+  //       }, 5000);
+  //       setTimeout(() => {
+  //         setUserExists(false);
+  //       }, 12000);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   } finally {
+  //     setShowLoader(false);
+  //   }
+  // };
 
   // const [userData, setUserData] = useState({});
+
+  // async function loginGo(e) {
+  //   e.preventDefault();
+  //   setShowLoader(true);
+  //   try {
+  //     const response = await axios.post("/api/login", loginForm);
+  //     if (response.ok) {
+  //       setIsLoggedIn(true);
+  //       setLoginSuccess(true);
+  //       setTimeout(() => {
+  //         setLoginSuccess(false);
+  //       }, 5000);
+  //       navigate("/dashboard");
+  //       window.scrollTo(0, 0);
+  //       console.log("Success... status : ", res.status, res.statusText);
+  //       console.log(response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     setIsLoggedIn(false);
+  //     window.scrollTo(0, 0);
+  //   } finally {
+  //     setShowLoader(false);
+  //   }
+  // }
 
   //to login users with go
   const loginGo = async (e) => {
@@ -144,7 +206,7 @@ function App() {
     setShowLoader(true);
     console.log(loginForm);
 
-    const res = await fetch("/api/login", {
+    const res = await fetch("http://localhost:8080/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginForm),
@@ -159,12 +221,11 @@ function App() {
         }, 5000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log("Log in success! status : ", res.status, res.statusText);
-        const responseObject = JSON.parse(res);
-        console.log(responseObject);
+        console.log("Log in success... status : ", res.status, res.statusText);
+        console.log(await res.json());
       }
     } catch (err) {
-      console.log("Error parsing JSON: ", err);
+      console.log("Error: ", err);
       setIsLoggedIn(false);
       window.scrollTo(0, 0);
     } finally {
