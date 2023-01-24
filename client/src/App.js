@@ -36,6 +36,8 @@ function App() {
   //to handle form input change chnage
   function handleRegChange(event) {
     const { id, value } = event.target;
+    setLoginErrorMessage("");
+    setRegErrorMessage("");
     setRegForm((prevState) => {
       return {
         ...prevState,
@@ -53,6 +55,8 @@ function App() {
   //to handle form input change chnage
   function handleLoginChange(event) {
     const { id, value } = event.target;
+    setLoginErrorMessage("");
+    setRegErrorMessage("");
     setLoginForm((prevState) => {
       return {
         ...prevState,
@@ -63,26 +67,18 @@ function App() {
 
   const [showLoader, setShowLoader] = useState(false);
 
-  // const [user, setUser] = useState({});
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (currentUser) => {
-  //     setUser(currentUser);
-  //   });
-  // }, []);
-  // console.log(user);
-
-  // const [invalidCred, setInvalidCred] = useState(false);
-
   const navigate = useNavigate();
 
-  const [userExists, setUserExists] = useState(false);
+  const [regErrorMessage, setRegErrorMessage] = useState("");
+  const [loginErrorMessage, setLoginErrorMessage] = useState("");
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   function closeUserMod() {
-    setUserExists(false);
     setRegisterSuccess(false);
     setLoginSuccess(false);
+    setRegErrorMessage("");
+    setLoginErrorMessage("");
   }
 
   async function regGo(e) {
@@ -91,8 +87,8 @@ function App() {
     try {
       const response = await fetch("/api/register", {
         method: "POST",
-        body: JSON.stringify(regForm),
-        headers: { "Content-Type": "application/json" },
+        body: new URLSearchParams(regForm), //to send as form encoded
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const data = await response.json();
 
@@ -102,22 +98,12 @@ function App() {
           setRegisterSuccess(false);
         }, 10000);
         navigate("/login");
-        console.log(response.status, response.statusText);
-        console.log(data.message);
       } else if (!response.ok) {
         window.scrollTo(0, 0);
-        setUserExists(true);
-        setTimeout(() => {
-          navigate("/login");
-        }, 5000);
-        setTimeout(() => {
-          setUserExists(false);
-        }, 12000);
-        console.log(response.status, response.statusText);
-        console.log(data.message);
+        setRegErrorMessage(data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log(JSON.parse(error));
     } finally {
       setShowLoader(false);
     }
@@ -136,7 +122,7 @@ function App() {
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        body: new URLSearchParams(loginForm),
+        body: new URLSearchParams(loginForm), //to send as form encoded
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const data = await response.json();
@@ -146,19 +132,20 @@ function App() {
         setLoginSuccess(true);
         setTimeout(() => {
           setLoginSuccess(false);
-        }, 6000);
+        }, 10000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
         console.log(response.status, response.statusText);
         console.log(data);
       } else if (!response.ok) {
+        setLoginErrorMessage(data.message);
         console.log(response.status, response.statusText);
         console.log(data);
         setIsLoggedIn(false);
         window.scrollTo(0, 0);
       }
     } catch (error) {
-      console.log(error);
+      console.log(JSON.parse(error));
     } finally {
       setShowLoader(false);
     }
@@ -183,6 +170,16 @@ function App() {
   const location = useLocation();
   let currentPage = location.pathname;
 
+  useEffect(() => {
+    setLoginErrorMessage("");
+    setRegErrorMessage("");
+  }, [currentPage]);
+
+  //to show and hide password
+  const [showPassword, setShowPassword] = useState(false);
+  function togglePassword() {
+    setShowPassword((prev) => !prev);
+  }
   return (
     <>
       <Routes>
@@ -196,11 +193,12 @@ function App() {
             <Login
               handleLoginChange={handleLoginChange}
               showLoader={showLoader}
-              // invalidCred={invalidCred}
               registerSuccess={registerSuccess}
               closeUserMod={closeUserMod}
-              userExists={userExists}
               loginGo={loginGo}
+              loginErrorMessage={loginErrorMessage}
+              showPassword={showPassword}
+              togglePassword={togglePassword}
             />
           }
         />
@@ -211,9 +209,9 @@ function App() {
               regForm={regForm}
               handleRegChange={handleRegChange}
               showLoader={showLoader}
-              userExists={userExists}
               regGo={regGo}
               closeUserMod={closeUserMod}
+              regErrorMessage={regErrorMessage}
             />
           }
         />
@@ -233,11 +231,12 @@ function App() {
               <Login
                 handleLoginChange={handleLoginChange}
                 showLoader={showLoader}
-                // invalidCred={invalidCred}
                 registerSuccess={registerSuccess}
                 closeUserMod={closeUserMod}
-                userExists={userExists}
                 loginGo={loginGo}
+                loginErrorMessage={loginErrorMessage}
+                showPassword={showPassword}
+                togglePassword={togglePassword}
               />
             )
           }

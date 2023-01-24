@@ -13,17 +13,18 @@ const Register = ({
   regGo,
   closeUserMod,
   userExists,
+  regErrorMessage,
 }) => {
   return (
     <>
       <Header />
       <div
         className={`w-full ${
-          userExists ? "pt-[100px]" : "pt-0"
+          regErrorMessage ? "pt-[100px]" : "pt-0"
         } transition-all duration-500`}
       >
-        {userExists && (
-          <div className=" p-10 float-center mx-5 md:mr-16 border border-[#B6B1B1] rounded-xl float-right relative flex gap-4 items-center">
+        {regErrorMessage && (
+          <div className=" p-10 mx-5 md:mr-16 border border-blue-500 rounded-xl md:float-right relative flex gap-4 items-center">
             <img
               className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
               alt=""
@@ -35,15 +36,20 @@ const Register = ({
               src="/images/icons8-information-64.png"
               className="w-10 h-10"
             />
-            <p>
-              User already exists,{" "}
-              <Link to="/login" className="text-blue-500 underline">
-                proceed to Login?
-              </Link>
-            </p>
+            {regErrorMessage === "Existing Account, Go to the Login page" && (
+              <p>
+                Existing Account,{" "}
+                <Link to="/login" className="text-blue-500 underline">
+                  proceed to Login?
+                </Link>
+              </p>
+            )}
+            {regErrorMessage === "invalid registered details" && (
+              <p>Invalid registration details</p>
+            )}
           </div>
         )}
-        <div className="pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:w-[45%] md:pl-[80px] md:mx-auto">
+        <div className="pt-10 md:pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:w-[45%] md:pl-[80px] md:mx-auto">
           {showLoader && <Loader />}
           <div className="pb-8">
             <h2 className="font-bold pb-4 text-2xl text-center mb-5">
@@ -86,12 +92,12 @@ const Register = ({
                 />
               </div>
               <div className="w-full">
-                <input
+                {/* <input
                   className="bg-[#F5F5F5] text-black text-opacity-50 w-[20%] pl-4 py-2.5 focus:outline-none rounded-sm"
                   type="dropdown"
-                />
+                /> */}
                 <input
-                  className="bg-[#F5F5F5] text-black text-opacity-50 w-[80%] pl-6 py-2.5 focus:outline-none rounded-sm"
+                  className="bg-[#F5F5F5] text-black text-opacity-50 w-full pl-6 py-2.5 focus:outline-none rounded-sm"
                   type="number"
                   id="phone"
                   onChange={handleRegChange}

@@ -7,24 +7,25 @@ import Loader from "../components/Loader";
 const Login = ({
   handleLoginChange,
   showLoader,
-  login,
   invalidCred,
   closeUserMod,
   registerSuccess,
-  userExists,
   loginGo,
+  loginErrorMessage,
+  showPassword,
+  togglePassword,
 }) => {
   return (
     <>
       <Header />
       <div
         className={`w-full ${
-          registerSuccess || userExists ? "pt-[100px]" : "pt-0"
+          loginErrorMessage ? "pt-[100px]" : "pt-0"
         } transition-all duration-500`}
       >
         {showLoader && <Loader />}
-        {userExists && (
-          <div className=" p-10 float-center mx-5 md:mr-16 border border-[#B6B1B1] rounded-xl float-right relative flex gap-4 items-center">
+        {loginErrorMessage && (
+          <div className=" p-10 mx-5 md:mr-16 border border-red-500 rounded-xl md:float-right relative flex gap-4 items-center">
             <img
               className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
               alt=""
@@ -33,14 +34,24 @@ const Login = ({
             />
             <img
               alt=""
-              src="/images/icons8-information-64.png"
+              src="/images/icons8-box-important-50.png"
               className="w-10 h-10"
             />
-            <p>User already exists, redirected to Login page</p>
+            {loginErrorMessage === "unregistered user" && (
+              <p>
+                unregistered user,{" "}
+                <Link to="/register" className="text-blue-500 underline">
+                  proceed to Sign Up?
+                </Link>
+              </p>
+            )}
+            {loginErrorMessage === "Incorrect login details" && (
+              <p>Incorrect login details</p>
+            )}
           </div>
         )}
         {registerSuccess && (
-          <div className=" p-10 float-center mx-5 md:mr-16 border border-[#B6B1B1] rounded-xl float-right relative flex gap-4 items-center">
+          <div className=" p-10 float-center mx-5 md:mr-16 border border-green-500 rounded-xl float-right relative flex gap-4 items-center">
             <img
               className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
               alt=""
@@ -55,7 +66,11 @@ const Login = ({
             <p>Successful Sign up, Proceed to Login</p>
           </div>
         )}
-        <div className="pt-[150px] w-[90%] min-h-[90vh] mx-auto space-y-16 md:pl-[80px] md:w-[45%] md:mx-auto">
+        <div
+          className={`${
+            loginErrorMessage ? "pt-10 md:pt-[150px]" : "pt-[150px]"
+          } w-[90%] min-h-[90vh] mx-auto space-y-16 md:pl-[80px] md:w-[45%] md:mx-auto`}
+        >
           <div>
             <h2 className="font-bold text-2xl mb-10 mx-auto text-center">
               Login
@@ -67,7 +82,9 @@ const Login = ({
                 {/* email */}
                 <div>
                   <input
-                    className="login-input"
+                    className={`login-input ${
+                      loginErrorMessage ? "border border-red-400" : ""
+                    }`}
                     type="email"
                     id="email"
                     onChange={handleLoginChange}
@@ -75,13 +92,21 @@ const Login = ({
                   />
                 </div>
                 {/* password */}
-                <div>
+                <div className="w-full relative">
                   <input
-                    className="login-input"
-                    type="password"
+                    className={`login-input ${
+                      loginErrorMessage ? "border border-red-400" : ""
+                    }`}
+                    type={showPassword ? "text" : "password"}
                     id="password"
                     onChange={handleLoginChange}
                     placeholder="Password"
+                  />
+                  <img
+                    alt="reveal"
+                    src="/images/icons8-eye-24.png"
+                    className="w-5 h-5 absolute top-1/2 right-3 translate-y-[-50%] cursor-pointer"
+                    onClick={togglePassword}
                   />
                 </div>
                 {invalidCred && (
