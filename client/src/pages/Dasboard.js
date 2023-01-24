@@ -19,7 +19,7 @@ const Dashboard = ({
         logout={logout}
       />
       {loginSuccess && (
-        <div className="bg-white w-full sm:w-1/3 px-5 sm:py-5 py-2 md:mr-16 border border-[#B6B1B1] rounded-xl relative sm:fixed sm:top-8 top-[70px] right-0 flex gap-4 items-center">
+        <div className="bg-white w-full sm:w-1/3 px-5 sm:py-5 py-2 md:mr-16 border border-green-500 rounded-xl relative sm:fixed sm:top-8 top-[70px] right-0 flex gap-4 items-center">
           <img
             className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
             alt=""

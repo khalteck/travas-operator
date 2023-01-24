@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
-const Header = () => {
+const Header = ({ isLoggedIn, logout }) => {
   const [openMenu, setOpenMenu] = useState(false);
   function handleClick() {
     setOpenMenu((prevState) => !prevState);
@@ -50,18 +50,30 @@ const Header = () => {
             </Link>
           </div>
         </nav>
-        <div>
-          <Link to="/login">
-            <button className="bg-white font-[700] text-[0.90rem] text-blue-500 mr-[20px] px-[20px] py-[5px] border-2 border-blue-500 rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300">
-              Log in
+        {!isLoggedIn && (
+          <div>
+            <Link to="/login">
+              <button className="bg-white font-[700] text-[0.90rem] text-blue-500 mr-[20px] px-[20px] py-[5px] border-2 border-blue-500 rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300">
+                Log in
+              </button>
+            </Link>
+            <Link to="/register">
+              <button className="bg-blue-500 font-[700] text-[0.90rem] text-white px-[20px] py-[5px] rounded-md border-2 border-blue-500 hover:bg-blue-500 hover:translate-y-[6px] transition-all duration-300">
+                Sign Up
+              </button>
+            </Link>
+          </div>
+        )}
+        {isLoggedIn && (
+          <div>
+            <button
+              onClick={logout}
+              className="bg-white font-[700] text-[0.90rem] text-blue-500 mr-[20px] px-[20px] py-[5px] border-2 border-blue-500 rounded-md hover:bg-blue-500 hover:text-white hover:translate-y-[6px] transition-all duration-300"
+            >
+              Log out
             </button>
-          </Link>
-          <Link to="/register">
-            <button className="bg-blue-500 font-[700] text-[0.90rem] text-white px-[20px] py-[5px] rounded-md border-2 border-blue-500 hover:bg-blue-500 hover:translate-y-[6px] transition-all duration-300">
-              Sign Up
-            </button>
-          </Link>
-        </div>
+          </div>
+        )}
       </div>
 
       {/*mobile header */}

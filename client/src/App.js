@@ -56,6 +56,7 @@ function App() {
   function handleLoginChange(event) {
     const { id, value } = event.target;
     setLoginErrorMessage("");
+    setNetworkError(false);
     setRegErrorMessage("");
     setLoginForm((prevState) => {
       return {
@@ -73,6 +74,7 @@ function App() {
   const [loginErrorMessage, setLoginErrorMessage] = useState("");
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
 
   function closeUserMod() {
     setRegisterSuccess(false);
@@ -103,7 +105,7 @@ function App() {
         setRegErrorMessage(data.message);
       }
     } catch (error) {
-      console.log(JSON.parse(error));
+      setNetworkError(true);
     } finally {
       setShowLoader(false);
     }
@@ -126,8 +128,9 @@ function App() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const data = await response.json();
+      setUserData(data);
+
       if (response.ok) {
-        setUserData(data);
         setIsLoggedIn(true);
         setLoginSuccess(true);
         setTimeout(() => {
@@ -136,16 +139,15 @@ function App() {
         navigate("/dashboard");
         window.scrollTo(0, 0);
         console.log(response.status, response.statusText);
-        console.log(data);
       } else if (!response.ok) {
         setLoginErrorMessage(data.message);
         console.log(response.status, response.statusText);
-        console.log(data);
         setIsLoggedIn(false);
         window.scrollTo(0, 0);
       }
     } catch (error) {
-      console.log(JSON.parse(error));
+      setNetworkError(true);
+      console.log(error);
     } finally {
       setShowLoader(false);
     }
@@ -164,6 +166,7 @@ function App() {
     localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("userData");
     navigate("/");
+    setIsLoggedIn(false);
   };
 
   //to handle the link highlight of current page
@@ -173,6 +176,7 @@ function App() {
   useEffect(() => {
     setLoginErrorMessage("");
     setRegErrorMessage("");
+    setNetworkError(false);
   }, [currentPage]);
 
   //to show and hide password
@@ -183,7 +187,10 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Main />} />
+        <Route
+          path="/"
+          element={<Main isLoggedIn={isLoggedIn} logout={logout} />}
+        />
         <Route path="/about" element={<About />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/support" element={<Support />} />
@@ -199,6 +206,9 @@ function App() {
               loginErrorMessage={loginErrorMessage}
               showPassword={showPassword}
               togglePassword={togglePassword}
+              networkError={networkError}
+              isLoggedIn={isLoggedIn}
+              logout={logout}
             />
           }
         />
@@ -212,6 +222,8 @@ function App() {
               regGo={regGo}
               closeUserMod={closeUserMod}
               regErrorMessage={regErrorMessage}
+              isLoggedIn={isLoggedIn}
+              logout={logout}
             />
           }
         />
@@ -223,6 +235,7 @@ function App() {
               <Dashboard
                 currentPage={currentPage}
                 logout={logout}
+                isLoggedIn={isLoggedIn}
                 loginSuccess={loginSuccess}
                 closeUserMod={closeUserMod}
                 userData={userData}
@@ -237,6 +250,9 @@ function App() {
                 loginErrorMessage={loginErrorMessage}
                 showPassword={showPassword}
                 togglePassword={togglePassword}
+                networkError={networkError}
+                isLoggedIn={isLoggedIn}
+                logout={logout}
               />
             )
           }

@@ -14,17 +14,22 @@ const Login = ({
   loginErrorMessage,
   showPassword,
   togglePassword,
+  networkError,
+  isLoggedIn,
+  logout,
 }) => {
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} logout={logout} />
       <div
         className={`w-full ${
-          loginErrorMessage ? "pt-[100px]" : "pt-0"
+          loginErrorMessage || networkError || registerSuccess
+            ? "pt-[100px]"
+            : "pt-0"
         } transition-all duration-500`}
       >
         {showLoader && <Loader />}
-        {loginErrorMessage && (
+        {(loginErrorMessage || networkError) && (
           <div className=" p-10 mx-5 md:mr-16 border border-red-500 rounded-xl md:float-right relative flex gap-4 items-center">
             <img
               className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
@@ -48,6 +53,7 @@ const Login = ({
             {loginErrorMessage === "Incorrect login details" && (
               <p>Incorrect login details</p>
             )}
+            {networkError && <p>Bad network connection</p>}
           </div>
         )}
         {registerSuccess && (
@@ -68,7 +74,9 @@ const Login = ({
         )}
         <div
           className={`${
-            loginErrorMessage ? "pt-10 md:pt-[150px]" : "pt-[150px]"
+            loginErrorMessage || networkError
+              ? "pt-10 md:pt-[150px]"
+              : "pt-[150px]"
           } w-[90%] min-h-[90vh] mx-auto space-y-16 md:pl-[80px] md:w-[45%] md:mx-auto`}
         >
           <div>

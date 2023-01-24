@@ -12,12 +12,13 @@ const Register = ({
   showLoader,
   regGo,
   closeUserMod,
-  userExists,
   regErrorMessage,
+  isLoggedIn,
+  logout,
 }) => {
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} logout={logout} />
       <div
         className={`w-full ${
           regErrorMessage ? "pt-[100px]" : "pt-0"

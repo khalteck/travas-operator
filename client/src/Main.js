@@ -4,10 +4,10 @@ import Footer from "./Footer";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
 
-const Main = () => {
+const Main = ({ isLoggedIn, logout }) => {
   return (
     <>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} logout={logout} />
       <div className="pt-[90px] px-[5%]">
         <div className="flex items-center space-x-4">
           <img src="/images/nigeria-heart-flag.svg" alt="nigeria-heart-flag" />
