@@ -84,7 +84,7 @@ function App() {
   }
 
   async function regGo(e) {
-    e.preventDefault();
+    e?.preventDefault();
     setShowLoader(true);
     try {
       const response = await fetch("/api/register", {
@@ -177,8 +177,13 @@ function App() {
     setLoginErrorMessage("");
     setRegErrorMessage("");
     setNetworkError(false);
+    setpasswordDoNotMatch(false);
   }, [currentPage]);
 
+  const [passwordDoNotMatch, setpasswordDoNotMatch] = useState(false);
+  function retypePassword() {
+    setpasswordDoNotMatch(true);
+  }
   //to show and hide password
   const [showPassword, setShowPassword] = useState(false);
   function togglePassword() {
@@ -224,6 +229,8 @@ function App() {
               regErrorMessage={regErrorMessage}
               isLoggedIn={isLoggedIn}
               logout={logout}
+              passwordDoNotMatch={passwordDoNotMatch}
+              retypePassword={retypePassword}
             />
           }
         />

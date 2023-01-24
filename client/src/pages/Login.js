@@ -86,7 +86,7 @@ const Login = ({
 
             {/* Login form container */}
             <div className=" mx-auto">
-              <form className="space-y-16">
+              <form className="space-y-10">
                 {/* email */}
                 <div>
                   <input

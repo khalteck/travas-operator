@@ -15,6 +15,9 @@ const Register = ({
   regErrorMessage,
   isLoggedIn,
   logout,
+  regForm,
+  retypePassword,
+  passwordDoNotMatch,
 }) => {
   return (
     <>
@@ -25,7 +28,7 @@ const Register = ({
         } transition-all duration-500`}
       >
         {regErrorMessage && (
-          <div className=" p-10 mx-5 md:mr-16 border border-blue-500 rounded-xl md:float-right relative flex gap-4 items-center">
+          <div className=" px-10 py-6 mx-5 md:mr-16 border border-blue-500 rounded-xl md:float-right relative flex gap-4 items-center">
             <img
               className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
               alt=""
@@ -50,9 +53,9 @@ const Register = ({
             )}
           </div>
         )}
-        <div className="pt-10 md:pt-[150px] mx-auto mb-16 space-y-8 w-[90%] md:w-[45%] md:pl-[80px] md:mx-auto">
+        <div className="pt-10 md:pt-[100px] mx-auto mb-16 space-y-8 w-[90%] md:w-[45%] md:pl-[80px] md:mx-auto">
           {showLoader && <Loader />}
-          <div className="pb-8">
+          <div className={`${regErrorMessage ? "pt-4" : "pt-12"} pb-8`}>
             <h2 className="font-bold pb-4 text-2xl text-center mb-5">
               Register
             </h2>
@@ -78,7 +81,7 @@ const Register = ({
             </div>
 
             {/* Contact info */}
-            <div className="space-y-12 pb-8">
+            <div className="space-y-8 pb-8">
               <div className="space-y-5">
                 <label htmlFor="email">
                   Contact info <span className="text-red-500">*</span>
@@ -103,40 +106,54 @@ const Register = ({
                   id="phone"
                   onChange={handleRegChange}
                   placeholder="Mobile number"
+                  minLength="9"
                   required
                 />
               </div>
             </div>
 
             {/* Password */}
-            <div className="space-y-5 pb-8">
+            <div className="space-y-5 pb-2">
               <label htmlFor="password">
                 Set your password <span className="text-red-500">*</span>
               </label>
-              <div className="space-y-12">
+              <div className="space-y-8">
                 <input
-                  className="reg-input"
+                  className={`reg-input ${
+                    passwordDoNotMatch && "border border-red-500"
+                  }`}
                   type="password"
                   id="password"
                   onChange={handleRegChange}
                   placeholder="Password"
+                  minLength="6"
                   required
                 />
                 <input
                   type="password"
-                  className="reg-input"
+                  className={`reg-input ${
+                    passwordDoNotMatch && "border border-red-500"
+                  }`}
                   id="confirm_password"
                   onChange={handleRegChange}
                   placeholder="Confirm password"
+                  minLength="6"
                   required
                 />
               </div>
             </div>
+            {passwordDoNotMatch && (
+              <div className="w-full text-red-500">*Passwords do not match</div>
+            )}
 
             {/* Register */}
             <div className="pt-8">
               <button
-                onClick={regGo}
+                onClick={() =>
+                  regForm.password === regForm.confirm_password
+                    ? regGo()
+                    : retypePassword()
+                }
                 className="bg-[#B6B1B1] font-semibold text-center py-3 w-full rounded-sm pointer"
                 type="submit"
               >
