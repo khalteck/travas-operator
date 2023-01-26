@@ -169,6 +169,118 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  //to join rules fields
+  const [rules, setRules] = useState({
+    rule_1: "",
+    rule_2: "",
+    rule_3: "",
+    rule_4: "",
+    rule_5: "",
+  });
+
+  //to join what to expect fields
+  const [whatToExpect, setWhatToExpect] = useState({
+    what_to_expect_1: "",
+    what_to_expect_2: "",
+    what_to_expect_3: "",
+    what_to_expect_4: "",
+    what_to_expect_5: "",
+  });
+
+  //to join dates and times
+  const [tourPackageTime, setTourPackageTime] = useState({
+    start_time_time: "",
+    start_time_ampm: "AM",
+    start_date_day: "",
+    start_date_month: "",
+    start_date_year: "",
+    end_date_day: "",
+    end_date_month: "",
+    end_date_year: "",
+  });
+
+  //to create tour package
+  const [tourPackageData, setTourPackageData] = useState({
+    title: "",
+    destination: "",
+    meeting_point: "",
+    start_time: "",
+    start_date: "",
+    end_date: "",
+    price: "",
+    contact: "",
+    language: "",
+    number_of_tourists: "",
+    description: "",
+    what_to_expect: "",
+    rules: "",
+  });
+
+  //to handle form input change chnage
+  function handleTourChange(event) {
+    const { id, value } = event.target;
+    setTourPackageData((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to handle form input time chnage
+  function handleTimeChange(event) {
+    const { id, value } = event.target;
+    setTourPackageTime((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to handle form input time chnage
+  function handleWhatToEXpectChange(event) {
+    const { id, value } = event.target;
+    setWhatToExpect((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to handle form input rule chnage
+  function handleRuleChange(event) {
+    const { id, value } = event.target;
+    setRules((prevState) => {
+      return {
+        ...prevState,
+        [id]: value,
+      };
+    });
+  }
+
+  //to join time strings together
+  function joinStr(e) {
+    e.preventDefault();
+    tourPackageData.start_time = `${tourPackageTime.start_time_time}${tourPackageTime.start_time_ampm}`;
+    tourPackageData.start_date = `${tourPackageTime.start_date_day}-${tourPackageTime.start_date_month}-${tourPackageTime.start_date_year}`;
+    tourPackageData.end_date = `${tourPackageTime.end_date_day}-${tourPackageTime.end_date_month}-${tourPackageTime.end_date_year}`;
+    console.log(tourPackageData);
+    navigate("/step2");
+  }
+
+  function joinWhatToExpect() {
+    tourPackageData.what_to_expect = whatToExpect;
+    console.log(tourPackageData);
+  }
+
+  function joinRules() {
+    tourPackageData.rules = rules;
+    console.log(tourPackageData);
+    navigate("/preview");
+  }
+
   //to handle the link highlight of current page
   const location = useLocation();
   let currentPage = location.pathname;
@@ -291,61 +403,33 @@ function App() {
           }
         />
         <Route path="/verify" element={<Verify />} />
-        <Route path="/step1" element={<Step1 />} />
-        <Route path="/step2" element={<Step2 />} />
-        <Route path="/step3" element={<Step3 />} />
+        <Route
+          path="/step1"
+          element={
+            <Step1
+              handleTourChange={handleTourChange}
+              handleTimeChange={handleTimeChange}
+              joinStr={joinStr}
+            />
+          }
+        />
+        <Route
+          path="/step2"
+          element={
+            <Step2
+              handleTourChange={handleTourChange}
+              handleWhatToEXpectChange={handleWhatToEXpectChange}
+              joinWhatToExpect={joinWhatToExpect}
+            />
+          }
+        />
+        <Route
+          path="/step3"
+          element={
+            <Step3 handleRuleChange={handleRuleChange} joinRules={joinRules} />
+          }
+        />
         <Route path="/preview" element={<Preview />} />
-
-        {/* {isLoggedIn && user && (
-          <>
-            <Route
-              path="/dashboard"
-              element={
-                <Dashboard
-                  currentPage={currentPage}
-                  logout={logout}
-                  loginSuccess={loginSuccess}
-                  closeUserMod={closeUserMod}
-                />
-              }
-            />
-            <Route
-              path="/tour-request"
-              element={
-                <TourRequest currentPage={currentPage} logout={logout} />
-              }
-            />
-            <Route
-              path="/tour-guide"
-              element={<TourGuide currentPage={currentPage} logout={logout} />}
-            />
-            <Route
-              path="/payment"
-              element={<Payment currentPage={currentPage} logout={logout} />}
-            />
-            <Route
-              path="/withdraw"
-              element={<Withdraw currentPage={currentPage} logout={logout} />}
-            />
-            <Route
-              path="/support-user"
-              element={
-                <SupportUser currentPage={currentPage} logout={logout} />
-              }
-            />
-            <Route
-              path="/product-feedback"
-              element={
-                <ProductFeedback currentPage={currentPage} logout={logout} />
-              }
-            />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/step1" element={<Step1 />} />
-            <Route path="/step2" element={<Step2 />} />
-            <Route path="/step3" element={<Step3 />} />
-            <Route path="/preview" element={<Preview />} />
-          </>
-        )} */}
 
         {/* user will be redirected to this page if they input invalid URL  */}
         <Route path="*" element={<PageNotFound />} />

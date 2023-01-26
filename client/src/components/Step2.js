@@ -3,7 +3,11 @@ import { Link } from "react-router-dom";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-function Step2() {
+function Step2({
+  handleTourChange,
+  handleWhatToEXpectChange,
+  joinWhatToExpect,
+}) {
   return (
     <>
       <div className="pt-[100px] md:pt-[120px] w-[90%] px-1 mx-auto md:w-full md:mx-0 md:px-[80px] pb-20">
@@ -56,6 +60,8 @@ function Step2() {
             <textarea
               className="bg-[#F5F5F5] pl-3 pt-3 h-[150px] w-full focus:outline-none placeholder:text-sm resize-none md:w-[60%]"
               placeholder="Enter full description here"
+              id="description"
+              onChange={handleTourChange}
             ></textarea>
           </div>
         </div>
@@ -91,6 +97,9 @@ function Step2() {
               </div>
             </div>
           </div>
+          <p className="font-medium text-sm">
+            Give a minimum of 2, maximum of 5
+          </p>
 
           {/* what to expect input */}
           {/* first row */}
@@ -99,24 +108,32 @@ function Step2() {
               <input
                 className="border-b-2 focus:outline-none pl-2 pb-2 placeholder:text-xs"
                 placeholder="what to expect"
+                id="what_to_expect_1"
+                onChange={handleWhatToEXpectChange}
               />
             </div>
             <div>
               <input
                 className="border-b-2 focus:outline-none pl-2 pb-2 placeholder:text-xs"
                 placeholder="what to expect"
+                id="what_to_expect_2"
+                onChange={handleWhatToEXpectChange}
               />
             </div>
             <div>
               <input
                 className="border-b-2 focus:outline-none pl-2 pb-2 placeholder:text-xs"
                 placeholder="what to expect"
+                id="what_to_expect_3"
+                onChange={handleWhatToEXpectChange}
               />
             </div>
             <div>
               <input
                 className="border-b-2 focus:outline-none pl-2 pb-2 placeholder:text-xs"
                 placeholder="what to expect"
+                id="what_to_expect_4"
+                onChange={handleWhatToEXpectChange}
               />
             </div>
           </div>
@@ -126,14 +143,16 @@ function Step2() {
               <input
                 className="border-b-2 focus:outline-none pl-2 pb-2 placeholder:text-xs"
                 placeholder="what to expect"
+                id="what_to_expect_5"
+                onChange={handleWhatToEXpectChange}
               />
             </div>
-            <div className="flex items-center space-x-3 w-[25%]">
+            {/* <div className="flex items-center space-x-3 w-[25%]">
               <img src="/images/plus.svg" alt="" />
               <a className="text-[#1F66D0]" href=".">
                 Add more
               </a>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -167,7 +186,7 @@ function Step2() {
               Back
             </button>
           </Link>
-          <Link to="/step3">
+          <Link to="/step3" onClick={joinWhatToExpect}>
             <button className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24">
               Next
             </button>
