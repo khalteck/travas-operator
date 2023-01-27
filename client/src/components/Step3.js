@@ -144,7 +144,7 @@ export default function Step3({ joinRules, handleRuleChange, rules }) {
             className="bg-[#1F66D0] text-white font-semibold px-12 py-3 md:px-24"
             onClick={joinRules}
           >
-            Submit
+            Preview
           </button>
         </div>
         <ScrollToTop />
