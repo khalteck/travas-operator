@@ -311,7 +311,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 
-		ctx.JSON(http.StatusCreated, gin.H{"Message": "New package added"})
+		ctx.JSON(http.StatusCreated, gin.H{"Message": "New package added successfully"})
 	}
 }
 
