@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-function Step1({ handleTourChange, handleTimeChange, joinStr }) {
+function Step1({
+  handleTourChange,
+  handleTimeChange,
+  joinStr,
+  tourPackageData,
+  tourPackageTime,
+}) {
   return (
     <>
       <div className="pt-[100px] md:pt-[120px] w-[90%] px-1 mx-auto md:w-full md:mx-0 md:pl-[80px] md:pr-[50px] pb-48">
@@ -49,6 +55,7 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
               className="border-b-2 focus:outline-none pb-2 pl-1 w-[90%] md:w-[70%]"
               type="text"
               placeholder="Tour title"
+              value={tourPackageData.title ? tourPackageData.title : ""}
               id="title"
               onChange={handleTourChange}
               required
@@ -67,6 +74,9 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
               className="border-b-2 focus:outline-none pb-2 pl-1 w-[90%] md:w-[70%]"
               type="text"
               placeholder="Destination"
+              value={
+                tourPackageData.destination ? tourPackageData.destination : ""
+              }
               id="destination"
               onChange={handleTourChange}
               required
@@ -85,6 +95,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
               className="border-b-2 focus:outline-none pb-2 pl-1 w-[90%] md:w-[70%]"
               type="text"
               placeholder="Meeting point"
+              value={
+                tourPackageData.meeting_point
+                  ? tourPackageData.meeting_point
+                  : ""
+              }
               id="meeting_point"
               onChange={handleTourChange}
               required
@@ -109,12 +124,22 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                     type="number"
                     placeholder="10"
                     maxLength="2"
+                    value={
+                      tourPackageTime.start_time_time
+                        ? tourPackageTime.start_time_time
+                        : ""
+                    }
                     id="start_time_time"
                     onChange={handleTimeChange}
                     required
                   />
                   <select
                     className="border-b-2 bg-transparent pb-2 pl-1 w-[70px]"
+                    value={
+                      tourPackageTime.start_time_ampm
+                        ? tourPackageTime.start_time_ampm
+                        : ""
+                    }
                     id="start_time_ampm"
                     onChange={handleTimeChange}
                     required
@@ -136,6 +161,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="10"
                       maxLength="2"
+                      value={
+                        tourPackageTime.start_date_day
+                          ? tourPackageTime.start_date_day
+                          : ""
+                      }
                       id="start_date_day"
                       onChange={handleTimeChange}
                       required
@@ -154,6 +184,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="10"
                       maxLength="2"
+                      value={
+                        tourPackageTime.start_date_month
+                          ? tourPackageTime.start_date_month
+                          : ""
+                      }
                       id="start_date_month"
                       onChange={handleTimeChange}
                       required
@@ -172,6 +207,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="2023"
                       maxLength="4"
+                      value={
+                        tourPackageTime.start_date_year
+                          ? tourPackageTime.start_date_year
+                          : ""
+                      }
                       id="start_date_year"
                       onChange={handleTimeChange}
                       required
@@ -197,6 +237,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="10"
                       maxLength="2"
+                      value={
+                        tourPackageTime.end_date_day
+                          ? tourPackageTime.end_date_day
+                          : ""
+                      }
                       id="end_date_day"
                       onChange={handleTimeChange}
                       required
@@ -215,6 +260,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="10"
                       maxLength="2"
+                      value={
+                        tourPackageTime.end_date_month
+                          ? tourPackageTime.end_date_month
+                          : ""
+                      }
                       id="end_date_month"
                       onChange={handleTimeChange}
                       required
@@ -233,6 +283,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                       type="number"
                       placeholder="2023"
                       maxLength="4"
+                      value={
+                        tourPackageTime.end_date_year
+                          ? tourPackageTime.end_date_year
+                          : ""
+                      }
                       id="end_date_year"
                       onChange={handleTimeChange}
                       required
@@ -266,6 +321,7 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                   className="border-b-2 focus:outline-none pl-1 pb-2"
                   type="number"
                   placeholder="5000"
+                  value={tourPackageData.price ? tourPackageData.price : ""}
                   id="price"
                   onChange={handleTourChange}
                   required
@@ -280,6 +336,9 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                   className="border-b-2 focus:outline-none pl-1 pb-2"
                   type="text"
                   placeholder="Language"
+                  value={
+                    tourPackageData.language ? tourPackageData.language : ""
+                  }
                   id="language"
                   onChange={handleTourChange}
                   required
@@ -294,6 +353,11 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
                   className="border-b-2 focus:outline-none pl-1 pb-2"
                   type="number"
                   placeholder="100"
+                  value={
+                    tourPackageData.number_of_tourists
+                      ? tourPackageData.number_of_tourists
+                      : ""
+                  }
                   id="number_of_tourists"
                   onChange={handleTourChange}
                   required
@@ -311,9 +375,9 @@ function Step1({ handleTourChange, handleTimeChange, joinStr }) {
             Next
           </button>
         </form>
+        <ScrollToTop />
       </div>
       <Footer />
-      <ScrollToTop />
     </>
   );
 }

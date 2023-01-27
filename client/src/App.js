@@ -169,6 +169,37 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  //to upload tour photos
+  const [tourPhotos, setTourPhotos] = useState([]);
+  function handleAddPhotos(e) {
+    setTourPhotos((prev) => {
+      return [
+        ...prev,
+        {
+          tour_photo: `${URL.createObjectURL(e.target.files[0])}`,
+          hover: false,
+        },
+      ];
+    });
+  }
+  function handleRemovePhoto(index) {
+    let photos = [...tourPhotos];
+    photos.splice(index, 1);
+    setTourPhotos(photos);
+  }
+
+  function handlePhotoHover(index) {
+    let photos = [...tourPhotos];
+    photos[index].hover = true;
+    setTourPhotos(photos);
+  }
+
+  function handlePhotoMouseout(index) {
+    let photos = [...tourPhotos];
+    photos[index].hover = false;
+    setTourPhotos(photos);
+  }
+
   //to join rules fields
   const [rules, setRules] = useState({
     rule_1: "",
@@ -208,12 +239,33 @@ function App() {
     start_date: "",
     end_date: "",
     price: "",
-    contact: "",
+    tour_photos: [
+      {
+        tour_photo: "",
+        hover: false,
+      },
+      {
+        tour_photo: "",
+        hover: false,
+      },
+      {
+        tour_photo: "",
+        hover: false,
+      },
+    ],
     language: "",
     number_of_tourists: "",
     description: "",
-    what_to_expect: "",
-    rules: "",
+    what_to_expect: {
+      what_to_expect_1: "",
+      what_to_expect_2: "",
+      what_to_expect_3: "",
+    },
+    rules: {
+      rule_1: "",
+      rule_2: "",
+      rule_3: "",
+    },
   });
 
   //to handle form input change chnage
@@ -272,6 +324,7 @@ function App() {
 
   function joinWhatToExpect() {
     tourPackageData.what_to_expect = whatToExpect;
+    tourPackageData.tour_photos = tourPhotos;
     console.log(tourPackageData);
   }
 
@@ -410,6 +463,8 @@ function App() {
               handleTourChange={handleTourChange}
               handleTimeChange={handleTimeChange}
               joinStr={joinStr}
+              tourPackageData={tourPackageData}
+              tourPackageTime={tourPackageTime}
             />
           }
         />
@@ -420,16 +475,30 @@ function App() {
               handleTourChange={handleTourChange}
               handleWhatToEXpectChange={handleWhatToEXpectChange}
               joinWhatToExpect={joinWhatToExpect}
+              whatToExpect={whatToExpect}
+              tourPackageData={tourPackageData}
+              tourPhotos={tourPhotos}
+              handleAddPhotos={handleAddPhotos}
+              handlePhotoHover={handlePhotoHover}
+              handlePhotoMouseout={handlePhotoMouseout}
+              handleRemovePhoto={handleRemovePhoto}
             />
           }
         />
         <Route
           path="/step3"
           element={
-            <Step3 handleRuleChange={handleRuleChange} joinRules={joinRules} />
+            <Step3
+              handleRuleChange={handleRuleChange}
+              joinRules={joinRules}
+              rules={rules}
+            />
           }
         />
-        <Route path="/preview" element={<Preview />} />
+        <Route
+          path="/preview"
+          element={<Preview tourPackageData={tourPackageData} />}
+        />
 
         {/* user will be redirected to this page if they input invalid URL  */}
         <Route path="*" element={<PageNotFound />} />
