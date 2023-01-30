@@ -9,6 +9,7 @@ import (
 )
 
 func Routes(r *gin.Engine, o controller.Operator) {
+	r.MaxMultipartMemory = 10 << 20
 	router := r.Use(gin.Logger(), gin.Recovery())
 
 	router.Use(cors.Default())
@@ -28,11 +29,9 @@ func Routes(r *gin.Engine, o controller.Operator) {
 
 		authRouter.GET("/create/packages", o.TourPackagePage())
 		authRouter.POST("/add/packages", o.ProcessTourPackage())
-
 		authRouter.GET("/guide/load", o.GetTourGuide())
 		authRouter.GET("/guide/select/assign", o.SelectTourGuide())
 		authRouter.POST("/guide/select/delete/:id", o.DeleteTourGuide())
 		authRouter.GET("/tour/preview", o.PreviewTour())
 	}
-
 }

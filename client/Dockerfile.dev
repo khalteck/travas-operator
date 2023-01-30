@@ -1,5 +1,5 @@
 # pull the node alpine image from docker hub for use
-FROM node:alpine as builder
+FROM node:alpine
 
 # Setup the working directory to run the image instance for the appliaction
 WORKDIR /app
@@ -9,13 +9,9 @@ COPY ./package.json /app
 
 # Execute command to install all dependencies
 RUN yarn install
+
+# Copy all the files in the local PWD to the container PWD
 COPY . /app
 
-RUN yarn run build
-
-FROM nginx
-
-EXPOSE 3000
-
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/build /usr/share/nginx/html
+# Execute the command to start the application
+CMD ["yarn", "run", "start"]

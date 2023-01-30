@@ -3,7 +3,14 @@ import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
-const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
+const Dashboard = ({
+  currentPage,
+  handleCurrentPage,
+  logout,
+  loginSuccess,
+  closeUserMod,
+  userData,
+}) => {
   return (
     <div className="w-full">
       <Sidebar
@@ -11,11 +18,36 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
         handleCurrentPage={handleCurrentPage}
         logout={logout}
       />
-      <div className="w-full md:w-[80%] float-right bg-white pt-[80px] md:pt-[50px] px-0 md:px-12">
+      {loginSuccess && (
+        <div className="bg-white px-10 py-6 mx-5 mt-[80px] md:mt-0 md:mr-16 border border-green-500 rounded-xl md:float-right relative flex gap-4 items-center">
+          <img
+            className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
+            alt=""
+            src="/images/icons8-close-50.png"
+            onClick={closeUserMod}
+          />
+          <img
+            alt=""
+            src="/images/icons8-checkmark-64.png"
+            className="w-10 h-10"
+          />
+          <p>Login Successful!</p>
+        </div>
+      )}
+      <div
+        className={`w-full md:w-[80%] float-right bg-white ${
+          loginSuccess ? "pt-8" : "pt-[80px]"
+        } md:pt-[50px] px-0 md:px-12 transition-all duration-500`}
+      >
         <div className="w-full min-h-[80vh] mb-16 px-3">
           <p>Welcome back</p>
           <div className="flex items-center gap-2 mt-5">
-            <strong>Angie style travels and tours limited</strong>
+            <img
+              alt=""
+              src="/images/icons8-user-64.png"
+              className="w-10 h-10"
+            />
+            <strong>{userData.company_name}</strong>
             <img
               alt=""
               src="/images/icons8-chevron-right-30.png"
@@ -65,7 +97,7 @@ const Dashboard = ({ currentPage, handleCurrentPage, logout }) => {
           </div>
 
           <div className="w-full flex justify-between mt-8 mb-16 md:md-0">
-            <h1 className="font-bold text-[1.25rem]">Packages</h1>
+            <h1 className="font-bold text-[1.25rem]">Tour Packages</h1>
             <Link to="/step1">
               <button className="bg-blue-500 hover:bg-blue-400 text-white rounded-md p-3">
                 Create new package

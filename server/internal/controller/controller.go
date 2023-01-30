@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -57,11 +58,11 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user := &model.Operator{
-			CompanyName:     ctx.Request.Form.Get("company_name"),
-			Email:           ctx.Request.Form.Get("email"),
-			Password:        ctx.Request.Form.Get("password"),
-			ConfirmPassword: ctx.Request.Form.Get("confirm_password"),
-			Phone:           ctx.Request.Form.Get("phone"),
+			CompanyName:     ctx.Request.FormValue("company_name"),
+			Email:           ctx.Request.FormValue("email"),
+			Password:        ctx.Request.FormValue("password"),
+			ConfirmPassword: ctx.Request.FormValue("confirm_password"),
+			Phone:           ctx.Request.FormValue("phone"),
 			TourGuide:       []string{},
 			ToursList:       []model.Tour{},
 			GeoLocation:     "",
@@ -72,55 +73,42 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		}
 
 		if user.Password != user.ConfirmPassword {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("passwords did not match"))
+			ctx.JSON(http.StatusNotAcceptable, gin.H{
+				"message": "unmatched password !Input correct password",
+			})
 			return
 		}
-
 		user.Password, _ = encrypt.Hash(user.Password)
 		user.ConfirmPassword, _ = encrypt.Hash(user.ConfirmPassword)
 
 		if err := op.App.Validator.Struct(&user); err != nil {
 			if _, ok := err.(*validator.InvalidValidationError); !ok {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				log.Println(err)
+				op.App.InfoLogger.Println(err)
 				return
 			}
 		}
 
-		track, userID, err := op.DB.InsertUser(user)
+		found, status, err := op.DB.InsertUser(user)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("error while adding new user"))
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
-		cookieData := sessions.Default(ctx)
 
-		userInfo := model.UserInfo{
-			ID:       userID,
-			Email:    user.Email,
-			Password: user.Password,
-		}
-		cookieData.Set("info", userInfo)
-
-		if err := cookieData.Save(); err != nil {
-			log.Println("error from the session storage")
-			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
-			return
-		}
-		switch track {
-		case 1:
-			// add the user id to session
-			// redirect to the home page of the application
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": "Existing Account, Go to the Login page",
-			})
-		case 0:
-			//	after inserting new user to the database
-			//  notify the user to verify their  details via mail
-			//  OR
-			//  Send notification message on the page for them to login
+		switch {
+		case found && status == 1:
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": "Registered Successfully",
 			})
+			return
+
+		case found && status == 2:
+			ctx.JSON(http.StatusSeeOther, gin.H{
+				"message": "Existing Account, Go to the Login page",
+			})
+			return
+
 		}
 	}
 }
@@ -142,39 +130,76 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 		email := ctx.Request.Form.Get("email")
 		password := ctx.Request.Form.Get("password")
 
-		cookieData := sessions.Default(ctx)
-		userInfo := cookieData.Get("info").(model.UserInfo)
+		regMail := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+		ok := regMail.MatchString(email)
 
-		verified, err := encrypt.Verify(password, userInfo.Password)
-		if err != nil {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot verify user input password"))
-		}
-		if verified {
+		if ok {
+
+			res, checkErr := op.DB.VerifyUser(email)
+
+			if checkErr != nil {
+				_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unregistered user %v", checkErr))
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "unregistered user"})
+				return
+			}
+
+			id := (res["_id"]).(primitive.ObjectID)
+			inputPass := (res["password"]).(string)
+			compName := (res["company_name"]).(string)
+
+			verified, err := encrypt.Verify(password, inputPass)
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusUnauthorized, errors.New("cannot verify user details"))
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
+				return
+			}
 			switch {
-			case email == userInfo.Email:
-				_, checkErr := op.DB.VerifyUser(userInfo.ID)
+			case verified:
+				cookieData := sessions.Default(ctx)
 
-				if checkErr != nil {
-					_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", checkErr))
+				userInfo := model.UserInfo{
+					ID:          id,
+					Email:       email,
+					Password:    password,
+					CompanyName: compName,
+				}
+				cookieData.Set("info", userInfo)
+
+				if err := cookieData.Save(); err != nil {
+					log.Println("error from the session storage")
+					_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
+					return
 				}
 				// generate the jwt token
-				t1, t2, err := token.Generate(userInfo.Email, userInfo.ID)
+				t1, t2, err := token.Generate(email, id)
 				if err != nil {
 					_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("token no generated : %v ", err))
 				}
 
-				var tk map[string]string
-				tk = map[string]string{"t1": t1, "t2": t2}
+				// var tk map[string]string
+				tk := map[string]string{"t1": t1, "t2": t2}
 
 				// update the database adding the token to user database
 				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
 				if updateErr != nil {
-					_ = ctx.AbortWithError(http.StatusNotFound, fmt.Errorf("unregistered user %v", updateErr))
+					_ = ctx.AbortWithError(http.StatusBadRequest, fmt.Errorf("unregistered user %v", updateErr))
+					ctx.JSON(http.StatusBadRequest, gin.H{"message": "Incorrect login details"})
+					return
 				}
 
 				ctx.SetCookie("authorization", t1, 60*60*24*7, "/", "localhost", false, true)
-				ctx.JSONP(http.StatusOK, gin.H{"message": "Welcome to user homepage"})
+				ctx.JSON(http.StatusOK, gin.H{
+					"message":       "Welcome to user homepage",
+					"email":         email,
+					"id":            id,
+					"company_name":  compName,
+					"session_token": t1,
+				})
+			case !verified:
+				ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Incorrect login details"})
+				return
 			}
+
 		}
 	}
 }
@@ -206,22 +231,60 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
+		imgMap := make(map[string]any)
+
+		multiForm, err := ctx.MultipartForm()
+		if err != nil {
+			ctx.AbortWithError(http.StatusInternalServerError, err)
+		}
+
+		imgForm, ok := multiForm.File["tour_images"]
+		if !ok {
+			ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
+			ctx.JSON(http.StatusInternalServerError, "error while uploading images")
+			return
+		}
+		for i, file := range imgForm {
+			log.Println(file.Filename)
+			x := fmt.Sprintf("image_%v", i)
+			imgMap[x] = file
+			if i > 5 {
+				break
+			}
+		}
+
+		wte := []string{ctx.Request.FormValue("what_to_expect")}
+		whatToExpect := make(map[string]string)
+		for x, y := range wte {
+			key := fmt.Sprintf("what_to_expect_%v", x)
+			whatToExpect[key] = y
+
+		}
+
+		rules := []string{ctx.Request.FormValue("rules")}
+		rulesMap := make(map[string]string)
+		for x, y := range rules {
+			key := fmt.Sprintf("rule_%v", x)
+			rulesMap[key] = y
+		}
+
 		tour := &model.Tour{
 			ID:              primitive.NewObjectID(),
 			OperatorID:      userInfo.ID,
-			Title:           ctx.Request.Form.Get("title"),
-			Destination:     strings.TrimSpace(strings.ToLower(ctx.Request.Form.Get("destination"))),
-			MeetingPoint:    ctx.Request.Form.Get("meeting_point"),
-			StartTime:       ctx.Request.Form.Get("start_time"),
-			StartDate:       ctx.Request.Form.Get("start_date"),
-			EndDate:         ctx.Request.Form.Get("end_date"),
-			Price:           ctx.Request.Form.Get("price"),
-			Contact:         ctx.Request.Form.Get("contact"),
-			Language:        ctx.Request.Form.Get("language"),
-			NumberOfTourist: ctx.Request.Form.Get("number_of_tourists"),
-			Description:     ctx.Request.Form.Get("description"),
-			WhatToExpect:    append([]string{}, ctx.Request.Form.Get("what_to_expect")),
-			Rules:           append([]string{}, ctx.Request.Form.Get("rules")),
+			Title:           ctx.Request.FormValue("title"),
+			Destination:     strings.TrimSpace(strings.ToLower(ctx.Request.FormValue("destination"))),
+			MeetingPoint:    ctx.Request.FormValue("meeting_point"),
+			StartTime:       ctx.Request.FormValue("start_time"),
+			StartDate:       ctx.Request.FormValue("start_date"),
+			EndDate:         ctx.Request.FormValue("end_date"),
+			Price:           ctx.Request.FormValue("price"),
+			Image:           imgMap,
+			Contact:         ctx.Request.FormValue("contact"),
+			Language:        ctx.Request.FormValue("language"),
+			NumberOfTourist: ctx.Request.FormValue("number_of_tourists"),
+			Description:     ctx.Request.FormValue("description"),
+			WhatToExpect:    whatToExpect,
+			Rules:           rulesMap,
 			CreatedAt:       CreatedAt,
 			UpdatedAt:       UpdatedAt,
 		}
@@ -242,13 +305,13 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 
-		_, err := op.DB.InsertPackage(tour)
+		_, err = op.DB.InsertPackage(tour)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			return
 		}
 
-		ctx.JSONP(http.StatusCreated, gin.H{"Message": "new tour package created"})
+		ctx.JSON(http.StatusCreated, gin.H{"Message": "New package added successfully"})
 	}
 }
 
@@ -278,6 +341,5 @@ func (op *Operator) GetTourRequest() gin.HandlerFunc {
 			return
 		}
 		ctx.JSONP(http.StatusOK, gin.H{"tourRequests": requestTours})
-
 	}
 }
