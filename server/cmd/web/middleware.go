@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -21,7 +20,6 @@ func Authorization() gin.HandlerFunc {
 		}
 		// fmt.Println(tokenString)
 
-		
 		parse, err := token.Parse(tokenString)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusUnauthorized, gin.Error{Err: err})
