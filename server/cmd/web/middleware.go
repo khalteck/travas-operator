@@ -1,8 +1,11 @@
 package main
 
 import (
-	"github.com/travas-io/travas-op/internal/token"
+	"fmt"
 	"net/http"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/travas-io/travas-op/internal/token"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
@@ -10,19 +13,15 @@ import (
 
 func Authorization() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		c, err := ctx.Request.Cookie("authorization")
-		if err != nil {
-			if err == http.ErrNoCookie {
-				ctx.AbortWithStatus(http.StatusUnauthorized)
-				return
-			}
-		}
-		tokenString := c.Value
-
+		cookieData := sessions.Default(ctx)
+		tokenString := cookieData.Get("token").(string)
 		if tokenString == "" {
-			_ = ctx.AbortWithError(http.StatusNoContent, errors.New("no value for authorization header"))
+			_ = ctx.AbortWithError(http.StatusNoContent, errors.New("no value for token"))
+			return
 		}
+		// fmt.Println(tokenString)
 
+		
 		parse, err := token.Parse(tokenString)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusUnauthorized, gin.Error{Err: err})
