@@ -81,6 +81,8 @@ function App() {
     setLoginSuccess(false);
     setRegErrorMessage("");
     setLoginErrorMessage("");
+    setLoggedOut(false);
+    setPackageCreated(false);
   }
 
   async function regGo(e) {
@@ -161,12 +163,18 @@ function App() {
     localStorage.setItem("userData", JSON.stringify(userData));
   }, [userData]);
 
+  const [loggedOut, setLoggedOut] = useState(false);
+
   //to log out users
   const logout = async () => {
     localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("userData");
     navigate("/");
     setIsLoggedIn(false);
+    setLoggedOut(true);
+    setTimeout(() => {
+      setLoggedOut(false);
+    }, 5000);
   };
 
   //to upload tour photos
@@ -354,12 +362,60 @@ function App() {
   function togglePassword() {
     setShowPassword((prev) => !prev);
   }
+
+  //create tour package button
+  function addTourPackage() {
+    navigate("/step1");
+  }
+
+  const [packageCreated, setPackageCreated] = useState(false);
+
+  //to submit new tour package
+  async function submitTourPackage(e) {
+    e.preventDefault();
+    setShowLoader(true);
+    try {
+      const response = await fetch("/api/auth/add/packages", {
+        method: "POST",
+        body: new URLSearchParams(tourPackageData), //to send as form encoded
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        setPackageCreated(true);
+        setTimeout(() => {
+          setPackageCreated(false);
+        }, 10000);
+        navigate("/dashboard");
+        window.scrollTo(0, 0);
+        console.log(data.message);
+        console.log(response.status, response.statusText);
+      } else if (!response.ok) {
+        console.log(data.message);
+        console.log(response.status, response.statusText);
+        setIsLoggedIn(false);
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setShowLoader(false);
+    }
+  }
   return (
     <>
       <Routes>
         <Route
           path="/"
-          element={<Main isLoggedIn={isLoggedIn} logout={logout} />}
+          element={
+            <Main
+              isLoggedIn={isLoggedIn}
+              logout={logout}
+              loggedOut={loggedOut}
+              closeUserMod={closeUserMod}
+            />
+          }
         />
         <Route path="/about" element={<About />} />
         <Route path="/pricing" element={<Pricing />} />
@@ -411,6 +467,8 @@ function App() {
                 loginSuccess={loginSuccess}
                 closeUserMod={closeUserMod}
                 userData={userData}
+                addTourPackage={addTourPackage}
+                packageCreated={packageCreated}
               />
             ) : (
               <Login
@@ -497,7 +555,13 @@ function App() {
         />
         <Route
           path="/preview"
-          element={<Preview tourPackageData={tourPackageData} />}
+          element={
+            <Preview
+              tourPackageData={tourPackageData}
+              submitTourPackage={submitTourPackage}
+              showLoader={showLoader}
+            />
+          }
         />
 
         {/* user will be redirected to this page if they input invalid URL  */}
