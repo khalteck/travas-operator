@@ -12,6 +12,7 @@ const Dashboard = ({
   userData,
   addTourPackage,
   packageCreated,
+  packageMssg,
 }) => {
   return (
     <div className="w-full">
@@ -49,7 +50,7 @@ const Dashboard = ({
             src="/images/icons8-checkmark-64.png"
             className="w-10 h-10"
           />
-          <p>Tour package created</p>
+          <p>{packageMssg}</p>
         </div>
       )}
       <div
