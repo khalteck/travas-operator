@@ -370,15 +370,17 @@ function App() {
 
   const [packageCreated, setPackageCreated] = useState(false);
 
-  //to submit new tour package
   async function submitTourPackage(e) {
     e.preventDefault();
     setShowLoader(true);
+
+    const formData = new FormData();
+    formData.set("data", tourPackageData);
+
     try {
       const response = await fetch("/api/auth/add/packages", {
         method: "POST",
-        body: new URLSearchParams(tourPackageData), //to send as form encoded
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData,
       });
       const data = await response.json();
 
@@ -390,19 +392,56 @@ function App() {
         navigate("/dashboard");
         window.scrollTo(0, 0);
         console.log(data.message);
-        console.log(response.status, response.statusText);
-      } else if (!response.ok) {
-        console.log(data.message);
-        console.log(response.status, response.statusText);
-        setIsLoggedIn(false);
+      } else {
+        console.error(
+          `Error: ${data.message} (${response.status} ${response.statusText})`
+        );
         window.scrollTo(0, 0);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setShowLoader(false);
     }
   }
+
+  //to submit new tour package
+  // async function submitTourPackage(e) {
+  //   e.preventDefault();
+  //   setShowLoader(true);
+  //   let form_data = new FormData();
+  //   form_data.set("data", tourPackageData);
+  //   try {
+  //     const response = await fetch("/api/auth/add/packages", {
+  //       method: "POST",
+  //       body: form_data,
+  //       // headers: {
+  //       //   "Content-Type": "multipart/form-data",
+  //       // },
+  //     });
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       setPackageCreated(true);
+  //       setTimeout(() => {
+  //         setPackageCreated(false);
+  //       }, 10000);
+  //       navigate("/dashboard");
+  //       window.scrollTo(0, 0);
+  //       console.log(data.message);
+  //       console.log(response.status, response.statusText);
+  //     } else if (!response.ok) {
+  //       console.log(data.message);
+  //       console.log(response.status, response.statusText);
+  //       setIsLoggedIn(false);
+  //       window.scrollTo(0, 0);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setShowLoader(false);
+  //   }
+  // }
   return (
     <>
       <Routes>
