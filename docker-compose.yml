@@ -23,7 +23,7 @@ services:
       replicas: 1
     restart: always
 
-  nginx:
+  travas-nginx:
     build:
       context: ./nginx
       dockerfile: Dockerfile.dev
