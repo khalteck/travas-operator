@@ -393,11 +393,11 @@ function App() {
         }, 10000);
         navigate("/dashboard");
         window.scrollTo(0, 0);
-        console.log(data.Message);
-        setPackageMssg(data.Message);
+        console.log(response.status, data, data.message);
+        setPackageMssg(data.message);
       } else {
         console.error(
-          `Error: ${data.Message} (${response.status} ${response.statusText})`
+          `Error: ${data.message} (${response.status} ${response.statusText})`
         );
         window.scrollTo(0, 0);
       }
