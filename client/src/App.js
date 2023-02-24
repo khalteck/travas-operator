@@ -184,7 +184,7 @@ function App() {
       return [
         ...prev,
         {
-          tour_photo: `${URL.createObjectURL(e.target.files[0])}`,
+          tour_images: `${URL.createObjectURL(e.target.files[0])}`,
           hover: false,
         },
       ];
@@ -247,17 +247,17 @@ function App() {
     start_date: "",
     end_date: "",
     price: "",
-    tour_photos: [
+    tour_images: [
       {
-        tour_photo: "",
+        tour_images: "",
         hover: false,
       },
       {
-        tour_photo: "",
+        tour_images: "",
         hover: false,
       },
       {
-        tour_photo: "",
+        tour_images: "",
         hover: false,
       },
     ],
@@ -332,7 +332,7 @@ function App() {
 
   function joinWhatToExpect() {
     tourPackageData.what_to_expect = whatToExpect;
-    tourPackageData.tour_photos = tourPhotos;
+    tourPackageData.tour_images = tourPhotos;
     console.log(tourPackageData);
   }
 

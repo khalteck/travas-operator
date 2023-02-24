@@ -225,7 +225,7 @@ function Step2({
                       </div>
                     )}
                     <img
-                      src={item.tour_photo}
+                      src={item.tour_images}
                       alt="tour"
                       className="w-[100px] h-[100px] rounded-md object-cover object-center"
                     />
