@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
@@ -224,20 +225,21 @@ func (op *Operator) VerifyDocument() gin.HandlerFunc {
 // necessary data need in the user menu
 func (op *Operator) Dashboard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
 		ctx.JSONP(http.StatusOK, gin.H{})
 	}
 }
 
 func (op *Operator) TourPackagePage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-
 		ctx.JSONP(http.StatusOK, gin.H{})
 	}
 }
 
 func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		var imageArr []map[string]any
+		var tourID primitive.ObjectID
+
 		if err := ctx.Request.ParseForm(); err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 		}
@@ -248,26 +250,50 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
-		imgMap := make(map[string]any)
-
 		ctx.Writer.Header().Set("Content-Type", "multipart/form-data")
+		// Parse the form_data received
 		multiForm, err := ctx.MultipartForm()
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		}
 
-		imgForm, ok := multiForm.File["tour_images"]
-		if !ok {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
-			ctx.JSON(http.StatusInternalServerError, "error while uploading images")
-			return
-		}
-		for i, file := range imgForm {
-			x := fmt.Sprintf("image_%v", i)
-			imgMap[x] = file
+		// Get the image files
+		imageFile := multiForm.File["tour_image"]
+
+		// Read through the uploaded files
+		for i, file := range imageFile {
+			var image map[string]any
+
+			uploadFile, err := file.Open()
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
+				ctx.JSON(http.StatusInternalServerError, "error while opening uploaded files")
+				return
+			}
+			defer uploadFile.Close()
+
+			fileByte, err := ioutil.ReadAll(uploadFile)
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
+			x := fmt.Sprintf("tour_image_%v", i)
+			image[x] = fileByte
+			imageArr = append(imageArr, image)
+			fmt.Println(imageArr)
 			if i > 5 {
 				break
 			}
+
+			// Insert the images file in the tour package
+			tourID, _, err = op.DB.InsertPackage(userInfo.ID, imageArr)
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot insert image file"))
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			}
+
 		}
 
 		wte := []string{ctx.Request.FormValue("what_to_expect")}
@@ -295,7 +321,6 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			StartDate:       ctx.Request.FormValue("start_date"),
 			EndDate:         ctx.Request.FormValue("end_date"),
 			Price:           ctx.Request.FormValue("price"),
-			Image:           imgMap,
 			Contact:         ctx.Request.FormValue("contact"),
 			Language:        ctx.Request.FormValue("language"),
 			NumberOfTourist: ctx.Request.FormValue("number_of_tourists"),
@@ -322,7 +347,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 
-		_, err = op.DB.InsertPackage(tour)
+		_, err = op.DB.UpdatePackage(tourID, tour)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			return
