@@ -229,16 +229,9 @@ func (op *Operator) Dashboard() gin.HandlerFunc {
 	}
 }
 
-func (op *Operator) TourPackagePage() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		ctx.JSONP(http.StatusOK, gin.H{})
-	}
-}
-
-
 func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if err := ctx.Request.ParseForm(); err != nil {
+		if err := ctx.Request.ParseMultipartForm(10 << 20); err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 		}
 
@@ -250,21 +243,12 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 
 		var imageArr []map[string]any
 
-		ctx.Writer.Header().Set("Content-Type", "multipart/form-data")
-		multiForm, err := ctx.MultipartForm()
-		if err != nil {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, err)
-		}
+		multiFile, _ := ctx.Request.MultipartForm.File["tour_image"]
+		log.Println(multiFile)
 
-		imageFile ,ok:= multiForm.File["tour_image"]
-		if !ok {
-			_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
-			ctx.JSON(http.StatusInternalServerError, "error while uploading images")
-			return
-		}
 		image := make(map[string]any)
 
-		for i, file := range imageFile {
+		for i, file := range multiFile {
 
 			log.Println(file)
 			uploadFile, err := file.Open()
@@ -291,7 +275,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			}
 		}
 
-		wte := []string{ctx.Request.FormValue("what_to_expect")}
+		wte := ctx.Request.MultipartForm.Value["what_to_expect"]
 		whatToExpect := make(map[string]string)
 		for x, y := range wte {
 			key := fmt.Sprintf("what_to_expect_%v", x)
@@ -299,7 +283,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 
 		}
 
-		rules := []string{ctx.Request.FormValue("rules")}
+		rules := ctx.Request.MultipartForm.Value["rules"]
 		rulesMap := make(map[string]string)
 		for x, y := range rules {
 			key := fmt.Sprintf("rule_%v", x)
@@ -327,6 +311,8 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			UpdatedAt:       UpdatedAt,
 		}
 
+		log.Println(tour)
+
 		if err := op.App.Validator.Struct(&tour); err != nil {
 			if _, ok := err.(*validator.InvalidValidationError); !ok {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
@@ -343,7 +329,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 
-		_, err = op.DB.InsertPackage(tour)
+		_, err := op.DB.InsertPackage(tour)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			return
@@ -355,23 +341,25 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 	}
 }
 
-
-// PreviewTour : this handler will handle the request to preview tour package that is recently created
-func (op *Operator) PreviewTour() gin.HandlerFunc {
+// PreviewTour : this handler will handle the request to load all tour package that was created
+func (op *Operator) LoadTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cookieData := sessions.Default(ctx)
-		tourID, ok := cookieData.Get("tour_id").(primitive.ObjectID)
+		userInfo, ok := cookieData.Get("info").(model.UserInfo)
 		if !ok {
 			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find tour id"))
 		}
-		tour, err := op.DB.LoadTour(tourID)
+
+		res, err := op.DB.LoadTours(userInfo.ID)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 			return
 		}
-		ctx.JSONP(http.StatusOK, gin.H{"tour": tour})
+		ctx.JSONP(http.StatusOK, gin.H{"tours": res})
 	}
 }
+
+
 
 func (op *Operator) GetTourRequest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
