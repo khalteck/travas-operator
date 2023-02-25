@@ -24,7 +24,7 @@ const Dashboard = ({
       {loginSuccess && (
         <div className="bg-white w-[fit-content] px-10 py-6 mx-5 mt-[80px] z-0 md:mt-0 border border-green-500 rounded-xl md:fixed md:right-10 md:top-10 relative flex gap-4 items-center">
           <img
-            className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
+            className="w-[15px] h-[15px] cursor-pointer absolute top-[15px] right-[15px]"
             alt=""
             src="/images/icons8-close-50.png"
             onClick={closeUserMod}
@@ -40,7 +40,7 @@ const Dashboard = ({
       {packageCreated && (
         <div className="bg-white w-[fit-content] px-10 py-6 mx-5 mt-[80px] z-0 md:mt-0 border border-green-500 rounded-xl md:fixed md:right-10 md:top-10 relative flex gap-4 items-center">
           <img
-            className="w-[20px] h-[20px] cursor-pointer absolute top-[15px] right-[15px]"
+            className="w-[15px] h-[15px] cursor-pointer absolute top-[15px] right-[15px]"
             alt=""
             src="/images/icons8-close-50.png"
             onClick={closeUserMod}

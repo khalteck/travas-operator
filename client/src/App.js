@@ -130,9 +130,9 @@ function App() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const data = await response.json();
-      setUserData(data);
 
       if (response.ok) {
+        setUserData(data);
         setIsLoggedIn(true);
         setLoginSuccess(true);
         setTimeout(() => {
