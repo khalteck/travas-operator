@@ -380,10 +380,16 @@ function App() {
     const formData = new FormData();
     formData.set("data", tourPackageData);
 
+    const boundary = `----${Date.now().toString(16)}`;
+    const headers = {
+      "Content-Type": `multipart/form-data; boundary=${boundary}`,
+    };
+
     try {
       const response = await fetch("/api/auth/add/packages", {
         method: "POST",
-        body: formData,
+        body: formatFormData(formData, boundary),
+        headers,
       });
       const data = await response.json();
 
@@ -406,6 +412,57 @@ function App() {
       setShowLoader(false);
     }
   }
+
+  function formatFormData(formData, boundary) {
+    const body = [];
+    for (const [key, value] of formData) {
+      body.push(`--${boundary}\r\n`);
+      body.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n`);
+      body.push(value instanceof Blob ? value : String(value));
+      body.push("\r\n");
+    }
+    body.push(`--${boundary}--`);
+    return new Blob(body, {
+      type: "multipart/form-data; boundary=" + boundary,
+    });
+  }
+
+  // async function submitTourPackage(e) {
+  //   e.preventDefault();
+  //   setShowLoader(true);
+
+  //   const formData = new FormData();
+  //   formData.set("data", tourPackageData);
+
+  //   try {
+  //     const response = await fetch("/api/auth/add/packages", {
+  //       method: "POST",
+  //       body: formData,
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  //     const data = await response.json();
+
+  //     if (response.ok) {
+  //       setPackageMssg(data.message);
+  //       setPackageCreated(true);
+  //       setTimeout(() => {
+  //         setPackageCreated(false);
+  //       }, 10000);
+  //       navigate("/dashboard");
+  //       window.scrollTo(0, 0);
+  //       console.log(response.status, data, data.message);
+  //     } else {
+  //       console.error(`Error: (${response.status} ${response.statusText})`);
+  //       window.scrollTo(0, 0);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setShowLoader(false);
+  //   }
+  // }
 
   return (
     <>
