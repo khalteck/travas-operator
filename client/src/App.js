@@ -438,9 +438,6 @@ function App() {
   //     const response = await fetch("/api/auth/add/packages", {
   //       method: "POST",
   //       body: formData,
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
   //     });
   //     const data = await response.json();
 
