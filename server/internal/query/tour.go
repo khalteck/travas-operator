@@ -63,11 +63,11 @@ func (op *OperatorDB) InsertPackage(id primitive.ObjectID, file []map[string]any
 }
 */
 
-func (op *OperatorDB) LoadTour(tourID primitive.ObjectID) (primitive.M, error) {
+func (op *OperatorDB) LoadTours(tourID primitive.ObjectID) ([]primitive.M, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "_id", Value: tourID}}
-	var res bson.M
+	var res []bson.M
 	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
