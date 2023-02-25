@@ -11,9 +11,7 @@ type Repo interface {
 	VerifyUser(email string) (primitive.M, error)
 	UpdateInfo(userID primitive.ObjectID, tk map[string]string) (bool, error)
 
-	// Tours Queries
-	InsertPackage(id primitive.ObjectID, file []map[string]any) (primitive.ObjectID, bool, error)
-	UpdatePackage(userID primitive.ObjectID, tour *model.Tour) (bool, error)
+	InsertPackage(tour *model.Tour) (bool, error)
 	LoadTour(tourID primitive.ObjectID) (primitive.M, error)
 	ValidTourRequest() ([]primitive.M, error)
 
