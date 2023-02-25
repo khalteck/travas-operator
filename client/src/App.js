@@ -180,11 +180,12 @@ function App() {
   //to upload tour photos
   const [tourPhotos, setTourPhotos] = useState([]);
   function handleAddPhotos(e) {
+    let key = `tour_image_${tourPhotos.length + 1}`;
     setTourPhotos((prev) => {
       return [
         ...prev,
         {
-          tour_images: `${URL.createObjectURL(e.target.files[0])}`,
+          [key]: `${URL.createObjectURL(e.target.files[0])}`,
           hover: false,
         },
       ];
@@ -247,17 +248,17 @@ function App() {
     start_date: "",
     end_date: "",
     price: "",
-    tour_images: [
+    tour_image: [
       {
-        tour_images: "",
+        tour_image: "",
         hover: false,
       },
       {
-        tour_images: "",
+        tour_image: "",
         hover: false,
       },
       {
-        tour_images: "",
+        tour_image: "",
         hover: false,
       },
     ],
@@ -332,7 +333,7 @@ function App() {
 
   function joinWhatToExpect() {
     tourPackageData.what_to_expect = whatToExpect;
-    tourPackageData.tour_images = tourPhotos;
+    tourPackageData.tour_image = tourPhotos;
     console.log(tourPackageData);
   }
 
@@ -387,6 +388,7 @@ function App() {
       const data = await response.json();
 
       if (response.ok) {
+        setPackageMssg(data.message);
         setPackageCreated(true);
         setTimeout(() => {
           setPackageCreated(false);
@@ -394,11 +396,8 @@ function App() {
         navigate("/dashboard");
         window.scrollTo(0, 0);
         console.log(response.status, data, data.message);
-        setPackageMssg(data.message);
       } else {
-        console.error(
-          `Error: ${data.message} (${response.status} ${response.statusText})`
-        );
+        console.error(`Error: (${response.status} ${response.statusText})`);
         window.scrollTo(0, 0);
       }
     } catch (error) {
