@@ -461,6 +461,42 @@ function App() {
   //   }
   // }
 
+  //to get tour packages
+  const [tourPackageFromDb, setTourPackageFromDb] = useState(
+    JSON.parse(localStorage.getItem("tourPackages")) || null
+  );
+  const [errorTpFetch, setErrorTpFetch] = useState(null);
+
+  useEffect(() => {
+    const fetchTourPackageFromDb = async () => {
+      setShowLoader(true);
+
+      try {
+        const response = await fetch("/auth/load/packages");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const text = await response.text();
+
+        try {
+          const jsonData = JSON.parse(text);
+          setTourPackageFromDb(jsonData);
+          localStorage.setItem("tourPackages", JSON.stringify(jsonData));
+          console.log(jsonData);
+        } catch (error) {
+          setErrorTpFetch("API returned non-JSON data");
+        }
+      } catch (error) {
+        setErrorTpFetch(error.message);
+        console.log(error);
+      } finally {
+        setShowLoader(false);
+      }
+    };
+
+    fetchTourPackageFromDb();
+  }, []);
+
   return (
     <>
       <Routes>
@@ -528,6 +564,8 @@ function App() {
                 addTourPackage={addTourPackage}
                 packageCreated={packageCreated}
                 packageMssg={packageMssg}
+                tourPackageFromDb={tourPackageFromDb}
+                errorTpFetch={errorTpFetch}
               />
             ) : (
               <Login
