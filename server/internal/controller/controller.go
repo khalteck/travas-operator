@@ -350,16 +350,17 @@ func (op *Operator) LoadTourPackage() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find tour id"))
 		}
 
-		res, err := op.DB.LoadTours(userInfo.ID)
+		res, msg, err := op.DB.LoadTours(userInfo.ID)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 			return
 		}
-		ctx.JSONP(http.StatusOK, gin.H{"tours": res})
+		ctx.JSONP(http.StatusOK, gin.H{
+			"tours":   res,
+			"message": msg,
+		})
 	}
 }
-
-
 
 func (op *Operator) GetTourRequest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

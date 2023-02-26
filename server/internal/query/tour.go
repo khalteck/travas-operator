@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/travas-io/travas-op/model"
@@ -15,7 +16,10 @@ import (
 func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
-	filter := bson.D{{Key: "destination", Value: tour.Destination}, {Key: "operator_id", Value: tour.OperatorID}}
+	filter := bson.D{
+		{Key: "destination", Value: tour.Destination},
+		{Key: "operator_id", Value: tour.OperatorID},
+	}
 	var res bson.M
 	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
 	if err != nil {
@@ -31,6 +35,24 @@ func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 
 	return true, nil
 }
+
+func (op *OperatorDB) LoadTours(id primitive.ObjectID) ([]primitive.M, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	defer cancel()
+	filter := bson.D{{Key: "_id", Value: id}}
+	var res []bson.M
+	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []bson.M{}, fmt.Sprintln("Not available tour package"), nil
+		}
+
+		op.App.InfoLogger.Printf("error while searching for data : %v ", err)
+		return []bson.M{}, "error while finding tour packages", err
+	}
+	return res, "success! loading tour packages", nil
+}
+
 /*
 func (op *OperatorDB) InsertPackage(id primitive.ObjectID, file []map[string]any) (primitive.ObjectID, bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
@@ -62,18 +84,3 @@ func (op *OperatorDB) InsertPackage(id primitive.ObjectID, file []map[string]any
 	return res["_id"].(primitive.ObjectID), true, nil
 }
 */
-
-func (op *OperatorDB) LoadTours(tourID primitive.ObjectID) ([]primitive.M, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-	filter := bson.D{{Key: "_id", Value: tourID}}
-	var res []bson.M
-	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, err
-		}
-		op.App.ErrorLogger.Fatalf("error while searching for data : %v ", err)
-	}
-	return res, nil
-}
