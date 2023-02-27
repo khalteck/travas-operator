@@ -2,7 +2,6 @@ package query
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/travas-io/travas-op/model"
@@ -30,28 +29,41 @@ func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 			}
 			return false, nil
 		}
-		op.App.InfoLogger.Println("error while searching for data : %v ", err)
+		op.App.InfoLogger.Printf("error while searching for data : %v ", err)
 		return false, err
 	}
 
 	return true, nil
 }
 
-func (op *OperatorDB) LoadTours(id primitive.ObjectID) ([]primitive.M, string, error) {
+func (op *OperatorDB) LoadTours(id primitive.ObjectID) ([]primitive.M, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	filter := bson.D{{Key: "operator_id", Value: id}}
 	var res []bson.M
-	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return []bson.M{}, fmt.Sprintln("Not available tour package"), nil
-		}
 
-		op.App.InfoLogger.Printf("error while searching for data : %v ", err)
-		return []bson.M{}, "error while finding tour packages", err
+	cursor, err := TourData(op.DB, "tours").Find(ctx, filter)
+	if err != nil {
+		op.App.InfoLogger.Printf("error while checking for tour package : %v ", err)
+		return []bson.M{}, err
 	}
-	return res, "success! loading tour packages", nil
+
+	defer func(cursor *mongo.Cursor, ctx context.Context) {
+		err := cursor.Close(ctx)
+		if err != nil {
+			return
+		}
+	}(cursor, ctx)
+
+	if err := cursor.All(ctx, &res); err != nil {
+		return nil, err
+	}
+
+	if err := cursor.Err(); err != nil {
+		op.App.InfoLogger.Printf("error while searching for data : %v ", err)
+		return nil, err
+	}
+	return res, nil
 }
 
 /*

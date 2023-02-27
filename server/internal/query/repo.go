@@ -12,7 +12,7 @@ type Repo interface {
 	UpdateInfo(userID primitive.ObjectID, tk map[string]string) (bool, error)
 
 	InsertPackage(tour *model.Tour) (bool, error)
-	LoadTours(id primitive.ObjectID) ([]primitive.M, string, error)
+	LoadTours(id primitive.ObjectID) ([]primitive.M, error)
 	ValidTourRequest() ([]primitive.M, error)
 
 	InsertTourGuide(tg *model.TourGuide) (bool, error)
