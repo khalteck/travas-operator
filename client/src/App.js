@@ -470,33 +470,35 @@ function App() {
   const [errorTpFetch, setErrorTpFetch] = useState(null);
 
   useEffect(() => {
-    const fetchTourPackageFromDb = async () => {
-      setShowLoader(true);
+    if (isLoggedIn) {
+      const fetchTourPackageFromDb = async () => {
+        setShowLoader(true);
 
-      try {
-        const response = await fetch("/api/auth/load/packages");
-        const data = await response.json();
-        console.log(data);
+        try {
+          const response = await fetch("/api/auth/load/packages");
+          const data = await response.json();
+          console.log(data);
 
-        if (data.message === "Not available tour package\n") {
-          return;
-        } else {
-          setTourPackageFromDb(data);
-          localStorage.setItem("tourPackages", JSON.stringify(data));
+          if (data.message === "Not available tour package\n") {
+            return;
+          } else {
+            setTourPackageFromDb(data);
+            // localStorage.setItem("tourPackages", JSON.stringify(data));
+          }
+          if (!response.ok) {
+            setErrorTpFetch("Bad network connection");
+            throw new Error("Network response was not ok");
+          }
+        } catch (error) {
+          setErrorTpFetch(error.message);
+        } finally {
+          setShowLoader(false);
         }
-        if (!response.ok) {
-          setErrorTpFetch("Bad network connection");
-          throw new Error("Network response was not ok");
-        }
-      } catch (error) {
-        setErrorTpFetch(error.message);
-      } finally {
-        setShowLoader(false);
-      }
-    };
+      };
 
-    fetchTourPackageFromDb();
-  }, []);
+      fetchTourPackageFromDb();
+    }
+  }, [isLoggedIn]);
 
   return (
     <>
