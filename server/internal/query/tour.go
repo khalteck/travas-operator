@@ -28,9 +28,10 @@ func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 			if err != nil {
 				return false, err
 			}
-			return true, nil
+			return false, nil
 		}
-		op.App.ErrorLogger.Fatalf("error while searching for data : %v ", err)
+		op.App.InfoLogger.Println("error while searching for data : %v ", err)
+		return false, err
 	}
 
 	return true, nil
@@ -39,7 +40,7 @@ func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 func (op *OperatorDB) LoadTours(id primitive.ObjectID) ([]primitive.M, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
-	filter := bson.D{{Key: "_id", Value: id}}
+	filter := bson.D{{Key: "operator_id", Value: id}}
 	var res []bson.M
 	err := TourData(op.DB, "tours").FindOne(ctx, filter).Decode(&res)
 	if err != nil {
