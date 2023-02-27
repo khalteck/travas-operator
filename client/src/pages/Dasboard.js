@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Loader from "../components/Loader";
 import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
@@ -13,9 +14,13 @@ const Dashboard = ({
   addTourPackage,
   packageCreated,
   packageMssg,
+  showLoader,
+  errorTpFetch,
+  tourPackageFromDb,
 }) => {
   return (
     <div className="w-full">
+      {showLoader && <Loader />}
       <Sidebar
         currentPage={currentPage}
         handleCurrentPage={handleCurrentPage}
@@ -125,19 +130,46 @@ const Dashboard = ({
             </button>
           </div>
 
-          <div className="my-10 text-center">
-            <img
-              alt=""
-              src="/images/undraw_no_data_re_kwbl 1.png"
-              className="w-[180px] h-auto mx-auto mb-5"
-            />
-            <p className="text-gray-500">No packages yet</p>
-            <p
-              className="mt-4 text-blue-500 font-bold"
-              onClick={addTourPackage}
-            >
-              Create new package
-            </p>
+          <div className="w-full min-h-[250px]">
+            {tourPackageFromDb.length === 0 && (
+              <div className="my-10 text-center">
+                <img
+                  alt=""
+                  src="/images/undraw_no_data_re_kwbl 1.png"
+                  className="w-[180px] h-auto mx-auto mb-5"
+                />
+                <p className="text-gray-500">No packages yet</p>
+                <p
+                  className="mt-4 text-blue-500 font-bold"
+                  onClick={addTourPackage}
+                >
+                  Create new package
+                </p>
+              </div>
+            )}
+
+            {tourPackageFromDb.length > 0 && (
+              <div className="w-full flex justify-between bg-gray-200/60 p-5 rounded-md">
+                <div>
+                  <h2 className="font-medium mb-4 text-[1.1rem]">Title</h2>
+                  <p>The beauty of tinapa</p>
+                </div>
+                <div className="text-center">
+                  <h2 className="font-medium mb-4 text-[1.1rem]">Bookings</h2>
+                  <p>0</p>
+                </div>
+                <div className="text-center">
+                  <h2 className="font-medium mb-4 text-[1.1rem]">
+                    No of tourists
+                  </h2>
+                  <p>0</p>
+                </div>
+                <div>
+                  <h2 className="font-medium mb-4 text-[1.1rem]">Status</h2>
+                  <p>In review</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="w-full h-[fit-content] md:h-[80px] flex gap-4 mt-6">

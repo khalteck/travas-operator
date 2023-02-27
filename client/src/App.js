@@ -169,6 +169,8 @@ function App() {
   const logout = async () => {
     localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("userData");
+    localStorage.removeItem("tourPackages");
+
     navigate("/");
     setIsLoggedIn(false);
     setLoggedOut(true);
@@ -463,7 +465,7 @@ function App() {
 
   //to get tour packages
   const [tourPackageFromDb, setTourPackageFromDb] = useState(
-    JSON.parse(localStorage.getItem("tourPackages")) || null
+    JSON.parse(localStorage.getItem("tourPackages")) || []
   );
   const [errorTpFetch, setErrorTpFetch] = useState(null);
 
@@ -472,23 +474,22 @@ function App() {
       setShowLoader(true);
 
       try {
-        const response = await fetch("/auth/load/packages");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const text = await response.text();
+        const response = await fetch("/api/auth/load/packages");
+        const data = await response.json();
+        console.log(data);
 
-        try {
-          const jsonData = JSON.parse(text);
-          setTourPackageFromDb(jsonData);
-          localStorage.setItem("tourPackages", JSON.stringify(jsonData));
-          console.log(jsonData);
-        } catch (error) {
-          setErrorTpFetch("API returned non-JSON data");
+        if (data.message === "Not available tour package\n") {
+          return;
+        } else {
+          setTourPackageFromDb(data);
+          localStorage.setItem("tourPackages", JSON.stringify(data));
+        }
+        if (!response.ok) {
+          setErrorTpFetch("Bad network connection");
+          throw new Error("Network response was not ok");
         }
       } catch (error) {
         setErrorTpFetch(error.message);
-        console.log(error);
       } finally {
         setShowLoader(false);
       }
@@ -566,6 +567,7 @@ function App() {
                 packageMssg={packageMssg}
                 tourPackageFromDb={tourPackageFromDb}
                 errorTpFetch={errorTpFetch}
+                showLoader={showLoader}
               />
             ) : (
               <Login
