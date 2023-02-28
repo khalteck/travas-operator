@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Loader from "../components/Loader";
 import Sidebar from "../components/Sidebar";
+import TourPackageCard from "../components/TourPackageCard";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
 
@@ -18,6 +19,7 @@ const Dashboard = ({
   errorTpFetch,
   tourPackageFromDb,
 }) => {
+  // console.log(tourPackageFromDb);
   return (
     <div className="w-full">
       {showLoader && <Loader />}
@@ -131,7 +133,7 @@ const Dashboard = ({
           </div>
 
           <div className="w-full min-h-[250px]">
-            {tourPackageFromDb.length === 0 && (
+            {tourPackageFromDb.length < 1 && (
               <div className="my-10 text-center">
                 <img
                   alt=""
@@ -148,28 +150,10 @@ const Dashboard = ({
               </div>
             )}
 
-            {tourPackageFromDb.length > 0 && (
-              <div className="w-full flex justify-between bg-gray-200/60 p-5 rounded-md">
-                <div>
-                  <h2 className="font-medium mb-4 text-[1.1rem]">Title</h2>
-                  <p>The beauty of tinapa</p>
-                </div>
-                <div className="text-center">
-                  <h2 className="font-medium mb-4 text-[1.1rem]">Bookings</h2>
-                  <p>0</p>
-                </div>
-                <div className="text-center">
-                  <h2 className="font-medium mb-4 text-[1.1rem]">
-                    No of tourists
-                  </h2>
-                  <p>0</p>
-                </div>
-                <div>
-                  <h2 className="font-medium mb-4 text-[1.1rem]">Status</h2>
-                  <p>In review</p>
-                </div>
-              </div>
-            )}
+            {tourPackageFromDb.tours?.length > 0 &&
+              tourPackageFromDb.tours?.map((item, index) => {
+                return <TourPackageCard key={index} item={item} />;
+              })}
           </div>
 
           <div className="w-full h-[fit-content] md:h-[80px] flex gap-4 mt-6">

@@ -170,6 +170,7 @@ function App() {
     localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("userData");
     localStorage.removeItem("tourPackages");
+    setTourPackageFromDb([]);
 
     navigate("/");
     setIsLoggedIn(false);
@@ -477,13 +478,13 @@ function App() {
         try {
           const response = await fetch("/api/auth/load/packages");
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
 
           if (data.message === "Not available tour package\n") {
             return;
-          } else {
+          } else if (data.tours?.length > 0) {
             setTourPackageFromDb(data);
-            // localStorage.setItem("tourPackages", JSON.stringify(data));
+            localStorage.setItem("tourPackages", JSON.stringify(data));
           }
           if (!response.ok) {
             setErrorTpFetch("Bad network connection");
