@@ -10,6 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// INFO --> these methods are only meant to interact with the tour collection in the database 
+//      --> and the tour packages.
+
+
 // InsertPackage : this will help the operator to add new create tour packages in the
 // tours collection with respect to a particular operators ID
 func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
@@ -36,6 +40,7 @@ func (op *OperatorDB) InsertPackage(tour *model.Tour) (bool, error) {
 	return true, nil
 }
 
+// LoadTours : this query method help to get all the added tour packages
 func (op *OperatorDB) LoadTours(id primitive.ObjectID) ([]primitive.M, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
