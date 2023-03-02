@@ -30,24 +30,24 @@ type TourGuide struct {
 }
 
 type Tour struct {
-	ID              primitive.ObjectID `bson:"_id" json:"_id"`
-	OperatorID      primitive.ObjectID `bson:"operator_id" json:"operator_id,omitempty"`
-	Title           string             `bson:"title" json:"title,omitempty"`
-	Destination     string             `bson:"destination" json:"destination"`
-	MeetingPoint    string             `bson:"meeting_point" json:"meeting_point,omitempty"`
-	StartTime       string             `bson:"start_time" json:"start_time,omitempty"`
-	StartDate       string             `bson:"start_date" json:"start_date,omitempty"`
-	EndDate         string             `bson:"end_date" json:"end_date,omitempty"`
-	Price           string             `bson:"price" json:"price"`
-	Contact         string             `bson:"contact" json:"contact,omitempty"`
-	Language        string             `bson:"language" json:"language,omitempty"`
-	Image           []map[string]any   `bson:"tour_image" json:"tour_image"`
-	NumberOfTourist string             `bson:"number_of_tourist" json:"number_of_tourist,omitempty"`
-	Description     string             `bson:"description" json:"description,omitempty"`
-	WhatToExpect    map[string]string  `bson:"what_to_expect" json:"what_to_expect"`
-	Rules           map[string]string  `bson:"rules" json:"rules"`
-	CreatedAt       time.Time          `bson:"created_at" Usage:"datetime" json:"created_at"`
-	UpdatedAt       time.Time          `bson:"updated_at" Usage:"datetime" json:"updated_at"`
+	ID              primitive.ObjectID       `bson:"_id" json:"_id"`
+	OperatorID      primitive.ObjectID       `bson:"operator_id" json:"operator_id,omitempty"`
+	Title           string                   `bson:"title" json:"title,omitempty"`
+	Destination     string                   `bson:"destination" json:"destination"`
+	MeetingPoint    string                   `bson:"meeting_point" json:"meeting_point,omitempty"`
+	StartTime       string                   `bson:"start_time" json:"start_time,omitempty"`
+	StartDate       string                   `bson:"start_date" json:"start_date,omitempty"`
+	EndDate         string                   `bson:"end_date" json:"end_date,omitempty"`
+	Price           string                   `bson:"price" json:"price"`
+	Contact         string                   `bson:"contact" json:"contact,omitempty"`
+	Language        string                   `bson:"language" json:"language,omitempty"`
+	Image           []map[string]interface{} `bson:"tour_image" json:"tour_image"`
+	NumberOfTourist string                   `bson:"number_of_tourist" json:"number_of_tourist,omitempty"`
+	Description     string                   `bson:"description" json:"description,omitempty"`
+	WhatToExpect    map[string]string        `bson:"what_to_expect" json:"what_to_expect"`
+	Rules           map[string]string        `bson:"rules" json:"rules"`
+	CreatedAt       time.Time                `bson:"created_at" Usage:"datetime" json:"created_at"`
+	UpdatedAt       time.Time                `bson:"updated_at" Usage:"datetime" json:"updated_at"`
 }
 
 type UserInfo struct {
