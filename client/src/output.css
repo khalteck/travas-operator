@@ -593,6 +593,31 @@ video {
   }
 }
 
+.info {
+  margin-bottom: 0.5rem;
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  border-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
+  padding: 0.25rem;
+  text-align: start;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .info {
+    display: block;
+    width: 25%;
+    border-style: none;
+    text-align: center;
+    font-size: .9rem;
+  }
+}
+
 .reg-input {
   display: block;
   width: 100%;
@@ -953,8 +978,8 @@ video {
   height: 100%;
 }
 
-.h-\[20px\] {
-  height: 20px;
+.h-\[15px\] {
+  height: 15px;
 }
 
 .h-10 {
@@ -1003,6 +1028,10 @@ video {
   height: fit-content;
 }
 
+.h-\[20px\] {
+  height: 20px;
+}
+
 .h-5 {
   height: 1.25rem;
 }
@@ -1013,6 +1042,10 @@ video {
 
 .min-h-\[92vh\] {
   min-height: 92vh;
+}
+
+.min-h-\[250px\] {
+  min-height: 250px;
 }
 
 .min-h-\[90vh\] {
@@ -1049,8 +1082,8 @@ video {
   width: fit-content;
 }
 
-.w-\[20px\] {
-  width: 20px;
+.w-\[15px\] {
+  width: 15px;
 }
 
 .w-10 {
@@ -1141,6 +1174,10 @@ video {
 
 .w-\[180px\] {
   width: 180px;
+}
+
+.w-\[20px\] {
+  width: 20px;
 }
 
 .w-5 {
@@ -1506,6 +1543,10 @@ video {
   background-color: rgb(182 177 177 / 0.2);
 }
 
+.bg-gray-200\/60 {
+  background-color: rgb(229 231 235 / 0.6);
+}
+
 .bg-gray-200\/70 {
   background-color: rgb(229 231 235 / 0.7);
 }
@@ -1563,6 +1604,10 @@ video {
 
 .p-3 {
   padding: 0.75rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
 }
 
 .p-10 {
@@ -1817,6 +1862,10 @@ video {
 
 .text-center {
   text-align: center;
+}
+
+.text-start {
+  text-align: start;
 }
 
 .text-\[0\.75rem\] {
@@ -2141,6 +2190,18 @@ li::marker {
 }
 
 @media (min-width: 640px) {
+  .sm\:block {
+    display: block;
+  }
+
+  .sm\:flex {
+    display: flex;
+  }
+
+  .sm\:w-1\/4 {
+    width: 25%;
+  }
+
   .sm\:w-\[300px\] {
     width: 300px;
   }
@@ -2153,8 +2214,20 @@ li::marker {
     justify-content: flex-end;
   }
 
+  .sm\:border-none {
+    border-style: none;
+  }
+
   .sm\:pl-6 {
     padding-left: 1.5rem;
+  }
+
+  .sm\:text-center {
+    text-align: center;
+  }
+
+  .sm\:text-\[\.9rem\] {
+    font-size: .9rem;
   }
 }
 

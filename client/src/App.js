@@ -130,9 +130,9 @@ function App() {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
       const data = await response.json();
-      setUserData(data);
 
       if (response.ok) {
+        setUserData(data);
         setIsLoggedIn(true);
         setLoginSuccess(true);
         setTimeout(() => {
@@ -169,6 +169,9 @@ function App() {
   const logout = async () => {
     localStorage.setItem("isLoggedIn", false);
     localStorage.removeItem("userData");
+    localStorage.removeItem("tourPackages");
+    setTourPackageFromDb([]);
+
     navigate("/");
     setIsLoggedIn(false);
     setLoggedOut(true);
@@ -461,6 +464,43 @@ function App() {
   //   }
   // }
 
+  //to get tour packages
+  const [tourPackageFromDb, setTourPackageFromDb] = useState(
+    JSON.parse(localStorage.getItem("tourPackages")) || []
+  );
+  const [errorTpFetch, setErrorTpFetch] = useState(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchTourPackageFromDb = async () => {
+        setShowLoader(true);
+
+        try {
+          const response = await fetch("/api/auth/load/packages");
+          const data = await response.json();
+          // console.log(data);
+
+          if (data.message === "Not available tour package\n") {
+            return;
+          } else if (data.tours?.length > 0) {
+            setTourPackageFromDb(data);
+            localStorage.setItem("tourPackages", JSON.stringify(data));
+          }
+          if (!response.ok) {
+            setErrorTpFetch("Bad network connection");
+            throw new Error("Network response was not ok");
+          }
+        } catch (error) {
+          setErrorTpFetch(error.message);
+        } finally {
+          setShowLoader(false);
+        }
+      };
+
+      fetchTourPackageFromDb();
+    }
+  }, [isLoggedIn]);
+
   return (
     <>
       <Routes>
@@ -528,6 +568,9 @@ function App() {
                 addTourPackage={addTourPackage}
                 packageCreated={packageCreated}
                 packageMssg={packageMssg}
+                tourPackageFromDb={tourPackageFromDb}
+                errorTpFetch={errorTpFetch}
+                showLoader={showLoader}
               />
             ) : (
               <Login
