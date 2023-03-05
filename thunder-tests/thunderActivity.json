@@ -1,0 +1,68 @@
+[
+  {
+    "_id": "0703728a-8cee-404c-ae4b-7c43a1b9a949",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://www.thunderclient.com/welcome?company_name=AkinTech&email=akintech@gmail.com&password=akintech123&confirm_password=akintech123&phone=+23409068908765",
+    "url": "https://www.thunderclient.com/welcome?company_name=AkinTech&email=akintech@gmail.com&password=akintech123&confirm_password=akintech123&phone=+23409068908765",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2023-03-02T01:27:36.541Z",
+    "modified": "2023-03-02T01:27:36.541Z",
+    "headers": [],
+    "params": [
+      {
+        "name": "company_name",
+        "value": "AkinTech",
+        "isPath": false
+      },
+      {
+        "name": "email",
+        "value": "akintech@gmail.com",
+        "isPath": false
+      },
+      {
+        "name": "password",
+        "value": "akintech123",
+        "isPath": false
+      },
+      {
+        "name": "confirm_password",
+        "value": "akintech123",
+        "isPath": false
+      },
+      {
+        "name": "phone",
+        "value": "+23409068908765",
+        "isPath": false
+      }
+    ],
+    "body": {
+      "type": "formencoded",
+      "raw": "",
+      "form": [
+        {
+          "name": "company_name",
+          "value": "AkinTech"
+        },
+        {
+          "name": "email",
+          "value": "akintech@gmail.com"
+        },
+        {
+          "name": "password",
+          "value": "akintech123"
+        },
+        {
+          "name": "confirm_password",
+          "value": "akintech123"
+        },
+        {
+          "name": "phone",
+          "value": "+23456789876"
+        }
+      ]
+    },
+    "tests": []
+  }
+]

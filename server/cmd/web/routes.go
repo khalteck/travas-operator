@@ -30,6 +30,7 @@ func Routes(r *gin.Engine, o controller.Operator) {
 	router.POST("/register", o.ProcessRegister())
 	router.GET("/login", o.LoginPage())
 	router.POST("/login", o.ProcessLogin())
+	
 	authRouter := r.Group("/auth")
 	// Restricted HTTP method requests and URL to an endpoints
 	authRouter.Use(Authorization())

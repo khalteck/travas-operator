@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to travas Docker Hub...
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+  build:
+    commands:
+      - echo Pulling the first Docker container --> travas-client ...
+      - docker pull travastech/travas-client:latest
+
+      - echo Pulling the second Docker container --> travas-server ...
+      - docker pull travastech/travas-server:latest
+
+      - echo Pulling the second Docker container --> travas-nginx ...
+      - docker pull travastech/travas-nginx:latest
+
+  post_build:
+    commands:
+      - echo Running the containers...
+      - docker run travastech/travas-client:latest
+      - docker run travastech/travas-server:latest
+      - docker run travastech/travas-nginx:latest
