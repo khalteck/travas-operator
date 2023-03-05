@@ -37,7 +37,7 @@ func Routes(r *gin.Engine, o controller.Operator) {
 	{
 		// For operator to manage created tour packages
 		authRouter.POST("/verify/documents", o.VerifyDocument())
-		authRouter.POST("/add/packages", o.ProcessTourPackage())
+		authRouter.POST("/add/packages", o.TestTourPackage())
 		authRouter.GET("/load/packages", o.LoadTourPackage())
 
 		// for Operator to manage tour guides
