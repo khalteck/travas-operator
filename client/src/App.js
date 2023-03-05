@@ -124,7 +124,8 @@ function App() {
     e.preventDefault();
     setShowLoader(true);
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("http://localhost:8080/login", {
+        //change back to /api/login
         method: "POST",
         body: new URLSearchParams(loginForm), //to send as form encoded
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -389,7 +390,7 @@ function App() {
     };
 
     try {
-      const response = await fetch("/api/auth/add/packages", {
+      const response = await fetch("http://localhost:8080/auth/add/packages", {
         method: "POST",
         body: formatFormData(formData, boundary),
         headers,
@@ -476,7 +477,9 @@ function App() {
         setShowLoader(true);
 
         try {
-          const response = await fetch("/api/auth/load/packages");
+          const response = await fetch(
+            "http://localhost:8080/auth/load/packages"
+          );
           const data = await response.json();
           // console.log(data);
 
