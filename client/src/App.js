@@ -20,6 +20,7 @@ import Withdraw from "./components/Withdraw";
 import SupportUser from "./pages/SupportUser";
 import ProductFeedback from "./pages/ProductFeedback";
 import PageNotFound from "./pages/PageNotFound";
+import FormData from "form-data";
 
 function App() {
   //to save reg form input
@@ -124,7 +125,7 @@ function App() {
     e.preventDefault();
     setShowLoader(true);
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      const response = await fetch("/api/login", {
         //change back to /api/login
         method: "POST",
         body: new URLSearchParams(loginForm), //to send as form encoded
@@ -189,7 +190,9 @@ function App() {
       return [
         ...prev,
         {
-          [key]: `${URL.createObjectURL(e.target.files[0])}`,
+          [key]: `${(window.URL || window.webkitURL)?.createObjectURL(
+            e.target.files[0]
+          )}`,
           hover: false,
         },
       ];
@@ -376,23 +379,22 @@ function App() {
   const [packageCreated, setPackageCreated] = useState(false);
   const [packageMssg, setPackageMssg] = useState("");
 
-  //to submit tour package form data
   async function submitTourPackage(e) {
     e.preventDefault();
     setShowLoader(true);
 
     const formData = new FormData();
-    formData.set("data", tourPackageData);
+    formData.append("data", JSON.stringify(tourPackageData));
 
-    const boundary = `----${Date.now().toString(16)}`;
     const headers = {
-      "Content-Type": `multipart/form-data; boundary=${boundary}`,
+      Accept: "application/json",
+      "Content-Type": "multipart/form-data",
     };
 
     try {
-      const response = await fetch("http://localhost:8080/auth/add/packages", {
+      const response = await fetch("/api/auth/add/packages", {
         method: "POST",
-        body: formatFormData(formData, boundary),
+        body: formData,
         headers,
       });
       const data = await response.json();
@@ -417,20 +419,6 @@ function App() {
     }
   }
 
-  function formatFormData(formData, boundary) {
-    const body = [];
-    for (const [key, value] of formData) {
-      body.push(`--${boundary}\r\n`);
-      body.push(`Content-Disposition: form-data; name="${key}"\r\n\r\n`);
-      body.push(value instanceof Blob ? value : String(value));
-      body.push("\r\n");
-    }
-    body.push(`--${boundary}--`);
-    return new Blob(body, {
-      type: "multipart/form-data; boundary=" + boundary,
-    });
-  }
-
   // async function submitTourPackage(e) {
   //   e.preventDefault();
   //   setShowLoader(true);
@@ -453,7 +441,7 @@ function App() {
   //       }, 10000);
   //       navigate("/dashboard");
   //       window.scrollTo(0, 0);
-  //       console.log(response.status, data, data.message);
+  //       console.log(response.status, data);
   //     } else {
   //       console.error(`Error: (${response.status} ${response.statusText})`);
   //       window.scrollTo(0, 0);
@@ -477,9 +465,7 @@ function App() {
         setShowLoader(true);
 
         try {
-          const response = await fetch(
-            "http://localhost:8080/auth/load/packages"
-          );
+          const response = await fetch("/api/auth/load/packages");
           const data = await response.json();
           // console.log(data);
 
@@ -503,6 +489,59 @@ function App() {
       fetchTourPackageFromDb();
     }
   }, [isLoggedIn]);
+
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+
+  const [verifyformData, setVerifyFormData] = useState({
+    fullName: "",
+    phoneNumber: "",
+    idImage: null,
+    certImage: null,
+  });
+
+  const handleVerifyInputChange = (event) => {
+    const { name, value } = event.target;
+    setVerifyFormData({ ...verifyformData, [name]: value });
+  };
+
+  const handleIdChange = (event) => {
+    const idImage = event.target.files[0];
+    setVerifyFormData({ ...verifyformData, idImage });
+  };
+
+  const handleCertChange = (event) => {
+    const certImage = event.target.files[0];
+    setVerifyFormData({ ...verifyformData, certImage });
+  };
+
+  const handleVerifySubmit = async (event) => {
+    event.preventDefault();
+    setShowLoader(true);
+    const endpoint = "/api/verify/document";
+    const formDataToSend = new FormData();
+    formDataToSend.append("fullName", verifyformData.fullName);
+    formDataToSend.append("phoneNumber", verifyformData.phoneNumber);
+    formDataToSend.append("idImage", verifyformData.idImage);
+    formDataToSend.append("certImage", verifyformData.certImage);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formDataToSend,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setShowLoader(false);
+    }
+  };
 
   return (
     <>
@@ -618,7 +657,19 @@ function App() {
             <ProductFeedback currentPage={currentPage} logout={logout} />
           }
         />
-        <Route path="/verify" element={<Verify />} />
+        <Route
+          path="/verify"
+          element={
+            <Verify
+              verifyformData={verifyformData}
+              handleVerifyInputChange={handleVerifyInputChange}
+              handleIdChange={handleIdChange}
+              handleCertChange={handleCertChange}
+              handleVerifySubmit={handleVerifySubmit}
+              showLoader={showLoader}
+            />
+          }
+        />
         <Route
           path="/step1"
           element={
