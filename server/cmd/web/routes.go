@@ -24,23 +24,27 @@ func Routes(r *gin.Engine, o controller.Operator) {
 	cookieData := cookie.NewStore([]byte("travas"))
 	router.Use(sessions.Sessions("session", cookieData))
 
-	// HTTP method , URL for each endpoints
+	// HTTP method , URL for each endpoint
 	router.GET("/", o.Welcome())
 	router.GET("/register", o.Register())
 	router.POST("/register", o.ProcessRegister())
 	router.GET("/login", o.LoginPage())
 	router.POST("/login", o.ProcessLogin())
-	
+
 	authRouter := r.Group("/auth")
 	// Restricted HTTP method requests and URL to an endpoints
 	authRouter.Use(Authorization())
 	{
-		// For operator to manage created tour packages
+		// to verify uploaded document ---> not implemented yet
 		authRouter.POST("/verify/documents", o.VerifyDocument())
-		authRouter.POST("/add/packages", o.TestTourPackage())
+
+		// For operator to manage created tour packages
+		authRouter.POST("/add/packages", o.ProcessTourPackage())
+		authRouter.POST("/add/packages/test", o.TestTourPackage())
 		authRouter.GET("/load/packages", o.LoadTourPackage())
 
 		// for Operator to manage tour guides
+		authRouter.POST("/guide/add", o.AddTourGuide())
 		authRouter.GET("/guide/load", o.GetTourGuide())
 		authRouter.GET("/guide/select/assign", o.SelectTourGuide())
 		authRouter.POST("/guide/select/delete/:id", o.DeleteTourGuide())
