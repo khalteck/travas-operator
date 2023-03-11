@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -18,9 +19,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+var MEMORYMAXSIZE = 10 * 1024 * 1024
+
+// ProcessTourPackage this parse the multipart form data and  process the upload files or data as a stream
+// getting the data for processing one at a time
 func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		memoryMaxSize := 10 * 1024 * 1024
 		if !strings.HasPrefix(ctx.Request.Header.Get("Content-Type"), "multipart/form-data") {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid content-Type"))
 			return
@@ -43,7 +47,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 		// Get the uploaded images from the client app
-		imageArr := make([]map[string]interface{}, 0)
+		imageStream := make(map[string][]*multipart.Part, 0)
 
 		for {
 			form, err := multipartReader.NextPart()
@@ -52,17 +56,17 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 				break
 			}
 			if err != nil {
-				ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			}
 			if form.FileName() != "" {
 
 				fileByte, err := ioutil.ReadAll(form)
 				if err != nil {
-					_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
+					_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot read file from request body"))
 					return
 				}
 
-				if len(fileByte) > memoryMaxSize {
+				if len(fileByte) > MEMORYMAXSIZE {
 					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("image too large"))
 					return
 				}
@@ -71,11 +75,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 				if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
 					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
 				}
-
-				image := make(map[string]interface{})
-				image["name"] = form.FileName()
-				image["size"] = fileByte
-				imageArr = append(imageArr, image)
+				imageStream["tour_image"] = append(imageStream["tour_image"], form)
 
 			}
 
@@ -108,7 +108,7 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			StartDate:       ctx.PostForm("start_date"),
 			EndDate:         ctx.PostForm("end_date"),
 			Price:           ctx.PostForm("price"),
-			Image:           imageArr,
+			ImageStream:     imageStream,
 			Contact:         ctx.PostForm("contact"),
 			Language:        ctx.PostForm("language"),
 			NumberOfTourist: ctx.PostForm("number_of_tourists"),
@@ -119,8 +119,8 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			UpdatedAt:       time.Now(),
 		}
 
-		// Validate the Images Uploade field
-		err = op.App.Validator.RegisterValidation("tour_image", ValidateImage)
+		// Validate the Images Upload field
+		err = op.App.Validator.RegisterValidation("image_stream", ValidateImage)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			return
@@ -154,9 +154,10 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 	}
 }
 
+// TestTourPackage  this is a test endpoint to try parsing of a multipart form data and processing the uploaded file or data
+// as a whole all at once
 func (op *Operator) TestTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		memoryMaxSize := 10 * 1024 * 1024
 		if !strings.HasPrefix(ctx.Request.Header.Get("Content-Type"), "multipart/form-data") {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid content-Type"))
 			return
@@ -166,7 +167,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		ctx.Request.Header.Set("Content-Type", fmt.Sprintf("multipart/form-data; boundary=%s", boundary))
 
 		// Parse the incoming posted data from the client app
-		if err := ctx.Request.ParseMultipartForm(int64(memoryMaxSize)); err != nil {
+		if err := ctx.Request.ParseMultipartForm(int64(MEMORYMAXSIZE)); err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 		}
 
@@ -179,8 +180,12 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		}
 
 		// Get the uploaded images from the client app
-		imageArr := make([]map[string]interface{}, 0)
-		multiFile, _ := ctx.Request.MultipartForm.File["tour_image"]
+		imageArr := make(map[string][]*multipart.FileHeader, 0)
+		multiFile, ok := ctx.Request.MultipartForm.File["tour_image"]
+		if !ok {
+			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("no upload image"))
+			return
+		}
 
 		// Check through the uploaded images. validate the filesize, format and append to a slice of a map
 		for _, file := range multiFile {
@@ -190,32 +195,33 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 				_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 				return
 			}
-			defer uploadFile.Close()
+			defer func(uploadFile multipart.File) {
+				err := uploadFile.Close()
+				if err != nil {
+					return
+				}
+			}(uploadFile)
 
 			fileByte, err := ioutil.ReadAll(uploadFile)
-			if err == io.EOF{
+			if err == io.EOF {
 				break
 			}
 			if err != nil {
 				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
 				return
 			}
-			if len(fileByte) > memoryMaxSize {
-				ctx.AbortWithError(http.StatusBadRequest, errors.New("image too large"))
+			if len(fileByte) > MEMORYMAXSIZE {
+				_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("image too large"))
 				return
 			}
 
 			ext := filepath.Ext(file.Filename)
 			if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
-				ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
+				_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
 			}
 
-			image := make(map[string]interface{})
-			image["name"] = file.Filename
-			image["size"] = fileByte
-			imageArr = append(imageArr, image)
-
 		}
+		imageArr["tour_image"] = multiFile
 
 		wte := ctx.Request.MultipartForm.Value["what_to_expect"]
 		whatToExpect := make(map[string]string)
@@ -253,7 +259,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 			UpdatedAt:       time.Now(),
 		}
 
-		// Validate the Images Uploade field
+		// Validate the Images Upload field
 		err := op.App.Validator.RegisterValidation("tour_image", ValidateImage)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
@@ -269,7 +275,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		}
 
 		cookieData.Set("tour_id", tour.ID)
-		
+
 		if err := cookieData.Save(); err != nil {
 			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
 			return
@@ -287,7 +293,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 	}
 }
 
-// LoadTourPackage: this will load all tour package created by the operator
+// LoadTourPackage this will load all tour package created by the operator
 func (op *Operator) LoadTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Get the needed data from session cookies
