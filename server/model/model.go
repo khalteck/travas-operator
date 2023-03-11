@@ -26,7 +26,7 @@ type Operator struct {
 type TourGuide struct {
 	OperatorID   primitive.ObjectID               `bson:"operator_id" json:"operator_id,omitempty"`
 	ID           string                           `bson:"_id" json:"_id"`
-	Name         string                           `bson:"name" json:"name"`
+	Name         string                           `bson:"full_name" json:"full_name"`
 	Bio          string                           `bson:"bio" json:"bio"`
 	ProfileImage map[string]*multipart.FileHeader `bson:"profile_image" json:"profile_image"`
 }
