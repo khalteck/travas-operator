@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Footer from "../Footer";
 import ScrollToTop from "../ScrollToTop";
@@ -19,9 +20,11 @@ const TourGuide = ({ currentPage, handleCurrentPage, logout }) => {
 
           <div className="w-full flex justify-between mt-8">
             <h1 className="font-bold text-[1.25rem]">Tour guides</h1>
-            <button className="bg-blue-500 text-white rounded-md p-3">
-              Add tour guide
-            </button>
+            <Link to="/add-tour-guide">
+              <button className="bg-blue-500 text-white rounded-md p-3">
+                Add tour guide
+              </button>
+            </Link>
           </div>
 
           <div className="my-8 text-center">

@@ -21,6 +21,7 @@ import SupportUser from "./pages/SupportUser";
 import ProductFeedback from "./pages/ProductFeedback";
 import PageNotFound from "./pages/PageNotFound";
 import FormData from "form-data";
+import AddTourGuide from "./components/AddTourGuide";
 
 function App() {
   //to save reg form input
@@ -469,7 +470,7 @@ function App() {
           const data = await response.json();
           // console.log(data);
 
-          if (data.message === "Not available tour package\n") {
+          if (data.message === "No available tour package\n") {
             return;
           } else if (data.tours?.length > 0) {
             setTourPackageFromDb(data);
@@ -525,6 +526,65 @@ function App() {
     formDataToSend.append("phoneNumber", verifyformData.phoneNumber);
     formDataToSend.append("idImage", verifyformData.idImage);
     formDataToSend.append("certImage", verifyformData.certImage);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: formDataToSend,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setShowLoader(false);
+    }
+  };
+
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+  //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
+
+  const [tourGuideformData, setTourGuideFormData] = useState({
+    fullName: "",
+    bio: "",
+    profileImage: null,
+    tourGuideIdImage: null,
+  });
+  console.log(tourGuideformData);
+
+  const handleTourGuideInputChange = (event) => {
+    const { id, value } = event.target;
+    setTourGuideFormData({ ...tourGuideformData, [id]: value });
+  };
+
+  const [displaProfileImage, setDisplayProfileImage] = useState(null);
+  const handlePhotoChange = (event) => {
+    setDisplayProfileImage(URL.createObjectURL(event.target.files[0]));
+    const profileImage = event.target.files[0];
+    setTourGuideFormData({ ...tourGuideformData, profileImage });
+  };
+
+  const handleTourGuideIdChange = (event) => {
+    const tourGuideIdImage = event.target.files[0];
+    setTourGuideFormData({ ...tourGuideformData, tourGuideIdImage });
+  };
+
+  const handleTourGuideSubmit = async (event) => {
+    event.preventDefault();
+    setShowLoader(true);
+    const endpoint = "";
+    const formDataToSend = new FormData();
+    formDataToSend.append("fullName", tourGuideformData.fullName);
+    formDataToSend.append("bio", tourGuideformData.bio);
+    formDataToSend.append("profileImage", tourGuideformData.profileImage);
+    formDataToSend.append(
+      "tourGuideIdImage",
+      tourGuideformData.tourGuideIdImage
+    );
 
     try {
       const response = await fetch(endpoint, {
@@ -629,6 +689,19 @@ function App() {
                 logout={logout}
               />
             )
+          }
+        />
+        <Route
+          path="/add-tour-guide"
+          element={
+            <AddTourGuide
+              handleTourGuideInputChange={handleTourGuideInputChange}
+              handlePhotoChange={handlePhotoChange}
+              handleTourGuideIdChange={handleTourGuideIdChange}
+              handleTourGuideSubmit={handleTourGuideSubmit}
+              tourGuideformData={tourGuideformData}
+              displaProfileImage={displaProfileImage}
+            />
           }
         />
         <Route
