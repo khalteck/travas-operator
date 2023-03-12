@@ -17,7 +17,14 @@ func Routes(r *gin.Engine, o controller.Operator) {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"*"}
 	config.AllowMethods = []string{"POST", "GET", "PUT", "DELETE"}
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"}
+	config.AllowHeaders = []string{
+		"Origin",
+		"Content-Type",
+		"Content-Length",
+		"Accept-Encoding",
+		"X-CSRF-Token",
+		"Authorization",
+	}
 	router.Use(cors.New(config))
 
 	// Manage cookies data in session
@@ -47,6 +54,6 @@ func Routes(r *gin.Engine, o controller.Operator) {
 		authRouter.POST("/guide/add", o.AddTourGuide())
 		authRouter.GET("/guide/load", o.GetTourGuide())
 		authRouter.GET("/guide/select/assign", o.SelectTourGuide())
-		authRouter.POST("/guide/select/delete/:id", o.DeleteTourGuide())
+		authRouter.DELETE("/guide/select/delete/:id", o.DeleteTourGuide())
 	}
 }
