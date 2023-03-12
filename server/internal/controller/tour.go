@@ -47,31 +47,34 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			return
 		}
 		// Get the uploaded images from the client app
-		imageStream := make(map[string]any, 0)
-
+		imageStream := make(map[string][]interface{}, 0)
+		//image := make(map[string])
+		count := 0
 		for {
 			form, err := multipartReader.NextPart()
 			log.Println(form)
 			if err == io.EOF {
 				break
 			}
+
 			if err != nil {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			}
-			if file[0].Filename != "" {
-				f, err := file[0].Open()
-				if err != nil {
-					_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				}
+			if form.FileName() != "" {
 
-				defer func(f multipart.File) {
-					err := f.Close()
+				fileByte, err := ioutil.ReadAll(form)
+				if err != nil {
+					_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
+					return
+				}
+				defer func(form *multipart.Part) {
+					err := form.Close()
 					if err != nil {
 						return
 					}
-				}(f)
+				}(form)
 
-				fileByte, err := ioutil.ReadAll(f)
+				fileByte, err = ioutil.ReadAll(form)
 				if err != nil {
 					_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot read image data"))
 					return
@@ -86,7 +89,11 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 				if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
 					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
 				}
-				imageStream["tour_image"] = append(imageStream["tour_image"], form)
+				count += 1
+				bk := fmt.Sprintf("image_data_%d", count)
+				img := fmt.Sprintf("tour_image_%d", count)
+				imageStream[bk] = append(imageStream[bk], fileByte)
+				imageStream["img"] = append(imageStream[img], form)
 
 			}
 
@@ -191,18 +198,20 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		}
 
 		// Get the uploaded images from the client app
-		imageArr := make(map[string]any, 0)
-		multiFile, ok := ctx.Request.MultipartForm.File["tour_image"]
+		imageArr := make(map[string][]any, 0)
+
+		form := ctx.Request.MultipartForm
+		file, ok := form.File["tour_image"]
 		if !ok {
 			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("no upload image"))
 			return
 		}
 
 		// Check through the uploaded images. validate the filesize, format and append to a slice of a map
-		for _, file := range multiFile {
+		for i, ff := range file {
 
-			if file[0].Filename != "" {
-				f, err := file[0].Open()
+			if ff.Filename != "" {
+				f, err := ff.Open()
 				if err != nil {
 					_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 				}
@@ -224,14 +233,17 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 					return
 				}
 
-				ext := filepath.Ext(file.Filename)
+				ext := filepath.Ext(ff.Filename)
 				if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
 					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
 				}
-				imageArr["image_data"] = fileByte
+
+				bk := fmt.Sprintf("image_data_%d", i)
+				img := fmt.Sprintf("tour_image_%d", i)
+				imageArr[bk] = append(imageArr[bk], fileByte)
+				imageArr[img] = append(imageArr[img], ff)
 
 			}
-			imageArr["tour_image"] = multiFile
 
 			wte := ctx.Request.MultipartForm.Value["what_to_expect"]
 			whatToExpect := make(map[string]string)

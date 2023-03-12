@@ -5,11 +5,9 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/travas-io/travas-op/model"
+	"github.com/travas-io/travas-op/pkg/upload"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io/ioutil"
-	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"strings"
 )
 
@@ -26,56 +24,26 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find operator id"))
 		}
 
-		imageFile := make(map[string]any, 0)
 		form := ctx.Request.MultipartForm
 
-		file, ok := form.File["profile_image"]
-
-		if file[0].Filename != "" {
-			f, err := file[0].Open()
-			if err != nil {
-				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-			}
-
-			defer func(f multipart.File) {
-				err := f.Close()
-				if err != nil {
-					return
-				}
-			}(f)
-
-			fileByte, err := ioutil.ReadAll(f)
-			if err != nil {
-				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot image data"))
-				return
-			}
-
-			if len(fileByte) > MEMORYMAXSIZE {
-				_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("image too large"))
-				return
-			}
-
-			ext := filepath.Ext(file[0].Filename)
-			if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
-				_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
-			}
-
-			imageFile["profile_data"] = fileByte
+		imageInfo, err := upload.SingleFile(form, "profile_image")
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 		}
-		imageFile["profile_image"] = file[0]
 
 		tourGuide := &model.TourGuide{
 			OperatorID:   userInfo.ID,
 			ID:           primitive.NewObjectID().Hex(),
 			Name:         ctx.Request.Form.Get("full_name"),
 			Bio:          ctx.Request.Form.Get("bio"),
-			ProfileImage: imageFile,
+			ProfileImage: imageInfo,
 		}
 
-		ok, err := op.DB.InsertTourGuide(tourGuide)
+		ok, err = op.DB.InsertTourGuide(tourGuide)
 		if !ok {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 		}
+
 		ctx.JSONP(http.StatusOK, gin.H{"message": "tour guide added"})
 	}
 }
