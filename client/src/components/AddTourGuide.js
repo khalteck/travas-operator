@@ -12,10 +12,37 @@ const AddTourGuide = ({
   handleTourGuideSubmit,
   tourGuideformData,
   displaProfileImage,
+  tourGuideAdded,
+  confirmAddedTg,
 }) => {
   return (
     <>
       {showLoader && <Loader />}
+      {tourGuideAdded && (
+        <div className="bg-slate-800/80 w-full h-screen p-3 z-[100] fixed top-0 right-0 flex justify-center items-center">
+          <div className="w-full md:w-[600px] p-8 bg-white rounded-md text-center">
+            <img
+              alt=""
+              src="/images/icons8-checkmark-64.png"
+              className="w-14 h-14 mx-auto mb-4"
+            />
+            <p className="font-medium mb-2">
+              Tour guide registeration completed successfully
+            </p>
+            <p className="mb-2">
+              You would be notified once the information provided has been
+              approved
+            </p>
+            <p>Review might take up to 24 hours</p>
+            <button
+              onClick={confirmAddedTg}
+              className="bg-blue-500 text-white rounded-md px-8 py-2 mt-4"
+            >
+              Okay
+            </button>
+          </div>
+        </div>
+      )}
       <div className="pt-[70px] pb-48 w-[90%] mx-auto sm:w-full md:pt-[100px] md:mx-0 md:pl-[80px]">
         <Link to="/tour-guide">
           <div className="flex items-center space-x-4 mb-4">
@@ -41,7 +68,7 @@ const AddTourGuide = ({
           {/* name */}
           <div className="space-y-3">
             <input
-              id="fullName"
+              id="full_name"
               className="login-input"
               type="text"
               placeholder="Full name"
@@ -91,7 +118,7 @@ const AddTourGuide = ({
                   />
                 )}
                 <input
-                  id="profileImage"
+                  id="profile_image"
                   className="custom-file-input"
                   type="file"
                   placeholder="Upload ID"
@@ -129,14 +156,14 @@ const AddTourGuide = ({
             <div className="space-y-8 mt-3">
               <div className="w-full rounded-sm border p-2 block sm:flex justify-start items-center gap-2">
                 <input
-                  id="tourGuideIdImage"
+                  id="id_card"
                   className="custom-file-input"
                   type="file"
                   placeholder="Upload ID"
                   accept="image/*"
                   onChange={handleTourGuideIdChange}
                 />
-                <p>{tourGuideformData.tourGuideIdImage?.name}</p>
+                <p>{tourGuideformData.id_card?.name}</p>
               </div>
             </div>
           </div>
