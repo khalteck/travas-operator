@@ -26,13 +26,25 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find operator id"))
 		}
 
-		imageFile := make(map[string]*multipart.FileHeader, 0)
+		imageFile := make(map[string]any, 0)
 		form := ctx.Request.MultipartForm
 
 		file, ok := form.File["profile_image"]
 
 		if file[0].Filename != "" {
-			fileByte, err := ioutil.ReadAll(ctx.Request.Body)
+			f, err := file[0].Open()
+			if err != nil {
+				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+			}
+
+			defer func(f multipart.File) {
+				err := f.Close()
+				if err != nil {
+					return
+				}
+			}(f)
+
+			fileByte, err := ioutil.ReadAll(f)
 			if err != nil {
 				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
 				return
@@ -48,6 +60,7 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 				_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
 			}
 
+			imageFile["profile_data"] = fileByte
 		}
 		imageFile["profile_image"] = file[0]
 
