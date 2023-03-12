@@ -373,11 +373,6 @@ function App() {
     setShowPassword((prev) => !prev);
   }
 
-  //create tour package button
-  function addTourPackage() {
-    navigate("/step1");
-  }
-
   const [packageCreated, setPackageCreated] = useState(false);
   const [packageMssg, setPackageMssg] = useState("");
 
@@ -576,6 +571,7 @@ function App() {
 
   const [trackAddTg, setTrackAddTg] = useState(false);
   const [tourGuideAdded, setTourGuideAdded] = useState(false);
+
   const handleTourGuideSubmit = async (event) => {
     event.preventDefault();
     setShowLoader(true);
@@ -645,6 +641,19 @@ function App() {
     }
   }, [isLoggedIn, trackAddTg]);
 
+  //create tour package button
+  const [noTourGuide, setNoTourGuide] = useState(false);
+
+  function addTourPackage() {
+    if (tourGuideFromDb !== null && tourGuideFromDb !== []) {
+      navigate("/step1");
+    } else {
+      setNoTourGuide(true);
+    }
+  }
+  function cancelAddTgPrompt() {
+    setNoTourGuide(false);
+  }
   return (
     <>
       <Routes>
@@ -715,6 +724,8 @@ function App() {
                 tourPackageFromDb={tourPackageFromDb}
                 errorTpFetch={errorTpFetch}
                 showLoader={showLoader}
+                noTourGuide={noTourGuide}
+                cancelAddTgPrompt={cancelAddTgPrompt}
               />
             ) : (
               <Login
