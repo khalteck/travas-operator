@@ -28,6 +28,7 @@ type TourGuide struct {
 	Name         string             `bson:"full_name" json:"full_name"`
 	Bio          string             `bson:"bio" json:"bio"`
 	ProfileImage map[string]any     `bson:"profile_image" json:"profile_image"`
+	IDCard       map[string]any     `bson:"id_card" json:"_id_card"`
 }
 
 type Tour struct {

@@ -46,7 +46,7 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 
 			fileByte, err := ioutil.ReadAll(f)
 			if err != nil {
-				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot upload images"))
+				_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot image data"))
 				return
 			}
 
