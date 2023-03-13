@@ -68,11 +68,14 @@ func (op *OperatorDB) FindTourGuide(operatorID primitive.ObjectID) ([]primitive.
 func (op *OperatorDB) UpdateTourGuide(guideID string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
+	opt := options.Delete().SetCollation(&options.Collation{
+		Locale:    "en_US",
+		Strength:  1,
+		CaseLevel: false,
+	})
 	filter := bson.D{{Key: "_id", Value: guideID}}
-	update := bson.D{{Key: "$pull", Value: bson.D{{Key: "_id", Value: guideID}}}}
-	opt := options.Update().SetUpsert(false)
 
-	_, err := TourGuideData(op.DB, "tour_guide").UpdateOne(ctx, filter, update, opt)
+	_, err := TourGuideData(op.DB, "tour_guide").DeleteOne(ctx, filter,opt)
 	if err != nil {
 		op.App.ErrorLogger.Fatal(err)
 	}
