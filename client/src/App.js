@@ -373,11 +373,6 @@ function App() {
     setShowPassword((prev) => !prev);
   }
 
-  //create tour package button
-  function addTourPackage() {
-    navigate("/step1");
-  }
-
   const [packageCreated, setPackageCreated] = useState(false);
   const [packageMssg, setPackageMssg] = useState("");
 
@@ -576,6 +571,7 @@ function App() {
 
   const [trackAddTg, setTrackAddTg] = useState(false);
   const [tourGuideAdded, setTourGuideAdded] = useState(false);
+
   const handleTourGuideSubmit = async (event) => {
     event.preventDefault();
     setShowLoader(true);
@@ -645,6 +641,48 @@ function App() {
     }
   }, [isLoggedIn, trackAddTg]);
 
+  //create tour package button
+  const [noTourGuide, setNoTourGuide] = useState(false);
+
+  function addTourPackage() {
+    if (tourGuideFromDb.length > 0) {
+      navigate("/step1");
+    } else if (tourGuideFromDb.length < 1) {
+      setNoTourGuide(true);
+    }
+  }
+  function cancelAddTgPrompt() {
+    setNoTourGuide(false);
+  }
+  //to delete tour guide
+  const [tgDeleted, setTgDeleted] = useState(false);
+  function tgDeletedReset() {
+    setTgDeleted(false);
+  }
+
+  const handleDeleteTg = async (id) => {
+    setShowLoader(true);
+
+    const endpoint = `/api/auth/guide/select/delete/${id}`;
+    try {
+      const response = await fetch(endpoint, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      let arr = [...tourGuideFromDb];
+      let removedArr = arr.filter((item) => item._id !== id);
+      setTourGuideFromDb(removedArr);
+      localStorage.setItem("tourGuides", JSON.stringify(removedArr));
+      setTgDeleted(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setShowLoader(false);
+    }
+  };
   return (
     <>
       <Routes>
@@ -715,6 +753,8 @@ function App() {
                 tourPackageFromDb={tourPackageFromDb}
                 errorTpFetch={errorTpFetch}
                 showLoader={showLoader}
+                noTourGuide={noTourGuide}
+                cancelAddTgPrompt={cancelAddTgPrompt}
               />
             ) : (
               <Login
@@ -763,6 +803,9 @@ function App() {
               closeUserMod={closeUserMod}
               showLoader={showLoader}
               tourGuideFromDb={tourGuideFromDb}
+              tgDeleted={tgDeleted}
+              handleDeleteTg={handleDeleteTg}
+              tgDeletedReset={tgDeletedReset}
             />
           }
         />

@@ -16,8 +16,9 @@ const Dashboard = ({
   packageCreated,
   packageMssg,
   showLoader,
-  errorTpFetch,
   tourPackageFromDb,
+  noTourGuide,
+  cancelAddTgPrompt,
 }) => {
   // console.log(tourPackageFromDb);
   return (
@@ -58,6 +59,35 @@ const Dashboard = ({
             className="w-10 h-10"
           />
           <p>{packageMssg}</p>
+        </div>
+      )}
+      {noTourGuide && (
+        <div className="bg-slate-800/80 w-full h-screen p-3 z-[100] fixed top-0 right-0 flex justify-center items-center">
+          <div className="w-full md:w-[600px] p-8 bg-white rounded-md text-center">
+            <img
+              alt=""
+              src="/images/icons8-box-important-50.png"
+              className="w-14 h-14 mx-auto mb-4"
+            />
+            <p className="font-normal mb-2">
+              Kindly note that at least one tour guide must be added before
+              creating a tour package
+            </p>
+
+            <div className="w-full flex justify-between gap-5 items-center">
+              <button
+                onClick={cancelAddTgPrompt}
+                className="bg-gray-400 text-white rounded-md px-6 py-2 mt-4 text-[.85rem] md:text-[1rem]"
+              >
+                Cancel
+              </button>
+              <Link to="/add-tour-guide">
+                <button className="bg-blue-500 text-white rounded-md px-6 py-2 mt-4 text-[.85rem] md:text-[1rem]">
+                  Add tour guide
+                </button>
+              </Link>
+            </div>
+          </div>
         </div>
       )}
       <div
