@@ -645,17 +645,15 @@ function App() {
   const [noTourGuide, setNoTourGuide] = useState(false);
 
   function addTourPackage() {
-    if (tourGuideFromDb !== null && tourGuideFromDb !== []) {
+    if (tourGuideFromDb.length > 0) {
       navigate("/step1");
-    } else if (tourGuideFromDb === [] || tourGuideFromDb === null) {
+    } else if (tourGuideFromDb.length < 1) {
       setNoTourGuide(true);
     }
   }
   function cancelAddTgPrompt() {
     setNoTourGuide(false);
   }
-  console.log(tourGuideFromDb);
-
   //to delete tour guide
   const [tgDeleted, setTgDeleted] = useState(false);
   function tgDeletedReset() {
