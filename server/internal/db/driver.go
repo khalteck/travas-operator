@@ -2,17 +2,15 @@ package db
 
 import (
 	"context"
-	"log"
+	"github.com/travas-io/travas-op/pkg/config"
 	"os"
 	"time"
-
-	"github.com/travas-io/travas-op/internal/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var app config.Tools
+var app = config.NewLogger()
 
 func SetConnection(uri string) (*mongo.Client, error) {
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
@@ -22,12 +20,12 @@ func SetConnection(uri string) (*mongo.Client, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPIOptions))
 	if err != nil {
-		log.Panicln(err)
+		app.Error.Panicln(err)
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatalln(err)
+		app.Error.Fatalln(err)
 	}
 
 	return client, nil
@@ -40,19 +38,18 @@ func OpenConnection() *mongo.Client {
 	for {
 		client, err := SetConnection(uri)
 		if err != nil {
-			log.Println("MongoDB not yet ready to connect ...")
+			app.Info.Println("MongoDB not yet ready to connect ...")
 			count++
 
 		} else {
-			log.Println("Connecting to MongoDB Atlas ...")
+			app.Info.Println("Connecting to MongoDB Atlas ...")
 			return client
 		}
 		if count >= 10 {
-			log.Println(err)
+			app.Info.Println(err)
 			return nil
 		}
-
-		log.Println("Trying to reconnect MongoDB database ...")
+		app.Info.Println("Trying to reconnect MongoDB database ...")
 		time.Sleep(5 * time.Second)
 		continue
 	}

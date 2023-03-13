@@ -3,6 +3,11 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/travas-io/travas-op/internal"
+	"github.com/travas-io/travas-op/internal/pkg/encrypt"
+	"github.com/travas-io/travas-op/internal/pkg/token"
+	"github.com/travas-io/travas-op/internal/query/mongodb"
+	"github.com/travas-io/travas-op/pkg/config"
 	"log"
 	"net/http"
 	"regexp"
@@ -11,26 +16,22 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/travas-io/travas-op/internal/config"
-	"github.com/travas-io/travas-op/internal/encrypt"
 	"github.com/travas-io/travas-op/internal/query"
-	"github.com/travas-io/travas-op/internal/token"
 	"github.com/travas-io/travas-op/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Operator : It holds all the neccessary field n
+// Operator : It holds all the necessary field n
 type Operator struct {
-	App *config.Tools
+	App *config.Logger
 	DB  query.Repo
 }
 
-
-func NewOperator(app *config.Tools, db *mongo.Client) *Operator {
+func NewOperator(app *config.Logger, db *mongo.Client) internal.MainStore {
 	return &Operator{
 		App: app,
-		DB:  query.NewOperatorDB(app, db),
+		DB:  mongodb.NewOperatorDB(app, db),
 	}
 }
 
@@ -84,7 +85,7 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		if err := op.App.Validator.Struct(&user); err != nil {
 			if _, ok := err.(*validator.InvalidValidationError); !ok {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				op.App.InfoLogger.Println(err)
+				op.App.Info.Println(err)
 				return
 			}
 		}
@@ -225,7 +226,7 @@ func (op *Operator) Dashboard() gin.HandlerFunc {
 	}
 }
 
-
+// GetTourRequest :: not implemented yet
 func (op *Operator) GetTourRequest() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Todo -> get all the tour request from the tourists collections

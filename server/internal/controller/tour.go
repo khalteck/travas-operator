@@ -3,6 +3,7 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/travas-io/travas-op/pkg/upload"
 	"io"
 	"io/ioutil"
 	"log"
@@ -201,118 +202,80 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		imageArr := make(map[string][]any, 0)
 
 		form := ctx.Request.MultipartForm
-		file, ok := form.File["tour_image"]
-		if !ok {
-			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("no upload image"))
+
+		imageArr, err := upload.MultiFile(form, "tour_image")
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+
+		}
+
+		wte := ctx.Request.MultipartForm.Value["what_to_expect"]
+		whatToExpect := make(map[string]string)
+		for i, value := range wte {
+			key := fmt.Sprintf("what_to_expect_%d", i)
+			whatToExpect[key] = value
+
+		}
+
+		rules := ctx.Request.MultipartForm.Value["rules"]
+		rulesMap := make(map[string]string)
+		for i, value := range rules {
+			key := fmt.Sprintf("rule_%d", i)
+			rulesMap[key] = value
+		}
+
+		tour := &model.Tour{
+			ID:              primitive.NewObjectID(),
+			OperatorID:      userInfo.ID,
+			Title:           ctx.PostForm("title"),
+			Destination:     strings.TrimSpace(strings.ToLower(ctx.PostForm("destination"))),
+			MeetingPoint:    ctx.PostForm("meeting_point"),
+			StartTime:       ctx.PostForm("start_time"),
+			StartDate:       ctx.PostForm("start_date"),
+			EndDate:         ctx.PostForm("end_date"),
+			Price:           ctx.PostForm("price"),
+			Image:           imageArr,
+			Contact:         ctx.PostForm("contact"),
+			Language:        ctx.PostForm("language"),
+			NumberOfTourist: ctx.PostForm("number_of_tourists"),
+			Description:     ctx.PostForm("description"),
+			WhatToExpect:    whatToExpect,
+			Rules:           rulesMap,
+			CreatedAt:       time.Now(),
+			UpdatedAt:       time.Now(),
+		}
+
+		// Validate the Images Upload field
+		err = op.App.Validator.RegisterValidation("tour_image", ValidateImage)
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 			return
 		}
 
-		// Check through the uploaded images. validate the filesize, format and append to a slice of a map
-		for i, ff := range file {
-
-			if ff.Filename != "" {
-				f, err := ff.Open()
-				if err != nil {
-					_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				}
-
-				defer func(f multipart.File) {
-					err := f.Close()
-					if err != nil {
-						return
-					}
-				}(f)
-
-				fileByte, err := ioutil.ReadAll(f)
-				if err != nil {
-					_ = ctx.AbortWithError(http.StatusInternalServerError, errors.New("cannot image data"))
-					return
-				}
-				if len(fileByte) > MEMORYMAXSIZE {
-					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("image too large"))
-					return
-				}
-
-				ext := filepath.Ext(ff.Filename)
-				if ext != ".png" && ext != ".jpg" && ext != ".jpeg" {
-					_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid image format"))
-				}
-
-				bk := fmt.Sprintf("image_data_%d", i)
-				img := fmt.Sprintf("tour_image_%d", i)
-				imageArr[bk] = append(imageArr[bk], fileByte)
-				imageArr[img] = append(imageArr[img], ff)
-
-			}
-
-			wte := ctx.Request.MultipartForm.Value["what_to_expect"]
-			whatToExpect := make(map[string]string)
-			for i, value := range wte {
-				key := fmt.Sprintf("what_to_expect_%d", i)
-				whatToExpect[key] = value
-
-			}
-
-			rules := ctx.Request.MultipartForm.Value["rules"]
-			rulesMap := make(map[string]string)
-			for i, value := range rules {
-				key := fmt.Sprintf("rule_%d", i)
-				rulesMap[key] = value
-			}
-
-			tour := &model.Tour{
-				ID:              primitive.NewObjectID(),
-				OperatorID:      userInfo.ID,
-				Title:           ctx.PostForm("title"),
-				Destination:     strings.TrimSpace(strings.ToLower(ctx.PostForm("destination"))),
-				MeetingPoint:    ctx.PostForm("meeting_point"),
-				StartTime:       ctx.PostForm("start_time"),
-				StartDate:       ctx.PostForm("start_date"),
-				EndDate:         ctx.PostForm("end_date"),
-				Price:           ctx.PostForm("price"),
-				Image:           imageArr,
-				Contact:         ctx.PostForm("contact"),
-				Language:        ctx.PostForm("language"),
-				NumberOfTourist: ctx.PostForm("number_of_tourists"),
-				Description:     ctx.PostForm("description"),
-				WhatToExpect:    whatToExpect,
-				Rules:           rulesMap,
-				CreatedAt:       time.Now(),
-				UpdatedAt:       time.Now(),
-			}
-
-			// Validate the Images Upload field
-			err := op.App.Validator.RegisterValidation("tour_image", ValidateImage)
-			if err != nil {
+		// Validate the input value with respect to their struct tags
+		if err := op.App.Validator.Struct(&tour); err != nil {
+			if _, ok := err.(*validator.InvalidValidationError); !ok {
 				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 				return
 			}
-
-			// Validate the input value with respect to their struct tags
-			if err := op.App.Validator.Struct(&tour); err != nil {
-				if _, ok := err.(*validator.InvalidValidationError); !ok {
-					_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-					return
-				}
-			}
-
-			cookieData.Set("tour_id", tour.ID)
-
-			if err := cookieData.Save(); err != nil {
-				_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
-				return
-			}
-			// insert the data into the database and check for error from the database
-			_, err = op.DB.InsertPackage(tour)
-			if err != nil {
-				_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-				return
-			}
-			// send a successful response to the client app
-			ctx.JSON(http.StatusCreated, gin.H{
-				"message": "New package added successfully",
-			})
 		}
+
+		cookieData.Set("tour_id", tour.ID)
+
+		if err := cookieData.Save(); err != nil {
+			_ = ctx.AbortWithError(http.StatusNotFound, gin.Error{Err: err})
+			return
+		}
+		// insert the data into the database and check for error from the database
+		_, err = op.DB.InsertPackage(tour)
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+			return
+		}
+		// send a successful response to the client app
+		ctx.JSON(http.StatusCreated, gin.H{
+			"message": "New package added successfully",
+		})
 	}
 }
 

@@ -76,7 +76,7 @@ func (op *Operator) DeleteTourGuide() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 			return
 		}
-		
+
 		ctx.JSONP(http.StatusOK, gin.H{"message": "tour guide delete successfully"})
 	}
 }
