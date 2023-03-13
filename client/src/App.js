@@ -654,6 +654,37 @@ function App() {
   function cancelAddTgPrompt() {
     setNoTourGuide(false);
   }
+
+  //to delete tour guide
+  const [tgDeleted, setTgDeleted] = useState(false);
+  function tgDeletedReset() {
+    setTgDeleted(false);
+  }
+
+  const handleDeleteTg = async (id) => {
+    setShowLoader(true);
+
+    const endpoint = `/api/auth/guide/select/delete/${id}`;
+    try {
+      const response = await fetch(endpoint, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      let arr = [...tourGuideFromDb];
+      let removedArr = arr.filter((item) => item._id !== id);
+      setTourGuideFromDb(removedArr);
+      localStorage.setItem("tourGuides", JSON.stringify(removedArr));
+      console.log(`Tour guide with ID ${id} deleted successfully`);
+      setTgDeleted(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setShowLoader(false);
+    }
+  };
   return (
     <>
       <Routes>
@@ -774,6 +805,9 @@ function App() {
               closeUserMod={closeUserMod}
               showLoader={showLoader}
               tourGuideFromDb={tourGuideFromDb}
+              tgDeleted={tgDeleted}
+              handleDeleteTg={handleDeleteTg}
+              tgDeletedReset={tgDeletedReset}
             />
           }
         />

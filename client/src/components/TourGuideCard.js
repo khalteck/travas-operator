@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const TourGuideCard = ({ item }) => {
+const TourGuideCard = ({ item, tgDeleted, handleDeleteTg }) => {
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
@@ -47,7 +47,13 @@ const TourGuideCard = ({ item }) => {
               >
                 Cancel
               </button>
-              <button className="bg-blue-500 text-white rounded-md px-8 py-2 mt-4">
+              <button
+                onClick={() => {
+                  handleDeleteTg(item._id);
+                  toggleDeleteTgModal();
+                }}
+                className="bg-blue-500 text-white rounded-md px-8 py-2 mt-4"
+              >
                 Delete
               </button>
             </div>
