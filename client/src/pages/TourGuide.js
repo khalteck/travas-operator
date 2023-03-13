@@ -32,9 +32,9 @@ const TourGuide = ({
               src="/images/icons8-checkmark-64.png"
               className="w-14 h-14 mx-auto mb-4"
             />
-            <p className="font-normalmb-2">Tout guide deleted successfully!</p>
+            <p className="font-normalmb-2">Tour guide deleted successfully!</p>
 
-            <div className="w-full flex justify-between gap-5 items-center">
+            <div className="w-full flex justify-center gap-5 items-center">
               <button
                 onClick={tgDeletedReset}
                 className="bg-blue-500 text-white rounded-md px-8 py-2 mt-4"

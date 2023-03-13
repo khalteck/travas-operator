@@ -647,13 +647,14 @@ function App() {
   function addTourPackage() {
     if (tourGuideFromDb !== null && tourGuideFromDb !== []) {
       navigate("/step1");
-    } else {
+    } else if (tourGuideFromDb === [] || tourGuideFromDb === null) {
       setNoTourGuide(true);
     }
   }
   function cancelAddTgPrompt() {
     setNoTourGuide(false);
   }
+  console.log(tourGuideFromDb);
 
   //to delete tour guide
   const [tgDeleted, setTgDeleted] = useState(false);
@@ -677,7 +678,6 @@ function App() {
       let removedArr = arr.filter((item) => item._id !== id);
       setTourGuideFromDb(removedArr);
       localStorage.setItem("tourGuides", JSON.stringify(removedArr));
-      console.log(`Tour guide with ID ${id} deleted successfully`);
       setTgDeleted(true);
     } catch (error) {
       console.error(error);
