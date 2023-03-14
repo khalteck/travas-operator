@@ -199,12 +199,17 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 			return
 		}
 
-		// Get the uploaded images from the client app
-		imageArr := make(map[string][]any, 0)
+    // Get the uploaded images from the client app
+		imageArr := make(map[string][]any)
 
-		form := ctx.Request.MultipartForm
 
-		imageArr, err := upload.MultiFile(form, "tour_image")
+		form, err := ctx.MultipartForm()
+    if err != nil{
+      _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+      return
+    }
+
+		imageArr, err = upload.MultiFile(form, "tour_image", "tour_image_data")
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 
