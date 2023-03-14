@@ -379,7 +379,7 @@ function App() {
   const submitTourPackage = async (event) => {
     event.preventDefault();
     setShowLoader(true);
-    const endpoint = "/api/auth/add/packages/test";
+    const endpoint = "/api/auth/add/packages";
     const formDataToSend = new FormData();
 
     formDataToSend.append("title", tourPackageData.title);
