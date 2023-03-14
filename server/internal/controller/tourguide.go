@@ -29,14 +29,24 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 		imageInfo, err := upload.SingleFile(form, "profile_image")
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+      return
 		}
 
+    IDInfo, err := upload.SingleFile(form, "id_card")
+    if err != nil{
+      _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+    return
+    }
+
+    
+	
 		tourGuide := &model.TourGuide{
 			OperatorID:   userInfo.ID,
 			ID:           primitive.NewObjectID().Hex(),
 			Name:         ctx.Request.Form.Get("full_name"),
 			Bio:          ctx.Request.Form.Get("bio"),
 			ProfileImage: imageInfo,
+      IDCard: IDInfo,
 		}
 
 		ok, err = op.DB.InsertTourGuide(tourGuide)

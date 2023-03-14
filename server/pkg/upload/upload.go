@@ -14,7 +14,7 @@ var MEMORYMAXSIZE = 1024 * 1024
 func SingleFile(form *multipart.Form, key string) (map[string]any, error) {
 	imageInfo := make(map[string]any, 0)
 	file, ok := form.File[key]
-	if !ok {
+	if !ok { 
 		return nil, errors.New("cannot get upload file")
 	}
 
@@ -27,8 +27,8 @@ func SingleFile(form *multipart.Form, key string) (map[string]any, error) {
 		defer func(f multipart.File) {
 			err := f.Close()
 			if err != nil {
-				return
-			}
+				return 
+				}
 		}(f)
 
 		fileByte, err := ioutil.ReadAll(f)
@@ -62,7 +62,7 @@ func MultiFile(form *multipart.Form, key string) (map[string][]any, error) {
 	for i, ff := range file {
 		if ff.Filename != "" {
 			f, err := ff.Open()
-			if err != nil {
+      if err != nil {
 				return nil, err
 			}
 

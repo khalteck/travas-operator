@@ -167,7 +167,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 					CompanyName: compName,
 				}
 				cookieData.Set("info", userInfo)
-
+ 
 				// generate the jwt token
 				t1, t2, err := token.Generate(email, id)
 				if err != nil {
