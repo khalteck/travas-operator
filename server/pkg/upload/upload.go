@@ -11,12 +11,12 @@ import (
 
 var MEMORYMAXSIZE = 1024 * 1024
 
-func SingleFile(form *multipart.Form, key string) (map[string]any, error) {
+func SingleFile(form *multipart.Form, key, dataKey string ) (map[string]any, error) {
 	imageInfo := make(map[string]any, 0)
 	file, ok := form.File[key]
 	if !ok { 
 		return nil, errors.New("cannot get upload file")
-	}
+	}	
 
 	if file[0].Filename != "" {
 		f, err := file[0].Open()
@@ -44,9 +44,9 @@ func SingleFile(form *multipart.Form, key string) (map[string]any, error) {
 			return nil, errors.New("invalid image format")
 		}
 
-		imageInfo["profile_data"] = fileByte
+		imageInfo[dataKey] = fileByte
 	}
-	imageInfo["profile_image"] = file[0]
+	imageInfo[key] = file[0]
 	return imageInfo, nil
 }
 

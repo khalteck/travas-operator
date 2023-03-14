@@ -22,17 +22,17 @@ func (op *Operator) AddTourGuide() gin.HandlerFunc {
 
 		if !ok {
 			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find operator id"))
-		}
+    }
 
 		form := ctx.Request.MultipartForm
 
-		imageInfo, err := upload.SingleFile(form, "profile_image")
+		imageInfo, err := upload.SingleFile(form, "profile_image","profile_data",)
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
       return
 		}
 
-    IDInfo, err := upload.SingleFile(form, "id_card")
+    IDInfo, err := upload.SingleFile(form, "id_card", "id_card_data")
     if err != nil{
       _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
     return
