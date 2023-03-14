@@ -187,14 +187,15 @@ function App() {
   //to upload tour photos
   const [tourPhotos, setTourPhotos] = useState([]);
   function handleAddPhotos(e) {
-    let key = `tour_image_${tourPhotos.length + 1}`;
+    // let key = `tour_image_${tourPhotos.length + 1}`;
     setTourPhotos((prev) => {
       return [
         ...prev,
-        {
-          [key]: e.target.files[0],
-          hover: false,
-        },
+        e.target.files[0],
+        // {
+        //   [key]: e.target.files[0],
+        //   hover: false,
+        // },
       ];
     });
   }
@@ -213,6 +214,7 @@ function App() {
   function handlePhotoMouseout(index) {
     let photos = [...tourPhotos];
     photos[index].hover = false;
+    delete photos[index].hover;
     setTourPhotos(photos);
   }
 
