@@ -187,16 +187,15 @@ function App() {
   //to upload tour photos
   const [tourPhotos, setTourPhotos] = useState([]);
   function handleAddPhotos(e) {
-    let key = `tour_image_${tourPhotos.length + 1}`;
+    // let key = `tour_image_${tourPhotos.length + 1}`;
     setTourPhotos((prev) => {
       return [
         ...prev,
-        {
-          [key]: `${(window.URL || window.webkitURL)?.createObjectURL(
-            e.target.files[0]
-          )}`,
-          hover: false,
-        },
+        e.target.files[0],
+        // {
+        //   [key]: e.target.files[0],
+        //   hover: false,
+        // },
       ];
     });
   }
@@ -215,6 +214,7 @@ function App() {
   function handlePhotoMouseout(index) {
     let photos = [...tourPhotos];
     photos[index].hover = false;
+    delete photos[index].hover;
     setTourPhotos(photos);
   }
 
@@ -376,23 +376,57 @@ function App() {
   const [packageCreated, setPackageCreated] = useState(false);
   const [packageMssg, setPackageMssg] = useState("");
 
-  async function submitTourPackage(e) {
-    e.preventDefault();
+  const submitTourPackage = async (event) => {
+    event.preventDefault();
     setShowLoader(true);
+    const endpoint = "/api/auth/add/packages/test";
+    const formDataToSend = new FormData();
 
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(tourPackageData));
+    formDataToSend.append("title", tourPackageData.title);
+    formDataToSend.append("destination", tourPackageData.destination);
+    formDataToSend.append("meeting_point", tourPackageData.meeting_point);
+    formDataToSend.append("start_time", tourPackageData.start_time);
+    formDataToSend.append("start_date", tourPackageData.start_date);
+    formDataToSend.append("end_date", tourPackageData.end_date);
+    formDataToSend.append("price", tourPackageData.price);
+    formDataToSend.append("language", tourPackageData.language);
+    formDataToSend.append(
+      "number_of_tourists",
+      tourPackageData.number_of_tourists
+    );
+    formDataToSend.append("description", tourPackageData.description);
 
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "multipart/form-data",
-    };
+    // Add tour image files to FormData object
+    for (let i = 0; i < tourPackageData.tour_image.length; i++) {
+      formDataToSend.append(
+        "tour_image[]",
+        tourPackageData.tour_image[i].tour_image
+      );
+    }
+
+    // Add what to expect fields to FormData object
+    formDataToSend.append(
+      "what_to_expect[what_to_expect_1]",
+      tourPackageData.what_to_expect.what_to_expect_1
+    );
+    formDataToSend.append(
+      "what_to_expect[what_to_expect_2]",
+      tourPackageData.what_to_expect.what_to_expect_2
+    );
+    formDataToSend.append(
+      "what_to_expect[what_to_expect_3]",
+      tourPackageData.what_to_expect.what_to_expect_3
+    );
+
+    // Add rules fields to FormData object
+    formDataToSend.append("rules[rule_1]", tourPackageData.rules.rule_1);
+    formDataToSend.append("rules[rule_2]", tourPackageData.rules.rule_2);
+    formDataToSend.append("rules[rule_3]", tourPackageData.rules.rule_3);
 
     try {
-      const response = await fetch("/api/auth/add/packages", {
+      const response = await fetch(endpoint, {
         method: "POST",
-        body: formData,
-        headers,
+        body: formDataToSend,
       });
       const data = await response.json();
 
@@ -414,19 +448,25 @@ function App() {
     } finally {
       setShowLoader(false);
     }
-  }
+  };
 
   // async function submitTourPackage(e) {
   //   e.preventDefault();
   //   setShowLoader(true);
 
   //   const formData = new FormData();
-  //   formData.set("data", tourPackageData);
+  //   formData.append("data", JSON.stringify(tourPackageData));
+
+  //   const headers = {
+  //     Accept: "application/json",
+  //     "Content-Type": "multipart/form-data",
+  //   };
 
   //   try {
   //     const response = await fetch("/api/auth/add/packages", {
   //       method: "POST",
   //       body: formData,
+  //       headers,
   //     });
   //     const data = await response.json();
 
@@ -438,7 +478,7 @@ function App() {
   //       }, 10000);
   //       navigate("/dashboard");
   //       window.scrollTo(0, 0);
-  //       console.log(response.status, data);
+  //       console.log(response.status, data, data.message);
   //     } else {
   //       console.error(`Error: (${response.status} ${response.statusText})`);
   //       window.scrollTo(0, 0);
@@ -571,6 +611,10 @@ function App() {
 
   const [trackAddTg, setTrackAddTg] = useState(false);
   const [tourGuideAdded, setTourGuideAdded] = useState(false);
+  const [tooLarge, setTooLarge] = useState(false);
+  useEffect(() => {
+    setTooLarge("");
+  }, [currentPage, tourGuideformData]);
 
   const handleTourGuideSubmit = async (event) => {
     event.preventDefault();
@@ -582,11 +626,12 @@ function App() {
     formDataToSend.append("profile_image", tourGuideformData.profile_image);
     formDataToSend.append("id_card", tourGuideformData.id_card);
 
+    const response = await fetch(endpoint, {
+      method: "POST",
+      body: formDataToSend,
+    });
+
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: formDataToSend,
-      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -595,6 +640,11 @@ function App() {
       setTourGuideAdded(true);
     } catch (error) {
       console.error(error);
+      if (response.status === 413) {
+        setTooLarge("too large");
+      } else if (response.status === 504) {
+        setTooLarge("network timeout");
+      }
     } finally {
       setShowLoader(false);
     }
@@ -643,6 +693,9 @@ function App() {
 
   //create tour package button
   const [noTourGuide, setNoTourGuide] = useState(false);
+  useEffect(() => {
+    setNoTourGuide(false);
+  }, [currentPage]);
 
   function addTourPackage() {
     if (tourGuideFromDb.length > 0) {
@@ -786,6 +839,7 @@ function App() {
               showLoader={showLoader}
               tourGuideAdded={tourGuideAdded}
               confirmAddedTg={confirmAddedTg}
+              tooLarge={tooLarge}
             />
           }
         />
@@ -876,6 +930,7 @@ function App() {
               handleRuleChange={handleRuleChange}
               joinRules={joinRules}
               rules={rules}
+              tourGuideFromDb={tourGuideFromDb}
             />
           }
         />
