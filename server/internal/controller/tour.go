@@ -200,7 +200,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		}
 
     // Get the uploaded images from the client app
-		imageArr := make(map[string][]any)
+		var imageArr map[string]interface{}
 
 
 		form, err := ctx.MultipartForm()

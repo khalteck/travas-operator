@@ -3,6 +3,7 @@ package upload
 import (
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -52,8 +53,8 @@ func SingleFile(form *multipart.Form, key, dataKey string ) (map[string]any, err
 }
 
 // MultiFile : Check through the uploaded images. validate the filesize, format and append to a slice of a map
-func MultiFile(form *multipart.Form, key, dataKey string) (map[string][]any, error) {
-	imageArr := make(map[string][]any, 0)
+func MultiFile(form *multipart.Form, key, dataKey string) (map[string]interface{}, error) {
+	imageArr := make(map[string]interface{}, 0)
   
   log.Println(form)
 
@@ -77,11 +78,19 @@ func MultiFile(form *multipart.Form, key, dataKey string) (map[string][]any, err
 				}
 			}(f)
 
-			fileByte, err := ioutil.ReadAll(f)
-			if err != nil {
-				return nil, err
-			}
-			if len(fileByte) > MEMORYMAXSIZE {
+      var content []byte
+      for {
+        buffer := make([]byte, 512)
+         n, err := f.Read(buffer)
+         if err == io.EOF {
+           break
+         } else if err != nil {
+           return nil, err
+         }
+         content = append(content, buffer[:n]...)
+       }
+
+			if len(content) > MEMORYMAXSIZE {
 				return nil, errors.New("file size too large")
 			}
 
@@ -92,8 +101,9 @@ func MultiFile(form *multipart.Form, key, dataKey string) (map[string][]any, err
 
 			bk := fmt.Sprintf("%s_%d",dataKey ,i)
 			img := fmt.Sprintf("%s_%d",key, i)
-			imageArr[bk] = append(imageArr[bk], fileByte)
-			imageArr[img] = append(imageArr[img], ff)
+
+      imageArr[bk] = append(imageArr[bk].([][]byte), content)
+			imageArr[img] = append(imageArr[img].([]*multipart.FileHeader), ff)
 
 		}
 	}
