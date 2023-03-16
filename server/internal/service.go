@@ -11,7 +11,10 @@ type MainStore interface {
 
 	LoginPage() gin.HandlerFunc
 	ProcessLogin() gin.HandlerFunc
+
+  // verification of document
 	VerifyDocument() gin.HandlerFunc
+  CheckStatus() gin.HandlerFunc
 
 	Dashboard() gin.HandlerFunc
 

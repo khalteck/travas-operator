@@ -81,18 +81,36 @@ func (op *OperatorDB) VerifyUser(email string) (primitive.M, error) {
 	return res, nil
 }
 
-func (op *OperatorDB) UpdateInfo(userID primitive.ObjectID, tk map[string]string) (bool, error) {
+func (op *OperatorDB) UpdateInfo(userID primitive.ObjectID, data map[string]any) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
 	filter := bson.D{{Key: "_id", Value: userID}}
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "token", Value: tk["t1"]}, {Key: "new_token", Value: tk["t2"]}}}}
-
-	_, err := OperatorData(op.DB, "operators").UpdateOne(ctx, filter, update)
-	if err != nil {
-		return false, err
+	for key, val := range data {
+		update := bson.D{{Key: "$set", Value: bson.D{{Key: key, Value: val}}}}
+		_, err := OperatorData(op.DB, "operators").UpdateOne(ctx, filter, update)
+		if err != nil {
+			return false, err
+		}
 	}
 	return true, nil
+}
+
+func(op *OperatorDB) FindStatus(userID primitive.ObjectID) (primitive.M, error ){
+  ctx, cancel := context.WithTimeout(context.Background(), time.Second*100)
+  defer cancel()
+
+  var res bson.M
+  filter := bson.D{{Key:"_id", Value: userID}}
+  err := OperatorData(op.DB, "operator").FindOne(ctx,filter).Decode(&res)
+  if err != nil{
+    if err == mongo.ErrNoDocuments{
+      op.App.Debug.Println("no document available")
+      return nil, err
+    }
+    op.App.Error.Fatal(err)
+  }
+  return res, nil
 }
 
 // ValidTourRequest This query below is to get all the valid tour requested by the tourist

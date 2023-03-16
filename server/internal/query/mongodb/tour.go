@@ -10,8 +10,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// INFO --> these methods are only meant to interact with the tour collection in the database
-//      --> and the tour packages.
+// INFO --> these methods are only meant to interact with the tour collection in the 
+// database and the tour packages
+
 
 // InsertPackage : this will help the operator to add new create tour packages in the
 // tours collection with respect to a particular operators ID
