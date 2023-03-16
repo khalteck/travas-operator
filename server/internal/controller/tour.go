@@ -244,7 +244,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 			CreatedAt:       time.Now(),
 			UpdatedAt:       time.Now(),
 		}
-
+	
 		// Validate the Images Upload field
 		err = op.App.Validator.RegisterValidation("tour_image", ValidateImage)
 		if err != nil {

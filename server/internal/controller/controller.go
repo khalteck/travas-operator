@@ -3,15 +3,17 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"regexp"
+	"time"
+
 	"github.com/travas-io/travas-op/internal"
 	"github.com/travas-io/travas-op/internal/pkg/encrypt"
 	"github.com/travas-io/travas-op/internal/pkg/token"
 	"github.com/travas-io/travas-op/internal/query/mongodb"
 	"github.com/travas-io/travas-op/pkg/config"
-	"log"
-	"net/http"
-	"regexp"
-	"time"
+	"github.com/travas-io/travas-op/pkg/upload"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -167,7 +169,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 					CompanyName: compName,
 				}
 				cookieData.Set("info", userInfo)
- 
+
 				// generate the jwt token
 				t1, t2, err := token.Generate(email, id)
 				if err != nil {
@@ -183,7 +185,7 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 				}
 
 				// var tk map[string]string
-				tk := map[string]string{"t1": t1, "t2": t2}
+				tk := map[string]any{"token": t1, "new_token": t2}
 
 				// update the database adding the token to user database
 				_, updateErr := op.DB.UpdateInfo(userInfo.ID, tk)
@@ -213,9 +215,81 @@ func (op *Operator) ProcessLogin() gin.HandlerFunc {
 func (op *Operator) VerifyDocument() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		//	todo --> verify document upload by the tour operator
-		//	this will involve scanning the pdf format of the document
-		//	signature and other details needed
+		if err := ctx.Request.ParseMultipartForm(int64(MEMORYMAXSIZE)); err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+		}
+
+		cookieData := sessions.Default(ctx)
+		userInfo, ok := cookieData.Get("info").(model.UserInfo)
+
+		if !ok {
+			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find operator id"))
+		}
+
+		form := ctx.Request.MultipartForm
+
+		IDcard, err := upload.SingleFile(form, "id_card", "Id_data")
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+			return
+		}
+
+		certf, err := upload.SingleFile(form, "certificate", "certificate_data")
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+			return
+		}
+
+		credential := map[string]any{
+			"full_name":   form.Value[""],
+			"phone":       form.Value["phone"],
+			"id_card":     IDcard,
+			"certificate": certf,
+			"status":      "Not Verified",
+		}
+
+		ok, err = op.DB.UpdateInfo(userInfo.ID, credential)
+		if !ok {
+			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
+			return
+		}
+
+		ctx.JSONP(http.StatusOK, gin.H{"message": "credential submitted successfully"})
 	}
+
+}
+
+func (op *Operator) CheckStatus() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookieData := sessions.Default(ctx)
+		userInfo, ok := cookieData.Get("info").(model.UserInfo)
+		
+    if !ok {
+			_ = ctx.AbortWithError(http.StatusNotFound, errors.New("cannot find operator id"))
+		}
+
+		res, err := op.DB.FindStatus(userInfo.ID)
+    if err != nil{
+      _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+      return
+    }
+
+		status := res["status"].(string)
+
+		switch status {
+		case "":
+			ctx.JSONP(http.StatusNotFound, gin.H{"message": "Please verify your credential"})
+			return
+
+		case "Verified": // this will be added in the backend of the admin panel after the admin verify the operator
+			ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
+			return
+		case "Not Verified":
+			ctx.JSONP(http.StatusNotFound, gin.H{"message": "You credential is still under review"})
+			return
+		}
+	}
+
 }
 
 // Dashboard : this will help load up and process all the user details,information and all the
