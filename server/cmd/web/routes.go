@@ -37,7 +37,8 @@ func Routes(r *gin.Engine, srv internal.MainStore) {
 	authRouter.Use(Authorization())
 	{
 		// to verify uploaded document ---> not implemented yet
-		authRouter.POST("/verify/documents", srv.VerifyDocument())
+		authRouter.POST("/verify/credential", srv.VerifyDocument())
+    authRouter.GET("/verify/status", srv.CheckStatus())
 
 		// For operator to manage created tour packages
 		authRouter.POST("/add/packages", srv.ProcessTourPackage())
