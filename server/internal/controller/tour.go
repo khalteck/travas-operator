@@ -137,7 +137,6 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 			CreatedAt:       time.Now(),
 			UpdatedAt:       time.Now(),
 		}
-  
 
 		// Validate the Images Upload field
 		err = op.App.Validator.RegisterValidation("image_stream", ValidateImage)
@@ -191,7 +190,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 		}
 
-	// Get the store cookies in user session
+		// Get the store cookies in user session
 		cookieData := sessions.Default(ctx)
 		userInfo, ok := cookieData.Get("info").(model.UserInfo)
 		if !ok {
@@ -199,17 +198,12 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 			return
 		}
 
-    // Get the uploaded images from the client app
+		// Get the uploaded images from the client app
 		var imageArr map[string]interface{}
 
+		form := ctx.Request.MultipartForm
 
-		form, err := ctx.MultipartForm()
-    if err != nil{
-      _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
-      return
-    }
-
-		imageArr, err = upload.MultiFile(form, "tour_image", "tour_image_data")
+		imageArr, err := upload.MultiFile(form, "tour_image", "tour_image_data")
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 
