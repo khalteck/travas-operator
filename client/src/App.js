@@ -398,10 +398,7 @@ function App() {
 
     // Add tour image files to FormData object
     for (let i = 0; i < tourPackageData.tour_image.length; i++) {
-      formDataToSend.append(
-        "tour_image[]",
-        tourPackageData.tour_image[i].tour_image
-      );
+      formDataToSend.append("tour_image[]", tourPackageData.tour_image[i]);
     }
 
     // Add what to expect fields to FormData object
