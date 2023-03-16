@@ -8,11 +8,15 @@ import (
 
 type Operator struct {
 	ID              primitive.ObjectID `bson:"_id" json:"_id"`
+	FullName        string             `bson:"full_name,omitempty"`
+	IDCard          map[string]any     `bson:"id_card,omitempty"`
+	Certificate     map[string]any     `bson:"certificate,omitempty"`
 	CompanyName     string             `bson:"company_name,omitempty"`
 	Email           string             `bson:"email" Usage:"required,alphanumeric" json:"email,omitempty"`
 	Password        string             `bson:"password" Usage:"required" json:"password,omitempty"`
 	ConfirmPassword string             `bson:"confirm_password" Usage:"required" json:"confirm_password,omitempty"`
 	Phone           string             `bson:"phone" Usage:"required" json:"phone,omitempty"`
+	Status          string             `bson:"status"`
 	TourGuide       []string           `bson:"guide" json:"guide,omitempty"`
 	ToursList       []Tour             `bson:"tours_list" json:"tours_list,omitempty"`
 	GeoLocation     string             `bson:"geo_location" json:"geo_location,omitempty"`
