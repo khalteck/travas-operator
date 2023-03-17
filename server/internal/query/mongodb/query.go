@@ -102,7 +102,7 @@ func(op *OperatorDB) FindStatus(userID primitive.ObjectID) (primitive.M, error )
 
   var res bson.M
   filter := bson.D{{Key:"_id", Value: userID}}
-  err := OperatorData(op.DB, "operator").FindOne(ctx,filter).Decode(&res)
+  err := OperatorData(op.DB, "operators").FindOne(ctx,filter).Decode(&res)
   if err != nil{
     if err == mongo.ErrNoDocuments{
       op.App.Debug.Println("no document available")
