@@ -529,36 +529,39 @@ function App() {
   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity   //to verify identity
 
   const [verifyformData, setVerifyFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-    idImage: null,
-    certImage: null,
+    full_name: "",
+    number: "",
+    id_card: null,
+    certificate: null,
   });
+  // console.log(verifyformData);
 
   const handleVerifyInputChange = (event) => {
-    const { name, value } = event.target;
-    setVerifyFormData({ ...verifyformData, [name]: value });
+    const { id, value } = event.target;
+    setVerifyFormData({ ...verifyformData, [id]: value });
   };
 
   const handleIdChange = (event) => {
-    const idImage = event.target.files[0];
-    setVerifyFormData({ ...verifyformData, idImage });
+    const id_card = event.target.files[0];
+    setVerifyFormData({ ...verifyformData, id_card });
   };
 
   const handleCertChange = (event) => {
-    const certImage = event.target.files[0];
-    setVerifyFormData({ ...verifyformData, certImage });
+    const certificate = event.target.files[0];
+    setVerifyFormData({ ...verifyformData, certificate });
   };
+
+  const [verifySubmitted, setVerifySubmitted] = useState(false);
 
   const handleVerifySubmit = async (event) => {
     event.preventDefault();
     setShowLoader(true);
-    const endpoint = "/api/verify/document";
+    const endpoint = "/api/auth/verify/credential";
     const formDataToSend = new FormData();
-    formDataToSend.append("fullName", verifyformData.fullName);
-    formDataToSend.append("phoneNumber", verifyformData.phoneNumber);
-    formDataToSend.append("idImage", verifyformData.idImage);
-    formDataToSend.append("certImage", verifyformData.certImage);
+    formDataToSend.append("full_name", verifyformData.full_name);
+    formDataToSend.append("number", verifyformData.number);
+    formDataToSend.append("id_card", verifyformData.id_card);
+    formDataToSend.append("certificate", verifyformData.certificate);
 
     try {
       const response = await fetch(endpoint, {
@@ -569,6 +572,7 @@ function App() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      setVerifySubmitted(true);
       console.log(data);
     } catch (error) {
       console.error(error);
@@ -576,6 +580,47 @@ function App() {
       setShowLoader(false);
     }
   };
+
+  function confirmVerify() {
+    setVerifySubmitted(false);
+    navigate("/dashboard");
+    window.location.reload();
+  }
+
+  const [verifyStatus, setVerifyStatus] = useState(
+    JSON.parse(localStorage.getItem("verifyStatus")) || "checking"
+  );
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const fetchVerifyStatus = async () => {
+        setShowLoader(true);
+
+        try {
+          const response = await fetch("/api/auth/verify/status");
+          const data = await response.json();
+          console.log(data);
+
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+
+          // if (data.TourGuides === null) {
+          //   return;
+          // } else if (data.TourGuides !== null) {
+          //   setVerifyStatus(data.TourGuides);
+          //   localStorage.setItem("verifyStatus", JSON.stringify(data.TourGuides));
+          // }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setShowLoader(false);
+        }
+      };
+
+      fetchVerifyStatus();
+    }
+  }, [isLoggedIn]);
 
   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide
   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide   //to add tour guide
@@ -888,6 +933,8 @@ function App() {
               handleCertChange={handleCertChange}
               handleVerifySubmit={handleVerifySubmit}
               showLoader={showLoader}
+              verifySubmitted={verifySubmitted}
+              confirmVerify={confirmVerify}
             />
           }
         />
