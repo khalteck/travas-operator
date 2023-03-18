@@ -65,7 +65,7 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 			Email:           ctx.Request.FormValue("email"),
 			Password:        ctx.Request.FormValue("password"),
 			ConfirmPassword: ctx.Request.FormValue("confirm_password"),
-			Phone:           ctx.Request.FormValue("phone"),
+      Phone:           ctx.Request.FormValue("phone"),
 			TourGuide:       []string{},
 			ToursList:       []model.Tour{},
 			GeoLocation:     "",
@@ -241,7 +241,7 @@ func (op *Operator) VerifyDocument() gin.HandlerFunc {
 		}
 
 		credential := map[string]any{
-			"full_name":   form.Value[""],
+			"full_name":   form.Value["full_name"],
 			"phone":       form.Value["phone"],
 			"id_card":     IDcard,
 			"certificate": certf,
@@ -272,21 +272,24 @@ func (op *Operator) CheckStatus() gin.HandlerFunc {
     if err != nil{
       _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
       return
-    }
+}
 
-		status := res["status"].(string)
+		status := res["status"]
 
-		switch status {
-		case "":
-			ctx.JSONP(http.StatusNotFound, gin.H{"message": "Please verify your credential"})
-			return
-
-		case "Verified": // this will be added in the backend of the admin panel after the admin verify the operator
-			ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
-			return
-		case "Not Verified":
-			ctx.JSONP(http.StatusNotFound, gin.H{"message": "You credential is still under review"})
-			return
+    switch v := status.(type) {
+		case string:
+      if v == "" {
+        ctx.JSONP(http.StatusNoContent, gin.H{"message": "Please verify your credential"})
+        return
+      }
+      if v == "Verified"{ // this will be added in the backend of the admin panel after the admin verify the operator
+        ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
+			  return
+      }
+      if v == "Not Verified"{
+        ctx.JSONP(http.StatusNoContent, gin.H{"message": "Verification under review"})
+			  return
+      }
 		}
 	}
 
