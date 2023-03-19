@@ -588,7 +588,7 @@ function App() {
   }
 
   const [verifyStatus, setVerifyStatus] = useState(
-    JSON.parse(localStorage.getItem("verifyStatus")) || "checking"
+    JSON.parse(localStorage.getItem("verifyStatus")) || "unverified"
   );
 
   useEffect(() => {
@@ -605,11 +605,14 @@ function App() {
             throw new Error("Network response was not ok");
           }
 
-          // if (data.TourGuides === null) {
+          // if (data.message === "You credential is still under review") {
+          //   setVerifyStatus("identity in review");
+          //   localStorage.setItem(
+          //     "verifyStatus",
+          //     JSON.stringify("identity in review")
+          //   );
+          // } else {
           //   return;
-          // } else if (data.TourGuides !== null) {
-          //   setVerifyStatus(data.TourGuides);
-          //   localStorage.setItem("verifyStatus", JSON.stringify(data.TourGuides));
           // }
         } catch (error) {
           console.log(error);
