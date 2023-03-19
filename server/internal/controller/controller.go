@@ -272,25 +272,18 @@ func (op *Operator) CheckStatus() gin.HandlerFunc {
     if err != nil{
       _ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
       return
-}
+    }
 
-		status := res["status"]
+		status := (res["status"]).(string) 
 
-    switch v := status.(type) {
-		case string:
-      if v == "" {
+    switch status {
+		case "":
         ctx.JSONP(http.StatusNoContent, gin.H{"message": "Please verify your credential"})
-        return
-      } 
-      if v == "Verified"{
+    case "Verified":
       // this will be added in the backend of the admin panel after the admin verify the operator
 			ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
-			return
-      } 
-      if v ==  "Not Verified" {
+    case "Not Verified":
 			ctx.JSONP(http.StatusNoContent, gin.H{"message": "You credential is still under review"})
-			return
-		  }
      }
   }
 }
