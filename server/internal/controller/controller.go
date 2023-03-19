@@ -51,7 +51,7 @@ func (op *Operator) Register() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, gin.H{})
 	}
 }
-----
+
 // ProcessRegister : this helps to process user registration
 func (op *Operator) ProcessRegister() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
