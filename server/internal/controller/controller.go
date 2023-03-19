@@ -51,7 +51,7 @@ func (op *Operator) Register() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, gin.H{})
 	}
 }
-
+----
 // ProcessRegister : this helps to process user registration
 func (op *Operator) ProcessRegister() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -60,12 +60,12 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		}
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-		user := &model.Operator{
+		-user := &model.Operator{
 			CompanyName:     ctx.Request.FormValue("company_name"),
 			Email:           ctx.Request.FormValue("email"),
 			Password:        ctx.Request.FormValue("password"),
 			ConfirmPassword: ctx.Request.FormValue("confirm_password"),
-      Phone:           ctx.Request.FormValue("phone"),
+			Phone:           ctx.Request.FormValue("phone"),
 			TourGuide:       []string{},
 			ToursList:       []model.Tour{},
 			GeoLocation:     "",
@@ -281,18 +281,18 @@ func (op *Operator) CheckStatus() gin.HandlerFunc {
       if v == "" {
         ctx.JSONP(http.StatusNoContent, gin.H{"message": "Please verify your credential"})
         return
-      }
-      if v == "Verified"{ // this will be added in the backend of the admin panel after the admin verify the operator
-        ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
-			  return
-      }
-      if v == "Not Verified"{
-        ctx.JSONP(http.StatusNoContent, gin.H{"message": "Verification under review"})
-			  return
-      }
-		}
-	}
-
+      } 
+      if v == "Verified"{
+      // this will be added in the backend of the admin panel after the admin verify the operator
+			ctx.JSONP(http.StatusOK, gin.H{"message": "You have been verified successfully"})
+			return
+      } 
+      if v ==  "Not Verified" {
+			ctx.JSONP(http.StatusNoContent, gin.H{"message": "You credential is still under review"})
+			return
+		  }
+     }
+  }
 }
 
 // Dashboard : this will help load up and process all the user details,information and all the
@@ -309,7 +309,7 @@ func (op *Operator) GetTourRequest() gin.HandlerFunc {
 		// Todo -> get all the tour request from the tourists collections
 		//	and compare and check for the date with the present date
 		requestTours, err := op.DB.ValidTourRequest()
-		if err != nil {
+if err != nil {
 			_ = ctx.AbortWithError(http.StatusInternalServerError, gin.Error{Err: err})
 			return
 		}
