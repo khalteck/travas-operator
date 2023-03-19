@@ -60,7 +60,7 @@ func (op *Operator) ProcessRegister() gin.HandlerFunc {
 		}
 		CreatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		UpdatedAt, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-		-user := &model.Operator{
+		user := &model.Operator{
 			CompanyName:     ctx.Request.FormValue("company_name"),
 			Email:           ctx.Request.FormValue("email"),
 			Password:        ctx.Request.FormValue("password"),
