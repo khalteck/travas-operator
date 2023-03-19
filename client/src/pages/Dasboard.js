@@ -19,6 +19,7 @@ const Dashboard = ({
   tourPackageFromDb,
   noTourGuide,
   cancelAddTgPrompt,
+  verifyStatus,
 }) => {
   // console.log(tourPackageFromDb);
   return (
@@ -190,15 +191,36 @@ const Dashboard = ({
             <div className="p-3 h-[fit-content] md:h-full flex items-center border border-gray-300 rounded-md">
               <img alt="" src="/images/Vector-user.png" className="w-10" />
             </div>
-            <div className="w-full py-3 px-6 border border-gray-300 rounded-md block md:flex justify-between">
-              <div>
-                <p>Your identity is unverified</p>
-                <p className="text-[0.8rem] mt-2">
+            {verifyStatus === "Unverified" ? (
+              <div className="w-full py-3 px-6 border border-gray-300 rounded-md block md:flex justify-between">
+                <div>
+                  <p>Your identity is unverified</p>
+                  <p className="text-[0.8rem] mt-2">
+                    Your identity would need to be verified before you'll be
+                    able to create a tour package
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <Link to="/verify">
+                    <p className="text-blue-500">Verify identity</p>
+                  </Link>
+                  <img
+                    alt=""
+                    src="/images/icons8-chevron-right-blue.png"
+                    className="w-3 h-4"
+                  />
+                </div>
+              </div>
+            ) : verifyStatus === "Verified" ? (
+              <div className="w-full py-3 px-6 border border-gray-300 rounded-md block md:flex justify-between">
+                <div>
+                  <p>Your identity is verified!</p>
+                  {/* <p className="text-[0.8rem] mt-2">
                   Your identity would need to be verified before you'll be able
                   to create a tour package
-                </p>
-              </div>
-              <div className="flex items-center gap-2 mt-3">
+                </p> */}
+                </div>
+                {/* <div className="flex items-center gap-2 mt-3">
                 <Link to="/verify">
                   <p className="text-blue-500">Verify identity</p>
                 </Link>
@@ -207,8 +229,29 @@ const Dashboard = ({
                   src="/images/icons8-chevron-right-blue.png"
                   className="w-3 h-4"
                 />
+              </div> */}
               </div>
-            </div>
+            ) : verifyStatus === "Under review" ? (
+              <div className="w-full py-3 px-6 border border-gray-300 rounded-md block md:flex justify-between">
+                <div>
+                  <p>Your identity is under review</p>
+                  <p className="text-[0.8rem] mt-2">
+                    Your identity would need to be verified before you'll be
+                    able to create a tour package
+                  </p>
+                </div>
+                {/* <div className="flex items-center gap-2 mt-3">
+                <Link to="/verify">
+                  <p className="text-blue-500">Verify identity</p>
+                </Link>
+                <img
+                  alt=""
+                  src="/images/icons8-chevron-right-blue.png"
+                  className="w-3 h-4"
+                />
+              </div> */}
+              </div>
+            ) : null}
           </div>
         </div>
         <Footer />

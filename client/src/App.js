@@ -588,7 +588,7 @@ function App() {
   }
 
   const [verifyStatus, setVerifyStatus] = useState(
-    JSON.parse(localStorage.getItem("verifyStatus")) || "unverified"
+    JSON.parse(localStorage.getItem("verifyStatus")) || ""
   );
 
   useEffect(() => {
@@ -601,8 +601,8 @@ function App() {
           const data = await response.json();
           console.log(data);
 
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
+          if (response.status === 204) {
+            setVerifyStatus("Unverified");
           }
 
           // if (data.message === "You credential is still under review") {
@@ -853,6 +853,7 @@ function App() {
                 showLoader={showLoader}
                 noTourGuide={noTourGuide}
                 cancelAddTgPrompt={cancelAddTgPrompt}
+                verifyStatus={verifyStatus}
               />
             ) : (
               <Login
