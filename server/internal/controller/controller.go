@@ -274,10 +274,10 @@ func (op *Operator) CheckStatus() gin.HandlerFunc {
       return
     }
 
-		status := (res["status"]).(string) 
+	status:= fmt.Sprintf("%s", res["status"])
 
     switch status {
-		case "":
+	case "":
         ctx.JSONP(http.StatusNoContent, gin.H{"message": "Please verify your credential"})
     case "Verified":
       // this will be added in the backend of the admin panel after the admin verify the operator
