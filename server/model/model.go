@@ -47,7 +47,7 @@ type Tour struct {
 	Price           string                 `bson:"price" json:"price"`
 	Contact         string                 `bson:"contact" json:"contact,omitempty"`
 	Language        string                 `bson:"language" json:"language,omitempty"`
-	Image           map[string]interface{} `bson:"tour_image" json:"tour_image"`
+	Image           map[string][]any `bson:"tour_image" json:"tour_image"`
 	ImageStream     map[string][]any       `bson:"image_stream" json:"image_stream"`
 	NumberOfTourist string                 `bson:"number_of_tourist" json:"number_of_tourist,omitempty"`
 	Description     string                 `bson:"description" json:"description,omitempty"`

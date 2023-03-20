@@ -3,7 +3,6 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/travas-io/travas-op/pkg/upload"
 	"io"
 	"io/ioutil"
 	"log"
@@ -12,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/travas-io/travas-op/pkg/upload"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -177,14 +178,6 @@ func (op *Operator) ProcessTourPackage() gin.HandlerFunc {
 // as a whole all at once
 func (op *Operator) TestTourPackage() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if !strings.HasPrefix(ctx.Request.Header.Get("Content-Type"), "multipart/form-data") {
-			_ = ctx.AbortWithError(http.StatusBadRequest, errors.New("invalid content-Type"))
-			return
-		}
-
-		boundary := "travas"
-		ctx.Request.Header.Set("Content-Type", fmt.Sprintf("multipart/form-data; boundary=%s", boundary))
-
 		// Parse the incoming posted data from the client app
 		if err := ctx.Request.ParseMultipartForm(int64(MEMORYMAXSIZE)); err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
@@ -199,17 +192,19 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 		}
 
 		// Get the uploaded images from the client app
-		var imageArr map[string]interface{}
+		var imageArr map[string][]any
 
-		form := ctx.Request.MultipartForm
-
-		imageArr, err := upload.MultiFile(form, "tour_image", "tour_image_data")
+		form, err := ctx.MultipartForm()
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
+		}
+		imageArr, err = upload.MultiFile(form, "tour_image", "tour_image_data")
 		if err != nil {
 			_ = ctx.AbortWithError(http.StatusBadRequest, gin.Error{Err: err})
 
 		}
 
-		wte := ctx.Request.MultipartForm.Value["what_to_expect"]
+		wte := form.Value["what_to_expect"]
 		whatToExpect := make(map[string]string)
 		for i, value := range wte {
 			key := fmt.Sprintf("what_to_expect_%d", i)
@@ -217,7 +212,7 @@ func (op *Operator) TestTourPackage() gin.HandlerFunc {
 
 		}
 
-		rules := ctx.Request.MultipartForm.Value["rules"]
+		rules := form.Value["rules"]
 		rulesMap := make(map[string]string)
 		for i, value := range rules {
 			key := fmt.Sprintf("rule_%d", i)
